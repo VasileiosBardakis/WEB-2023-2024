@@ -1,0 +1,3 @@
+Θέλει npm install package, npm install mysql, npm install --save mysql express, npm i --save dotenv (gia enviroment variables)
+npm install -g nodemon (gia na mhn thelei restart kathe fora pou allazw kati)
+pataw nodemon gia na mhn xreiazetai na to trexw kathe fora, apla kanw save
