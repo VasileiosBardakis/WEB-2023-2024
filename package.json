@@ -6,7 +6,8 @@
     "express-session": "^1.17.3",
     "mysql": "^2.18.1",
     "package": "^1.0.1",
-    "package.json": "^2.0.1"
+    "package.json": "^0.0.0",
+    "path": "^0.12.7"
   },
   "name": "desktop",
   "version": "1.0.0",

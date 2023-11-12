@@ -20,7 +20,6 @@ db.connect((err) => {
 
 // GET for rendering pages,
 // POST for user actions
-app.set('view-engine', 'ejs')
 
 // associate the modules we'll be using
 app.use(session({
@@ -35,7 +34,12 @@ app.use(express.static(path.join(__dirname, 'static')));
 // http://localhost:3000/ redirects to login
 app.get('/', function(req, res) {
 	// Render login template
-	res.sendFile(path.join(__dirname + '/login.html'));
+	if (req.session.loggedin) {
+		res.redirect('/home');      //If logged in, redirect to home
+	}
+	else {
+		res.sendFile(path.join(__dirname + '/login.html'));   //If not logged in, show login page
+	}
 });
 
 // auth route
@@ -54,9 +58,9 @@ app.post('/', (req, res) => {
 				req.session.loggedin = true;
 				req.session.username = username;
 				// Redirect to home page
-				res.redirect('/getadmin');
+				res.redirect('/home');
 			} else {
-				res.send('Incorrect Username and/or Password!');
+				res.send('Incorrect Username and/or Password, please try again!');
 			}			
 			res.end();
 		});
@@ -66,32 +70,19 @@ app.post('/', (req, res) => {
 	}
 });
 
-app.get('/getadmin', (req, response) => {
+app.get('/home', (req, response) => {
     let sql = 'SELECT * FROM admin';
     db.query(sql, (err, result) => {
         if (err) throw err;
-		
-        // console.log(result);
-		usernames = [];
-		result.forEach(row => {
-			usernames.push(row.username)
-		});
-
-        response.send('admins are...\n' + usernames.join('\n'));
+		if (req.session.loggedin) {
+			
+			response.send('Welcome back, ' + req.session.username);
+		}
+		else { response.send('Please log in to view this page') }
+			
     });
 });
 
-app.get('/home', function(req, res) {
-    // If the user is loggedin
-	if (request.session.loggedin) {
-		// Output username
-		res.send('Welcome back, ' + req.session.username + '!');
-	} else {
-		// Not logged in
-		res.send('Please login to view this page!');
-	}
-	res.end();
-})
 
 app.listen('3000', () => {
     console.log('Server started on port 3000')
