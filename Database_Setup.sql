@@ -7,6 +7,5 @@ username VARCHAR(30) NOT NULL,
 password VARCHAR(30) NOT NULL);
 
 
-
 INSERT INTO admin VALUES
 ('admin','admin')
