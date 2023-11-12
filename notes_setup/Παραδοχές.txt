@@ -1,0 +1,23 @@
+npm install package
+npm install mysql
+npm install --save mysql express
+npm i --save dotenv (gia enviroment variables)
+npm install -g nodemon (gia na mhn thelei restart kathe fora pou allazw kati)
+npm install mysql2@latest
+npm install ejs
+pataw nodemon gia na mhn xreiazetai na to trexw kathe fora, apla kanw save
+npm run devStart
+
+Pinakas me credentials user_login:
+San to pinaka admin omws tha xei sthlh "user type"
+Kathe arithmos tha antistoixei se eidos xrhsth
+p.x. admin = 0
+diaswsths = 1
+
+Ta credentials ths sql tha eprepe na einai se .env omws exei bug to package
+
+Sto static/ mpainoun ta arxeia pou theloume na xrhsimopoihsoume mesa sta html arxeia
+(express.static)
+
+To register sto /test thewritika tha prepe na xei animation alla den doulevei
+https://mdbootstrap.com/docs/standard/extended/login/
