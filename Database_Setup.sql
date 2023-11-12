@@ -2,10 +2,10 @@ DROP DATABASE IF EXISTS saviors;
 CREATE DATABASE saviors;
 USE saviors;
 
-CREATE TABLE admin (
+CREATE TABLE accounts (
 username VARCHAR(30) NOT NULL,
-password VARCHAR(30) NOT NULL);
+password VARCHAR(30) NOT NULL,
+type TINYINT NOT NULL);
 
-
-INSERT INTO admin VALUES
-('admin','admin')
+INSERT INTO accounts VALUES
+('admin','admin',0);
