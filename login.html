@@ -5,82 +5,80 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-    />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Include the Bootstrap JS dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-      <div id="demo"></div>
-    <style>
-    </style>
+    <!-- Include the Bootstrap JS file -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   </head>
 
   <body>
-    <nav class="navbar navbar-default nav-background">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="login.html">
-
-            <!-- 
-                <img
-              src=""
-              alt="My logo"
-              class="headerLogo""
-            />
-             -->
-            <div style="font-size: 3rem">Saviors Inc.</div>
-          </a>
+    <!-- Pills content -->
+  <div class="logo">
+    <img src="/logo-no-background.png" alt="SAVIORS Rescue Coordination logo">
+  </div>
+    <!-- LOGIN -->
+    <div class="tab-pane" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+      <form action="/" method="post">
+        <!-- Username input -->
+        <div class="form-outline mb-4">
+          <input type="username" name="username" id="username" class="form-control" required/>
+          <label class="form-label" for="username">Username</label>
         </div>
-      </div>
-    </nav>
+  
+        <!-- Password input -->
+        <div class="form-outline mb-4">
+          <input type="password" name="password" id="password" class="form-control" required/>
+          <label class="form-label" for="password">Password</label>
+        </div>
+  
+        <!-- Submit button -->
+        <!-- TODO: type="submit" makes site bug out -->
+        <button type="button" onclick="login()" class="btn btn-primary btn-block mb-4">Log in</button>
+  
+        <!-- Register buttons -->
+        <div class="text-center">
+          <p>Don't have a civilian account? <a href="/register">Register</a></p>
+        </div>
+        
+        <!--         
+        TODO: Elements scale with biggest div
+        FIX: Have text already inside but toggle show 
+        -->
+        <div id="error-message"></div>
 
-    <div class="login">
-			<h1>Login</h1>
-            <form action="/" method="post">
-                <label for="username"></label>
-                <input type="text" name="username" placeholder="Username" id="username" required>
+        <script>
+          function login() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            var errorMessageElement = document.getElementById('error-message');
 
-                <label for="password"></label>
-                <input type="password" name="password" placeholder="Password" id="password" required>
+            var xhttp = new XMLHttpRequest();
+            xhttp.open('POST', '/', true);
+            xhttp.setRequestHeader('Content-Type', 'application/json');
 
-                <button type="button" onclick="login()">Login</button>
-               
-                <a href="/register">Register</a>
-               
+            xhttp.onreadystatechange = function () {
+              if (xhttp.readyState === 4) {
+                if (xhttp.status === 401) {
+                  // Handle incorrect username/password with AJAX
+                  var response = JSON.parse(xhttp.responseText);
+                  errorMessageElement.innerHTML = response.error;
+                } else if (xhttp.status === 200) {
+                  // Redirect on successful login if needed
+                  window.location.href = '/auth';
+                }
+              }
+            };
 
-
-                <div id="error-message"></div>
-
-                <script>
-                    function login() {
-                        var username = document.getElementById('username').value;
-                        var password = document.getElementById('password').value;
-                        var errorMessageElement = document.getElementById('error-message');
-
-                        var xhttp = new XMLHttpRequest();
-                        xhttp.open('POST', '/', true);
-                        xhttp.setRequestHeader('Content-Type', 'application/json');
-
-                        xhttp.onreadystatechange = function () {
-                            if (xhttp.readyState === 4) {
-                                if (xhttp.status === 401) {
-                                    // Handle incorrect username/password with AJAX
-                                    var response = JSON.parse(xhttp.responseText);
-                                    errorMessageElement.innerHTML = response.error;
-                                } else if (xhttp.status === 200) {
-                                    // Redirect on successful login if needed
-                                    window.location.href = '/auth';
-                                }
-                            }
-                        };
-
-                        var data = JSON.stringify({ username: username, password: password });
-                        xhttp.send(data);
-                    }
-                </script>
-            </form>
-		</div>
+            var data = JSON.stringify({ username: username, password: password });
+            xhttp.send(data);
+          }          
+        </script>
+      </form>
+    </div>
 
   </body>
 </html>
