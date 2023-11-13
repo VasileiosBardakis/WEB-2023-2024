@@ -4,6 +4,8 @@ const express = require('express');
 const session = require('express-session')
 const path = require('path');
 const app = express();
+const methodOverride = require('method-override');
+
 
 // Establishing connection
 const db = mysql.createConnection({
@@ -30,6 +32,7 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'static')));
+app.use(methodOverride('_method'));
 
 // http://localhost:3000/ redirects to login
 app.get('/', function(req, res) {
@@ -62,18 +65,13 @@ app.post('/', (req, res) => {
 				res.redirect('/auth');
 
 			} else {
-				res.send('Incorrect Username and/or Password, please try again!');
+				res.status(401).json({ error: 'Incorrect Username and/or Password, please try again!' });
 			}			
 			res.end();
 		});
 	} else {
-		res.send('Please enter Username and Password!');
 		res.end();
 	}
-});
-
-app.get('/test', function (req, res) {
-		res.sendFile(path.join(__dirname + '/test.html'));
 });
 
 
@@ -99,7 +97,7 @@ app.post('/register', (req, res) => {
 			if (error) throw error;
 			// Account already exists
 			if (results.length > 0) {
-				response.send('Username already exists, please pick a different one.')
+				res.status(401).json({ error: 'Username is already being used, please use a different one.' });
 			} else {
 				db.query('INSERT INTO accounts VALUES (?,?,1)', [username,password], function (error, results, fields) {
 					if (error) throw error;
@@ -110,7 +108,6 @@ app.post('/register', (req, res) => {
 			res.end();
 		});
 	} else {
-		res.send('Please enter Username and Password!');
 		res.end();
 	}
 });
@@ -122,7 +119,7 @@ app.get('/home', (req, res) => {
         if (err) throw err;
 		if (req.session.type==1) {			//Checking to see if user is a citizen
 			
-			response.send('Welcome back, ' + req.session.username);
+			res.send('Welcome back, ' + req.session.username);
 		}
 		else { res.redirect('/auth'); }    //If not, redirect to the right page
 			
@@ -151,16 +148,22 @@ app.get('/auth', (req, res) => {    //Pages go through /auth to see what permiss
 			if (req.session.type == 0) { res.redirect('/admin'); }
 			if (req.session.type == 1) { res.redirect('/home'); }
 
-			//response.send('Welcome back, ' + req.session.username);
+			//res.send('Welcome back, ' + req.session.username);
 		}
 		else { res.redirect('/'); }
 
 	});
 });
 
+app.delete('/logout', (req, res) => {
+	req.session.loggedin = false;
+	res.redirect('/');
 
-app.listen('4000', () => {
-    console.log('Server started on port 4000')
+});
+
+
+app.listen('3000', () => {
+    console.log('Server started on port 3000')
 });
 
 

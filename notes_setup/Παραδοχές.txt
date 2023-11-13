@@ -5,6 +5,7 @@ npm i --save dotenv (gia enviroment variables)
 npm install -g nodemon (gia na mhn thelei restart kathe fora pou allazw kati)
 npm install mysql2@latest
 npm install ejs
+npm i method-override
 pataw nodemon gia na mhn xreiazetai na to trexw kathe fora, apla kanw save
 npm run devStart
 
