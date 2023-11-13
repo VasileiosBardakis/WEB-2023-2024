@@ -5,6 +5,7 @@ const session = require('express-session')
 const path = require('path');
 const app = express();
 const methodOverride = require('method-override');
+const fs = require('fs');
 
 
 // Establishing connection
@@ -167,4 +168,59 @@ app.listen('3000', () => {
 });
 
 
+
+	//INSERT DATA
+// Clear existing data from tables
+
+db.query('DELETE FROM details', (err, results) => {
+	if (err) throw err;
+	console.log('Deleted all records from the details table');
+});
+
+db.query('DELETE FROM items', (err, results) => {
+	if (err) throw err;
+	console.log('Deleted all records from the items table');
+});
+
+db.query('DELETE FROM categories', (err, results) => {
+	if (err) throw err;
+	console.log('Deleted all records from the categories table');
+});
+
+
+
+const jsonData = fs.readFileSync('data.json', 'utf-8');
+const data = JSON.parse(jsonData);
+
+data.categories.forEach((category) => {
+	const categoryId = category.id;
+	const categoryName = category.category_name;
+
+	// Insert category into the 'categories' table
+	db.query('INSERT INTO categories (id, category_name) VALUES (?, ?)', [categoryId, categoryName], (err, results) => {
+		if (err) throw err;
+	});
+});
+
+// Insert items into the database
+data.items.forEach((item) => {
+	const itemId = item.id;
+	const itemName = item.name;
+	const category = item.category;
+
+	// Insert item into the 'items' table
+	db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
+		if (err) throw err;
+
+		// Insert details into the 'details' table
+		item.details.forEach((detail) => {
+			const detailName = detail.detail_name;
+			const detailValue = detail.detail_value;
+
+			db.query('INSERT INTO details (item_id, detail_name, detail_value) VALUES (?, ?, ?)', [itemId, detailName, detailValue], (err, results) => {
+				if (err) throw err;
+			});
+		});
+	});
+});
 
