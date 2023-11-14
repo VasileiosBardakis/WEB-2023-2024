@@ -22,12 +22,15 @@ db.connect((err) => {
 // POST for user actions
 
 const server = http.createServer((request, response) => {
-	let urlPath = '.' + request.url;
-	console.log(`Requesting ${request.url}`);
-
+	let urlPath = request.url;
 	// to make ext extraction work
-	if (urlPath === './') {
-		urlPath = './index.html';
+	if (urlPath === '/') {
+		urlPath = '/index';
+	}
+	
+	//if it doesnt have extension it's html
+	if (!urlPath.includes('.')) {
+		urlPath += '.html';
 	}
 	const extname = String(path.extname(urlPath)).toLowerCase();
 	console.log(extname);
@@ -45,12 +48,14 @@ const server = http.createServer((request, response) => {
 	
 	let contentType = 'text/html';
 	contentType = mimeTypes[extname];
-
+	
 	if (request.method === 'GET') {
+		console.log(`Requesting ${urlPath}`);
 		if (extname === '.html') {
+			let filePath;
 			switch (request.url) {
 				case '/':
-					let filePath = path.join(__dirname, 'login.html');
+					filePath = path.join(__dirname, 'login.html');
 					//TODO: Add if session
 					
 					fs.readFile(filePath, 'utf8', (err, data) => {
@@ -66,7 +71,7 @@ const server = http.createServer((request, response) => {
 						
 				case '/login':
 				case '/register':
-					filePath = path.join(__dirname, request.url + '.html')
+					filePath = path.join(__dirname, urlPath)
 					fs.readFile(filePath, 'utf8', (err, data) => {
 						if (err) {
 							response.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -104,8 +109,10 @@ const server = http.createServer((request, response) => {
 			}
 		});
 	}
+	} else if (request.method === 'POST') {
+		console.log(`${urlPath} requests $`);
+		
 	}
-	console.log();
 });
 
 server.on('connection', (socket) => {
