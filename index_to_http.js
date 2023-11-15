@@ -10,7 +10,7 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "root",
-    database: 'saviors'
+    database: "saviors"
 })
 
 db.connect((err) => { 
@@ -33,7 +33,6 @@ const server = http.createServer((request, response) => {
 		urlPath += '.html';
 	}
 	const extname = String(path.extname(urlPath)).toLowerCase();
-	console.log(extname);
 	
 	const mimeTypes = {
 		'.html': 'text/html',
@@ -42,20 +41,30 @@ const server = http.createServer((request, response) => {
 		'.json': 'application/json',
 		'.png': 'image/png',
 		'.jpg': 'image/jpg',
-		// '.gif': 'image/gif',
-		// '.svg': 'image/svg+xml',
+		'.gif': 'image/gif',
+		'.svg': 'image/svg+xml',
+		'.ico': '/image/ico'
 	};
+
+	let imgTypes = [
+		'.png',
+		'.jpg',
+		'.gif',
+		'.svg',
+		'.ico'
+	];
 	
 	let contentType = 'text/html';
 	contentType = mimeTypes[extname];
 	
+	// TODO: GET/POST first, URL second. Can change if need be
 	if (request.method === 'GET') {
-		console.log(`Requesting ${urlPath}`);
+		console.log(`GET: ${urlPath}`);
 		if (extname === '.html') {
 			let filePath;
 			switch (request.url) {
 				case '/':
-					filePath = path.join(__dirname, 'login.html');
+					filePath = path.join(__dirname, 'views', 'login.html');
 					//TODO: Add if session
 					
 					fs.readFile(filePath, 'utf8', (err, data) => {
@@ -88,30 +97,79 @@ const server = http.createServer((request, response) => {
 					response.end('Not Found');
 
 			}
-	// Anything other than .html
-	} else {
-		let encoding = 'utf-8';
+		// Anything other than .html
+		} else {
+			let encoding = 'utf-8';
 
-		if (['.png', '.jpg'].includes(extname)) {
-			encoding = 'binary';
-		}
-
-		const filePath = path.join(__dirname, urlPath);
-		console.log(`from ${filePath}`);
-
-		fs.readFile(filePath, encoding, (err, data) => {
-			if (err) {
-				response.writeHead(500, { 'Content-Type': 'text/plain' });
-				response.end('Internal Server Error');
-			} else {
-				response.writeHead(200, { 'Content-Type': contentType });
-				response.end(data, encoding);
+			if (imgTypes.includes(extname)) {
+				encoding = 'binary';
 			}
-		});
-	}
+
+			const filePath = path.join(__dirname, urlPath);
+			console.log(`from ${filePath}`);
+
+			fs.readFile(filePath, encoding, (err, data) => {
+				if (err) {
+					response.writeHead(500, { 'Content-Type': 'text/plain' });
+					response.end('Internal Server Error');
+				} else {
+					response.writeHead(200, { 'Content-Type': contentType });
+					response.end(data, encoding);
+				}
+			});
+		}
 	} else if (request.method === 'POST') {
-		console.log(`${urlPath} requests $`);
+		console.log(`POST: ${urlPath}`);
+		let body = '';
+
+
+		switch (urlPath) {
+			case '/register':
+				// fetch the request
+				request.on('data', (chunk) => {
+					body += chunk;
+				});
 		
+				request.on('end', () => {
+					// Parse as JSON
+					const jsonData = JSON.parse(body);
+					const username = jsonData.username;
+					const password = jsonData.password;
+					const name = jsonData.name;
+					const telephone = jsonData.telephone;
+		
+					
+					console.log(`${username} ${name} ${telephone}`);
+		
+					if (username && password && name && telephone) {
+				
+					db.query('SELECT * FROM accounts WHERE username = ?', [username], function (error, results, fields) {
+						if (error) throw error;
+		
+						if (results.length > 0) {
+							response.writeHead(401, { 'Content-Type': 'application/json' });
+							response.end(JSON.stringify({ error: 'Username is already being used, please use a different one.' }));
+						} else {
+							db.query('INSERT INTO accounts VALUES (?,?,1,?,?)', [username,password,name,telephone], function (error, results, fields) {
+								if (error) throw error;
+							});
+							// Redirect to login page
+							response.writeHead(302, { 'Location': '/' });
+							response.end();
+						}
+					});
+				} else {
+					response.statusCode = 400;
+					response.end('Bad GET');
+				}
+				});
+				break;
+		
+			default:
+				response.writeHead(404, { 'Content-Type': 'text/plain' });
+				response.end('Not Found');
+
+		}
 	}
 });
 
@@ -142,7 +200,9 @@ db.query('DELETE FROM categories', (err, results) => {
 	console.log('Deleted all records from the categories table');
 });
 
-const jsonData = fs.readFileSync('data.json', 'utf-8');
+
+const dataPath = path.join(__dirname, 'data', 'data.json');
+const jsonData = fs.readFileSync(dataPath, 'utf-8');
 const data = JSON.parse(jsonData);
 
 data.categories.forEach((category) => {
