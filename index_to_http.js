@@ -228,7 +228,6 @@ const server = http.createServer((request, response) => {
 
 		}
 	}
-})
 });
 
 server.on('connection', (socket) => {
