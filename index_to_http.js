@@ -80,7 +80,7 @@ const server = http.createServer((request, response) => {
 						
 				case '/login':
 				case '/register':
-					filePath = path.join(__dirname, urlPath)
+					filePath = path.join(__dirname, 'views', urlPath)
 					fs.readFile(filePath, 'utf8', (err, data) => {
 						if (err) {
 							response.writeHead(500, { 'Content-Type': 'text/plain' });
