@@ -1,0 +1,6 @@
+Requirements:
+JS, Node.js, mySQL
+
+npm install package.json
+npm run http
+localhost:port

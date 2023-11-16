@@ -11,9 +11,9 @@ const db = mysql.createConnection({
     user: "root",
     password: "root",
     database: "saviors"
-})
+});
 
-db.connect((err) => { 
+db.connect((err) => {
     if (err) { throw err; }
     else { console.log('MySql Connected'); }
 });
@@ -163,10 +163,10 @@ const server = http.createServer((request, response) => {
 						    });
 						    break;
 						
-				    case '/login':
-				    case '/register':
-					    filePath = path.join(__dirname, '/views', urlPath)
-					    fs.readFile(filePath, 'utf8', (err, data) => {
+				case '/login':
+				case '/register':
+					filePath = path.join(__dirname, 'views', urlPath)
+					fs.readFile(filePath, 'utf8', (err, data) => {
 						if (err) {
 							response.writeHead(500, { 'Content-Type': 'text/plain' });
 							response.end('Internal Server Error');
@@ -222,6 +222,50 @@ const server = http.createServer((request, response) => {
 
 
 	       	switch (urlPath) {
+			case '/':
+			case '/login':
+				// fetch the request
+				request.on('data', (chunk) => {
+					body += chunk;
+				});
+
+				request.on('end', () => {
+					// Parse as JSON
+					const jsonData = JSON.parse(body);
+					const username = jsonData.username;
+					const password = jsonData.password;
+					
+					console.log(`${username} ${password}`);
+		
+					if (username && password) {
+				
+					db.query('SELECT * FROM accounts WHERE username = ?', [username], function (error, results, fields) {
+						if (error) throw error;
+		
+						if (results.length > 0) {
+							// Authenticate the user
+							// req.session.loggedin = true;
+							// req.session.username = username;
+							// req.session.type = results[0].type;
+
+							// Redirect to auth
+							response.writeHead(302, { 'Location': '/auth' });
+							response.end();
+						} else {
+							response,writeHead(401, { 'Content-Type': 'application/json' })
+							response.end(JSON.stringify({ error: 'Incorrect Username and/or Password, please try again!' }));
+
+							}
+						});
+				} else {
+					response.statusCode = 400;
+					response.end('Bad GET');
+				}
+				});
+				break;
+
+
+
 	     		case '/register':
 		   		// fetch the request
 		  		request.on('data', (chunk) => {
@@ -278,7 +322,7 @@ server.on('connection', (socket) => {
 const PORT = 3000;
 server.listen(PORT, () => {
 	console.log(`Server running at localhost:${PORT}/`)
-})
+});
 
 	//INSERT DATA
 // Clear existing data from tables

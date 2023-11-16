@@ -23,4 +23,5 @@ Sto static/ mpainoun ta arxeia pou theloume na xrhsimopoihsoume mesa sta html ar
 To register sto /test thewritika tha prepe na xei animation alla den doulevei
 https://mdbootstrap.com/docs/standard/extended/login/
 
-href path is written relatively in html so no need for different cases in js code
+
+/auth is skipped and handled directly in /login
