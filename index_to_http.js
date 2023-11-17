@@ -63,6 +63,7 @@ const server = http.createServer((request, response) => {
 
 	let contentType = 'text/html';
 	contentType = mimeTypes[extname];
+
 	// Parse cookies
     const cookies = parseCookies(request);
 
@@ -132,8 +133,7 @@ const server = http.createServer((request, response) => {
                     }
 				});
 			} else {
-                // If the cookie doesn't exist, continue with your existing GET request handling logic
-                // For example, render the login page
+                // If the cookie doesn't exist, continue with existing GET request handling logic
                 const filePath = path.join(__dirname, 'views', 'login.html');
                 fs.readFile(filePath, 'utf8', (err, data) => {
                     if (err) {
@@ -165,7 +165,7 @@ const server = http.createServer((request, response) => {
 						
 				case '/login':
 				case '/register':
-					filePath = path.join(__dirname, '/views', urlPath)
+					filePath = path.join(__dirname, 'views', urlPath)
 					fs.readFile(filePath, 'utf8', (err, data) => {
 						if (err) {
 							response.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -177,22 +177,9 @@ const server = http.createServer((request, response) => {
 						});
 					break;
 
-					case '/auth':
-					let sql = 'SELECT type FROM accounts';
-					db.query(sql, (err, result) => {
-						if (err) throw err;
-						if (req.session.loggedin) {
-							if (req.session.type == 0) { res.redirect('/admin'); }
-							if (req.session.type == 1) { res.redirect('/home'); }
-				
-							//res.send('Welcome back, ' + req.session.username);
-						}
-						else { res.redirect('/'); }
-					});
-
-				    default:
-					    response.writeHead(404, { 'Content-Type': 'text/plain' });
-					    response.end('Not Found');
+				default:
+					response.writeHead(404, { 'Content-Type': 'text/plain' });
+					response.end('Not Found');
 
 			    }
 		    // Anything other than .html
