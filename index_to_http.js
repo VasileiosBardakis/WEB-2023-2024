@@ -239,7 +239,7 @@ const server = http.createServer((request, response) => {
 							response.writeHead(302, { 'Location': '/auth' });
 							response.end();
 						} else {
-							response,writeHead(401, { 'Content-Type': 'application/json' })
+							response.writeHead(401, { 'Content-Type': 'application/json' })
 							response.end(JSON.stringify({ error: 'Incorrect Username and/or Password, please try again!' }));
 
 							}
