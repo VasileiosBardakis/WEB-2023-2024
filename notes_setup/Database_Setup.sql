@@ -6,7 +6,7 @@ CREATE DATABASE saviors;
 USE saviors;
 
 CREATE TABLE accounts (
-    username VARCHAR(30) NOT NULL,
+    username VARCHAR(30) PRIMARY KEY,
     password VARCHAR(30) NOT NULL,
     type TINYINT NOT NULL,
     fullname VARCHAR(60),
@@ -20,6 +20,22 @@ INSERT INTO accounts VALUES
 INSERT INTO accounts VALUES
 ('npc', 'npc', 1, null, null);
 
+CREATE TABLE session (
+    username VARCHAR(30) NOT NULL,
+    sessionid VARCHAR(60),
+    PRIMARY KEY (username, sessionid),
+    FOREIGN KEY (username) REFERENCES accounts(username)
+);
+
+DELIMITER //
+CREATE TRIGGER after_accounts_insert
+AFTER INSERT
+ON accounts FOR EACH ROW
+BEGIN
+    INSERT INTO session (username, sessionid) VALUES (NEW.username, NULL);
+END;
+//
+DELIMITER ;
 
 CREATE TABLE items (
     id INT PRIMARY KEY,

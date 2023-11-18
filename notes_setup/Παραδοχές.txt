@@ -1,27 +1,15 @@
 npm install package
-npm install mysql
-npm install --save mysql express
-npm i --save dotenv (gia enviroment variables)
-npm install -g nodemon (gia na mhn thelei restart kathe fora pou allazw kati)
-npm install mysql2@latest
-npm install ejs
-npm i method-override
-pataw nodemon gia na mhn xreiazetai na to trexw kathe fora, apla kanw save
-npm run devStart
-
-Pinakas me credentials user_login:
-San to pinaka admin omws tha xei sthlh "user type"
-Kathe arithmos tha antistoixei se eidos xrhsth
-p.x. admin = 0
-diaswsths = 1
-
-Ta credentials ths sql tha eprepe na einai se .env omws exei bug to package
 
 Sto static/ mpainoun ta arxeia pou theloume na xrhsimopoihsoume mesa sta html arxeia
 (express.static)
 
-To register sto /test thewritika tha prepe na xei animation alla den doulevei
-https://mdbootstrap.com/docs/standard/extended/login/
-
 
 /auth is skipped and handled directly in /login
+
+,writehead
+
+When an account is created, it is also registered in table session
+Session holds current sessionid for each account
+For every action, sessionid is compared to sessionid in mysql database
+if same allow, else logout and prompt to login
+
