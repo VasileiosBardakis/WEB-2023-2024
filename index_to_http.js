@@ -20,11 +20,17 @@ db.connect((err) => {
 // GET for rendering pages,
 // POST for user actions
 
+//isCorrectSession()
+
 const server = http.createServer((request, response) => {
 	let urlPath = request.url;
+
+	const rawCookies = request.headers.cookie || ''
+	console.log(rawCookies);
+
 	// to make ext extraction work
 	if (urlPath === '/') {
-		urlPath = '/index';
+		urlPath = '/login';
 	}
 	
 	//if it doesnt have extension it's html
@@ -58,7 +64,7 @@ const server = http.createServer((request, response) => {
 	
 	// TODO: GET/POST first, URL second. Can change if need be
 	if (request.method === 'GET') {
-		console.log(`GET: ${urlPath}`);
+		console.log(`GET: ${request.url}`);
 		if (extname === '.html') {
 			let filePath;
 			switch (request.url) {
@@ -75,7 +81,7 @@ const server = http.createServer((request, response) => {
 							response.end(data, 'utf-8');
 						}
 						});
-						break;
+					break;
 						
 				case '/login':
 				case '/register':
@@ -89,21 +95,25 @@ const server = http.createServer((request, response) => {
 							response.end(data, 'utf-8');
 						}
 						});
-						break;
-					
+					break;
+
 				case '/auth':
-					let sql = 'SELECT type FROM accounts';
-					db.query(sql, (err, result) => {
-						if (err) throw err;
-						if (req.session.loggedin) {
-							if (req.session.type == 0) { res.redirect('/admin'); }
-							if (req.session.type == 1) { res.redirect('/home'); }
-				
-							//res.send('Welcome back, ' + req.session.username);
+					console.log('hello');
+					break;
+
+				case '/admin':
+					filePath = path.join(__dirname, 'views', urlPath)
+					fs.readFile(filePath, 'utf8', (err, data) => {
+						if (err) {
+							response.writeHead(500, { 'Content-Type': 'text/plain' });
+							response.end('Internal Server Error');
+						} else {
+							response.writeHead(200, { 'Content-Type': contentType });
+							response.end(data, 'utf-8');
 						}
-						else { res.redirect('/'); }
-					});
-					
+						});
+					break;
+
 
 				default:
 					response.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -132,11 +142,10 @@ const server = http.createServer((request, response) => {
 			});
 		}
 	} else if (request.method === 'POST') {
-		console.log(`POST: ${urlPath}`);
+		console.log(`POST: ${request.url}`);
 		let body = '';
 
-
-		switch (urlPath) {
+		switch (request.url) {
 			case '/':
 			case '/login':
 				// fetch the request
@@ -164,7 +173,7 @@ const server = http.createServer((request, response) => {
 							// req.session.type = results[0].type;
 
 							// Redirect to auth
-							response.writeHead(302, { 'Location': '/auth' });
+							response.writeHead(302, { 'Location': '/admin' });
 							response.end();
 						} else {
 							response,writeHead(401, { 'Content-Type': 'application/json' })
@@ -177,7 +186,7 @@ const server = http.createServer((request, response) => {
 					response.end('Bad GET');
 				}
 				});
-				break;
+			break;
 
 
 
@@ -220,7 +229,7 @@ const server = http.createServer((request, response) => {
 					response.end('Bad GET');
 				}
 				});
-				break;
+			break;
 		
 			default:
 				response.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -257,6 +266,10 @@ db.query('DELETE FROM categories', (err, results) => {
 	console.log('Deleted all records from the categories table');
 });
 
+db.query('UPDATE session SET sessionid = NULL', (err, results) => {
+	if (err) throw err;
+	console.log('Flushed previous session id\'s');	
+})
 
 const dataPath = path.join(__dirname, 'data', 'data.json');
 const jsonData = fs.readFileSync(dataPath, 'utf-8');
