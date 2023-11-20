@@ -40,17 +40,17 @@
 
     <div class="admin">
 			<h1>Admin Hub</h1>
-            <form action="/logout?_method=DELETE" method="post">
-                Welcome Admin
-                <button type="submit">Logout</button>
-            </form>
+      <button id="addRes" type="button" onclick="addResFunction()">Add new rescuer</button>
+      <button id="shStats" type="button" onclick="shStatsFunction()">Service Statistics</button>
+      <button id="shStore" type="button" onclick="shStoreFunction()">Storage</button>
+      <button id="mkAn" type="button" onclick="mkAnFunction()">Make an announcement</button>      
+      <br>
+      <button id="logout" type="button" onclick="logoutFunction()">Logout</button>
+  
 		</div>
 
-      <script>
-
-            
-          
-      </script>
+      <script src="index_to_http.js"></script>
+      <noscript>Sorry, your browser does not support JavaScript!</noscript>
 
   </body>
 </html>

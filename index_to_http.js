@@ -17,6 +17,24 @@ db.connect((err) => {
     else { console.log('MySql Connected'); }
 });
 
+
+//Admin Functions
+function logoutFunction() {
+	response.writeHead(302, { 'Location': '/' });
+	response.end();
+  }
+function addResFunction() {
+	
+  }
+function shStatsFunction() {
+	
+  }
+function shStoreFunction() {
+	
+  }
+function mkAnFunction() {
+	
+  }
 // GET for rendering pages,
 // POST for user actions
 
