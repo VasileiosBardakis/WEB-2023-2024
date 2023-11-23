@@ -6,16 +6,19 @@ CREATE DATABASE saviors;
 USE saviors;
 
 CREATE TABLE accounts (
-username VARCHAR(30) NOT NULL,
-password VARCHAR(30) NOT NULL,
-type TINYINT NOT NULL);
+    username VARCHAR(30) NOT NULL,
+    password VARCHAR(30) NOT NULL,
+    type TINYINT NOT NULL,
+    fullname VARCHAR(60),
+    telephone VARCHAR(12)
+);
 
 INSERT INTO accounts VALUES
-('admin','admin',0);
+('admin','admin',0, null, null);
 INSERT INTO accounts VALUES
-('test_admin', 'zoowee', 0);
+('test_admin', 'zoowee', 0, null, null);
 INSERT INTO accounts VALUES
-('npc', 'npc', 1);
+('npc', 'npc', 1, null, null);
 
 
 CREATE TABLE items (

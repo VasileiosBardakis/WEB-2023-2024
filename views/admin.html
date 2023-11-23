@@ -4,6 +4,7 @@
     <title>Saviors Inc. - Admin</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" type="text/css" href="styles.css" />
     <link
       rel="stylesheet"
@@ -20,8 +21,7 @@
     <nav class="navbar navbar-default nav-background">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="admin.html">
-
+          <a class="navbar-brand" href="/admin">
             <!-- 
                 <img
               src=""
@@ -29,8 +29,6 @@
               class="headerLogo"
             />
              -->
-
-
             <div style="font-size: 3rem">Saviors Inc.</div>
           </a>
         </div>
@@ -39,17 +37,17 @@
 
     <div class="admin">
 			<h1>Admin Hub</h1>
-            <form action="/logout?_method=DELETE" method="post">
-                Welcome Admin
-                <button type="submit">Logout</button>
-            </form>
+      <button id="addRes" type="button" onclick="addResFunction()">Add new rescuer</button>
+      <button id="shStats" type="button" onclick="shStatsFunction()">Service Statistics</button>
+      <button id="shStore" type="button" onclick="shStoreFunction()">Storage</button>
+      <button id="mkAn" type="button" onclick="mkAnFunction()">Make an announcement</button>      
+      <br>
+      <button id="logout" type="button" href="/logout">Logout</button>
+  
 		</div>
 
-      <script>
-
-            
-          
-      </script>
+      <script src="js/admin.js"></script>
+      <noscript>Sorry, your browser does not support JavaScript!</noscript>
 
   </body>
 </html>

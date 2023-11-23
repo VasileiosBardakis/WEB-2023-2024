@@ -42,18 +42,19 @@ app.get('/', function(req, res) {
 		res.redirect('/home');      //If logged in, redirect to home
 	}
 	else {
-		res.sendFile(path.join(__dirname + '/login.html'));   //If not logged in, show login page
+		res.sendFile(path.join(__dirname, 'views', 'login.html'));   //If not logged in, show login page
 	}
 });
 
-// auth route
+// authentication
 app.post('/', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
 
 	if (username && password) {
 		// Execute SQL query that'll select the account from the database based on the specified username and password
-		db.query('SELECT type FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {  //Get specific account type
+		db.query('SELECT type FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
+			// Get specific account type
 			// If there is an issue with the query, output the error
 			if (error) throw error;
 			// If the account exists
@@ -82,7 +83,7 @@ app.get('/register', function (req, res) {
 		res.redirect('/auth');      //If logged in, redirect to auth
 	}
 	else {
-		res.sendFile(path.join(__dirname + '/register.html'));   //If not logged in, showlogin page
+		res.sendFile(path.join(__dirname, 'views', 'register.html'));   //If not logged in, show login page
 	}
 });
 
@@ -90,6 +91,12 @@ app.get('/register', function (req, res) {
 app.post('/register', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
+	let name = req.body.name;
+	let telephone = req.body.telephone;
+
+	console.log(username);
+	console.log(name);
+	console.log(telephone);
 
 	if (username && password) {
 		// Execute SQL query that'll register the account to the database
@@ -98,9 +105,10 @@ app.post('/register', (req, res) => {
 			if (error) throw error;
 			// Account already exists
 			if (results.length > 0) {
+				//TODO: Maybe add same check for telephone number
 				res.status(401).json({ error: 'Username is already being used, please use a different one.' });
 			} else {
-				db.query('INSERT INTO accounts VALUES (?,?,1)', [username,password], function (error, results, fields) {
+				db.query('INSERT INTO accounts VALUES (?,?,1,?,?)', [username,password,name,telephone], function (error, results, fields) {
 					if (error) throw error;
 				});
 				res.redirect('/');
@@ -134,7 +142,7 @@ app.get('/admin', (req, res) => {
 		if (err) throw err;
 		if (req.session.type == 0) {        //Checking to see if user is an admin
 
-			res.sendFile(path.join(__dirname + '/admin.html')); 
+			res.sendFile(path.join(__dirname, 'views', '/admin.html')); 
 		}
 		else { res.redirect('/auth'); }    //If not, redirect to the right page
 
@@ -156,7 +164,7 @@ app.get('/auth', (req, res) => {    //Pages go through /auth to see what permiss
 	});
 });
 
-app.delete('/logout', (req, res) => {
+app.get('/logout', (req, res) => {
 	req.session.loggedin = false;
 	res.redirect('/');
 
@@ -188,8 +196,8 @@ db.query('DELETE FROM categories', (err, results) => {
 });
 
 
-
-const jsonData = fs.readFileSync('data.json', 'utf-8');
+const data_path = path.join('data', 'data.json')
+const jsonData = fs.readFileSync(data_path, 'utf-8');
 const data = JSON.parse(jsonData);
 
 data.categories.forEach((category) => {
