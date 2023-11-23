@@ -42,7 +42,7 @@ app.get('/', function(req, res) {
 		res.redirect('/home');      //If logged in, redirect to home
 	}
 	else {
-		res.sendFile(path.join(__dirname + '/login.html'));   //If not logged in, show login page
+		res.sendFile(path.join(__dirname, 'views', 'login.html'));   //If not logged in, show login page
 	}
 });
 
@@ -83,7 +83,7 @@ app.get('/register', function (req, res) {
 		res.redirect('/auth');      //If logged in, redirect to auth
 	}
 	else {
-		res.sendFile(path.join(__dirname + '/register.html'));   //If not logged in, show login page
+		res.sendFile(path.join(__dirname, 'views', 'register.html'));   //If not logged in, show login page
 	}
 });
 
@@ -142,7 +142,7 @@ app.get('/admin', (req, res) => {
 		if (err) throw err;
 		if (req.session.type == 0) {        //Checking to see if user is an admin
 
-			res.sendFile(path.join(__dirname + '/admin.html')); 
+			res.sendFile(path.join(__dirname, 'views', '/admin.html')); 
 		}
 		else { res.redirect('/auth'); }    //If not, redirect to the right page
 
@@ -196,8 +196,8 @@ db.query('DELETE FROM categories', (err, results) => {
 });
 
 
-
-const jsonData = fs.readFileSync('data.json', 'utf-8');
+const data_path = path.join('data', 'data.json')
+const jsonData = fs.readFileSync(data_path, 'utf-8');
 const data = JSON.parse(jsonData);
 
 data.categories.forEach((category) => {
