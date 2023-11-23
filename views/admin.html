@@ -42,7 +42,9 @@
       <button id="shStore" type="button" onclick="shStoreFunction()">Storage</button>
       <button id="mkAn" type="button" onclick="mkAnFunction()">Make an announcement</button>      
       <br>
-      <button id="logout" type="button" href="/logout">Logout</button>
+      <form action="/logout?_method=DELETE" method="post">
+          <button type="submit">Logout</button>
+      </form>
   
 		</div>
 
