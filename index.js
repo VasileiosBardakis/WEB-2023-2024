@@ -91,6 +91,7 @@ app.get('/register', function (req, res) {
 app.post('/register', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
+	let type = req.body.type;
 	let name = req.body.name;
 	let telephone = req.body.telephone;
 
@@ -108,7 +109,7 @@ app.post('/register', (req, res) => {
 				//TODO: Maybe add same check for telephone number
 				res.status(401).json({ error: 'Username is already being used, please use a different one.' });
 			} else {
-				db.query('INSERT INTO accounts VALUES (?,?,1,?,?)', [username,password,name,telephone], function (error, results, fields) {
+				db.query('INSERT INTO accounts VALUES (?,?,?,?,?)', [username,password,type,name,telephone], function (error, results, fields) {
 					if (error) throw error;
 				});
 				res.redirect('/');

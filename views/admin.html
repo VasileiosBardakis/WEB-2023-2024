@@ -18,38 +18,139 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-default nav-background">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/admin">
-            <!-- 
-                <img
-              src=""
-              alt="My logo"
-              class="headerLogo"
-            />
-             -->
-            <div style="font-size: 3rem">Saviors Inc.</div>
-          </a>
-        </div>
-      </div>
-    </nav>
+      <nav class="navbar navbar-default nav-background">
+          <div class="container-fluid">
+              <div class="navbar-header">
+                  <a class="navbar-brand" href="/admin">
+                      <!--
+                        <img
+                      src=""
+                      alt="My logo"
+                      class="headerLogo"
+                    />
+                     -->
+                      <div style="font-size: 3rem">Saviors Inc.</div>
+                  </a>
+              </div>
+          </div>
+      </nav>
 
-    <div class="admin">
-			<h1>Admin Hub</h1>
-      <button id="addRes" type="button" onclick="addResFunction()">Add new rescuer</button>
-      <button id="shStats" type="button" onclick="shStatsFunction()">Service Statistics</button>
-      <button id="shStore" type="button" onclick="shStoreFunction()">Storage</button>
-      <button id="mkAn" type="button" onclick="mkAnFunction()">Make an announcement</button>      
-      <br>
-      <form action="/logout?_method=DELETE" method="post">
-          <button type="submit">Logout</button>
-      </form>
-  
-		</div>
+      <div class="admin">
+          <h1>Admin Hub</h1>
+
+
+
+
+
+
+          <div id="error-message"></div>
+
+          <script>
+              var adResClick = false; //Variable to see if addRescuer is clicked
+
+              function clearFields() {
+                  document.getElementById('inputFieldsDiv').innerHTML = '';
+              }
+              function addRescuer() {
+                  
+                  if (!adResClick) {       //If addRescuer isn't clicked, show input fields
+                      adResClick = true;
+
+                      //Html code for input fields
+                      var inputFieldsHTML = `
+                              <div class="form-outline mb-4">
+                              <input type="text" id="username" class="form-control" />
+                              <label class="form-label" for="username">Username</label>
+                              </div>
+                               <div class="form-outline mb-4">
+                              <input type="password" id="password" class="form-control" />
+                              <label class="form-label" for="password">Password</label>
+                              </div>
+                              <div class="form-outline mb-4">
+                              <input type="text" id="name" class="form-control" />
+                              <label class="form-label" for="name">Full name</label>
+                              </div>
+                              <div class="form-outline mb-4">
+                              <input type="text" id="telephone" class="form-control" />
+                              <label class="form-label" for="telephone">Telephone</label>
+                              </div>
+                              <button type="button" onclick="register()" class="btn btn-primary btn-block mb-4">Sign up</button>
+                                                    `;
+                      //insert the HTML content into the designated div
+                      document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML; 
+                  }
+                  else {    //clear if addRescuer fields are showing
+                      clearFields();
+                      adResClick = false;
+                  }    
+              }
+              
+      
+
+              function register() {
+                  var username = document.getElementById('username').value;
+                  var password = document.getElementById('password').value;
+                  var type = 2;
+                  var name = document.getElementById('name').value;
+                  var telephone = document.getElementById('telephone').value;
+                  var errorMessageElement = document.getElementById('error-message');
+
+                  var xhttp = new XMLHttpRequest();
+                  xhttp.open('POST', '/register', true);
+                  xhttp.setRequestHeader('Content-Type', 'application/json');
+
+                  xhttp.onreadystatechange = function () {
+                      if (xhttp.readyState === 4) {
+                          if (xhttp.status === 401) {
+                              // Handle incorrect username/password with AJAX
+                              var response = JSON.parse(xhttp.responseText);
+                              errorMessageElement.innerHTML = response.error;
+                          } else if (xhttp.status === 200) {
+                              // Redirect on successful login if needed
+                              window.location.href = '/auth';
+                          }
+                      }
+                  };
+
+                  var data = JSON.stringify({ username: username, password: password, type: type, name: name, telephone: telephone });
+                  xhttp.send(data);
+              }
+
+              function shStats() {
+                  clearFields()
+              }
+              function shStore() {
+                  clearFields()
+              }
+              function mkAn() {
+                  clearFields()
+              }
+          </script>
+
+
+          <button id="adRes" type="button" onclick="addRescuer()">Add a rescuer account</button>
+          <button id="shStats" type="button" onclick="shStats()">Service Statistics</button>
+          <button id="shStore" type="button" onclick="shStore()">Storage</button>
+          <button id="mkAn" type="button" onclick="mkAn()">Make an announcement</button>
+          <br>
+          <div id="inputFieldsDiv">
+              <!-- Input fields will be inserted here -->
+          </div>
+
+          <form action="/logout?_method=DELETE" method="post">
+              <button type="submit">Logout</button>
+          </form>
+
+      </div>
 
       <script src="js/admin.js"></script>
       <noscript>Sorry, your browser does not support JavaScript!</noscript>
+
+
+
+      
+
+
 
   </body>
 </html>

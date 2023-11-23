@@ -74,6 +74,7 @@
                 var username = document.getElementById('username').value;
                 var password = document.getElementById('password').value;
                 var name = document.getElementById('name').value;
+                var type = 1;
                 var telephone = document.getElementById('telephone').value;
                 var errorMessageElement = document.getElementById('error-message');
   
@@ -94,7 +95,7 @@
                   }
                 };
   
-                var data = JSON.stringify({ username: username, password: password, name: name, telephone: telephone });
+                var data = JSON.stringify({ username: username, password: password,type:type, name: name, telephone: telephone });
                 xhttp.send(data);
               }
           </script>
