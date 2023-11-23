@@ -164,7 +164,7 @@ app.get('/auth', (req, res) => {    //Pages go through /auth to see what permiss
 	});
 });
 
-app.delete('/logout', (req, res) => {
+app.get('/logout', (req, res) => {
 	req.session.loggedin = false;
 	res.redirect('/');
 
