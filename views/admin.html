@@ -80,14 +80,16 @@
           };
 
           function clearFields() {
-              document.getElementById('inputFieldsDiv').innerHTML = '';
-              document.getElementById('error-message').innerHTML = '';
               adResClick = false;
               mkAnClick = false;
               shStoreClick = false;
+              document.getElementById('inputFieldsDiv').innerHTML = '';
+              document.getElementById('error-message').innerHTML = '';
+              document.getElementById('storage').innerHTML = '';
+              
           }
           function addRescuer() {
-              clearFields()
+
               if (!adResClick) {       //If addRescuer isn't clicked, show input fields
                   adResClick = true;
                   //Html code for input fields
@@ -112,9 +114,10 @@
                                                               `;
                   //insert the HTML content into the designated div
                   document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
+
               }
               else {    //clear if addRescuer fields are showing
-                  adResClick = false;
+                  clearFields();
               }
           }
 
@@ -154,7 +157,7 @@
           }
 
           function shStore() {
-            clearFields()
+            
               if (!shStoreClick) {       //If Storage isn't clicked, show input fields
                   shStoreClick = true;
                   console.log("Fetching data...");
@@ -173,27 +176,22 @@
                 xhrs.send();
                 console.log("After sending AJAX request");
           }else {    //clear if storage table is showing
-                  shStoreClick = false;
+                  clearFields()
               }
           }
 
           function displayData(data) {
-            console.log("Displaying data:", data);
-            var storageDiv = document.getElementById("storage");
-            console.log("Storage div retrieved:", storageDiv);
-            for (var i = 0; i < data.length; i++) {
-                var item = data[i];
+            console.log("Displaying data:", data.items);
+            for (var i = 0; i < data.items.length; i++) {
+                var item = data.items[i];
                 var paragraph = document.createElement('p');
                 paragraph.textContent = "ID: " + item.id + ", Name: " + item.name + ", Category: " + item.category;
-                storageDiv.appendChild(paragraph);
+                document.getElementById('storageDiv').innerHTML = 'hello';
             }
-            console.log("Content inside storageDiv:", storageDiv.innerHTML);
           }
    
           
           function mkAn() {
-              clearFields()
-
 
               if (!mkAnClick) {       //If addRescuer isn't clicked, show input fields
                   mkAnClick = true;
@@ -234,7 +232,6 @@
               }
               else {    //clear if mkAn fields are showing
                   clearFields();
-                  mkAnClick = false;
               }
 
           }
