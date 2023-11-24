@@ -89,9 +89,11 @@
               
           }
           function addRescuer() {
+              
               if (!adResClick) {       //If addRescuer isn't clicked, show input fields
-                  adResClick = true;
                   //Html code for input fields
+                  clearFields();
+                  adResClick = true;
                   var inputFieldsHTML = `
                                         <div class="form-outline mb-4">
                                         <input type="text" id="username" class="form-control" />
@@ -113,11 +115,11 @@
                                                               `;
                   //insert the HTML content into the designated div
                   document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
-
               }
-              else {    //clear if addRescuer fields are showing
+              else {
                   clearFields();
               }
+              
           }
 
 
@@ -157,6 +159,7 @@
 
           function shStore() {
               if (!shStoreClick) {       //If Storage isn't clicked, show input fields
+                  clearFields();
                   shStoreClick = true;
                   console.log("Fetching data...");
                   var xhrs = new XMLHttpRequest();
@@ -192,6 +195,7 @@
           function mkAn() {
 
               if (!mkAnClick) {       //If addRescuer isn't clicked, show input fields
+                  clearFields();
                   mkAnClick = true;
 
                   //Html code for input fields
