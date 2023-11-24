@@ -150,13 +150,27 @@ app.get('/admin', (req, res) => {
 	});
 });
 
+app.get('/citizen', (req, res) => {
+	let sql = 'SELECT * FROM accounts';
+	db.query(sql, (err, result) => {
+		if (err) throw err;
+		if (req.session.type == 1) {        //Checking to see if user is a citizen
+
+			res.sendFile(path.join(__dirname, 'views', '/citizen.html')); 
+		}
+		else { res.redirect('/auth'); }    //If not, redirect to the right page
+
+	});
+});
+
 app.get('/auth', (req, res) => {    //Pages go through /auth to see what permissions the user has and point them to the right page
 	let sql = 'SELECT * FROM accounts';
 	db.query(sql, (err, result) => {
 		if (err) throw err;
 		if (req.session.loggedin) {
 			if (req.session.type == 0) { res.redirect('/admin'); }
-			if (req.session.type == 1) { res.redirect('/home'); }
+			if (req.session.type == 1) { res.redirect('/citizen'); }
+			if (req.session.type == 2) { res.redirect('/rescuer'); }
 
 			//res.send('Welcome back, ' + req.session.username);
 		}
