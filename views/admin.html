@@ -80,11 +80,13 @@
           };
 
           function clearFields() {
-              document.getElementById('inputFieldsDiv').innerHTML = '';
-              document.getElementById('error-message').innerHTML = '';
               adResClick = false;
               mkAnClick = false;
               shStoreClick = false;
+              document.getElementById('inputFieldsDiv').innerHTML = '';
+              document.getElementById('error-message').innerHTML = '';
+              document.getElementById('storage').innerHTML = '';
+              
           }
           function addRescuer() {
               if (!adResClick) {       //If addRescuer isn't clicked, show input fields
@@ -111,6 +113,7 @@
                                                               `;
                   //insert the HTML content into the designated div
                   document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
+
               }
               else {    //clear if addRescuer fields are showing
                   clearFields();
@@ -183,7 +186,6 @@
                 var item = data.items[i];
                 storageDiv.innerHTML += "ID: " + item.id + ", Name: " + item.name + ", Category: " + item.category;
             }
-            console.log("Content inside storageDiv:", storageDiv.innerHTML);
           }
    
           
