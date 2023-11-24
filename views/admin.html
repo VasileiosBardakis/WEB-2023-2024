@@ -87,7 +87,6 @@
               shStoreClick = false;
           }
           function addRescuer() {
-              clearFields()
               if (!adResClick) {       //If addRescuer isn't clicked, show input fields
                   adResClick = true;
                   //Html code for input fields
@@ -114,7 +113,7 @@
                   document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
               }
               else {    //clear if addRescuer fields are showing
-                  adResClick = false;
+                  clearFields();
               }
           }
 
@@ -154,7 +153,6 @@
           }
 
           function shStore() {
-            clearFields()
               if (!shStoreClick) {       //If Storage isn't clicked, show input fields
                   shStoreClick = true;
                   console.log("Fetching data...");
@@ -173,7 +171,7 @@
                 xhrs.send();
                 console.log("After sending AJAX request");
           }else {    //clear if storage table is showing
-                  shStoreClick = false;
+                clearFields();
               }
           }
 
@@ -190,8 +188,6 @@
    
           
           function mkAn() {
-              clearFields()
-
 
               if (!mkAnClick) {       //If addRescuer isn't clicked, show input fields
                   mkAnClick = true;
@@ -232,7 +228,6 @@
               }
               else {    //clear if mkAn fields are showing
                   clearFields();
-                  mkAnClick = false;
               }
 
           }
