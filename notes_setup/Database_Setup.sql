@@ -19,6 +19,8 @@ INSERT INTO accounts VALUES
 ('test_admin', 'zoowee', 0, null, null);
 INSERT INTO accounts VALUES
 ('npc', 'npc', 1, null, null);
+INSERT INTO accounts VALUES
+('mister_helper', 'forfree', 2, null, null);
 
 
 CREATE TABLE items (

@@ -8,3 +8,8 @@ Sto static/ mpainoun arxeia pou theloume na fortwsoume (.css, .png etc)
 
 To register sto test.html thewritika tha prepe na xei animation alla den doulevei
 https://mdbootstrap.com/docs/standard/extended/login/
+
+TODO: Fix sql auth (where username = ?)
+Handle show/hide in admin.html with css:
+Have vertical navbar to the left, upon pressing a button, show its text fields while hiding every other button's text fields
+Going back a page breaks the user flow (e.g. admin login -> backwards -> press register)
