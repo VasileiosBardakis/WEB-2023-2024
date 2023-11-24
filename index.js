@@ -242,6 +242,7 @@ app.get('/api/items', (req, res) => {
 			res.status(500).json({ error: 'Internal Server Error' });
 			return;
 		}
+		console.log('Items from database:', results);
 		res.json({ items: results });
 	});
 });

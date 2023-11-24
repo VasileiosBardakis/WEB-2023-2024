@@ -181,11 +181,9 @@
             console.log("Displaying data:", data);
             var storageDiv = document.getElementById("storage");
             console.log("Storage div retrieved:", storageDiv);
-            for (var i = 0; i < data.length; i++) {
-                var item = data[i];
-                var paragraph = document.createElement('p');
-                paragraph.textContent = "ID: " + item.id + ", Name: " + item.name + ", Category: " + item.category;
-                storageDiv.appendChild(paragraph);
+            for (var i = 0; i < data.items.length; i++) {
+                var item = data.items[i];
+                storageDiv.innerHTML += "ID: " + item.id + ", Name: " + item.name + ", Category: " + item.category;
             }
             console.log("Content inside storageDiv:", storageDiv.innerHTML);
           }
