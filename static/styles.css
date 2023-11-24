@@ -24,3 +24,18 @@ body {
     display: block; /* Ensure the image behaves as a block element */
     margin: 0 auto; /* Center the image horizontally */
 }
+
+#storage {
+    display: none;
+    max-width: 600px; /* Adjust the maximum width as needed */
+    margin: 20px auto; /* Center the container */
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+
+#storage p {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+}

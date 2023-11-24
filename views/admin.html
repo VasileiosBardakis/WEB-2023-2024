@@ -47,16 +47,17 @@
           <button id="mkAn" type="button" onclick="mkAn()">Make an announcement</button>
           <br>
           <div id="error-message"></div>  <!--Error message is displayed here -->
+          <div id="storage">
+            <!--Storage is displayed here -->
+          </div>
           <div id="inputFieldsDiv">
-
               <!-- Input fields will be inserted here -->
           </div>
-
           <form action="/logout?_method=DELETE" method="post">
               <button type="submit">Logout</button>
           </form>
 
-      </div>
+          </div>
 
 
 
@@ -64,17 +65,26 @@
 
 
 
-
-
+ 
       <script>
           var adResClick = false; //Variable to see if 'add a rescuer' is clicked
           var mkAnClick = false; //Variable to see if 'make announcement' is clicked
+          var shStoreClick = false; //Variable to see if 'Storage' is clicked
+
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            var jsonResponse = JSON.parse(xhr.responseText);
+            displayData(jsonResponse);
+            }
+          };
 
           function clearFields() {
               document.getElementById('inputFieldsDiv').innerHTML = '';
               document.getElementById('error-message').innerHTML = '';
               adResClick = false;
               mkAnClick = false;
+              shStoreClick = false;
           }
           function addRescuer() {
               clearFields()
@@ -139,11 +149,48 @@
           }
 
           function shStats() {
-              clearFields()
+            clearFields()
+            
           }
+
           function shStore() {
-              clearFields()
+            clearFields()
+              if (!shStoreClick) {       //If Storage isn't clicked, show input fields
+                  shStoreClick = true;
+                  console.log("Fetching data...");
+                  var xhrs = new XMLHttpRequest();
+                  xhrs.onreadystatechange = function() {
+                    console.log("Ready state:", xhrs.readyState);
+                    if (xhrs.readyState == 4 && xhrs.status == 200) {
+                        console.log("Response received:", xhr.status, xhr.responseText);
+                        var jsonResponse = JSON.parse(xhrs.responseText);
+                        console.log("JSON response:", jsonResponse);
+                        displayData(jsonResponse);
+                    }
+                };
+                xhrs.open("GET", "http://localhost:3000/api/items", true);
+                console.log("Before sending AJAX request");
+                xhrs.send();
+                console.log("After sending AJAX request");
+          }else {    //clear if storage table is showing
+                  shStoreClick = false;
+              }
           }
+
+          function displayData(data) {
+            console.log("Displaying data:", data);
+            var storageDiv = document.getElementById("storage");
+            console.log("Storage div retrieved:", storageDiv);
+            for (var i = 0; i < data.length; i++) {
+                var item = data[i];
+                var paragraph = document.createElement('p');
+                paragraph.textContent = "ID: " + item.id + ", Name: " + item.name + ", Category: " + item.category;
+                storageDiv.appendChild(paragraph);
+            }
+            console.log("Content inside storageDiv:", storageDiv.innerHTML);
+          }
+   
+          
           function mkAn() {
               clearFields()
 

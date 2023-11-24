@@ -143,7 +143,7 @@ app.get('/admin', (req, res) => {
 		if (err) throw err;
 		if (req.session.type == 0) {        //Checking to see if user is an admin
 
-			res.sendFile(path.join(__dirname, 'views', '/admin.html')); 
+			res.sendFile(path.join(__dirname, 'views', '/admin.html'));
 		}
 		else { res.redirect('/auth'); }    //If not, redirect to the right page
 
@@ -235,7 +235,7 @@ data.items.forEach((item) => {
 
 // Set up a route to fetch items from the database
 app.get('/api/items', (req, res) => {
-	const query = 'SELECT name FROM items'; // Modify the query as needed
+	const query = 'SELECT * FROM items'; // Modify the query as needed
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
