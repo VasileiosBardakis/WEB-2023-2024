@@ -118,12 +118,63 @@ function shStore() {
 
 function displayData(data) {
     /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
-    console.log("Displaying data:", data);
     var storageDiv = document.getElementById("storage");
-    console.log("Storage div retrieved:", storageDiv);
-    for (var i = 0; i < data.items.length; i++) {
+    storageDiv.innerHTML = ""; //clear existing
+     // Create a search bar
+     var searchInput = document.createElement("input");
+     searchInput.type = "text";
+     searchInput.placeholder = "Search by category...[;] for multiples";
+     searchInput.id = "searchInput";
+     storageDiv.appendChild(searchInput);
+     // create table
+    var table = document.createElement("table"); 
+     // Create a header row
+     var headerRow = table.insertRow(0);
+     var headers = ["ID", "Name", "Category"];
+     for (var i = 0; i < headers.length; i++) {
+         var headerCell = headerRow.insertCell(i);
+         headerCell.textContent = headers[i];
+         headerCell.classList.add("fw-bold"); //bold header 
+     }
+     // Populate the table with data
+     for (var i = 0; i < data.items.length; i++) {
         var item = data.items[i];
-        storageDiv.innerHTML += "ID: " + item.id + ", Name: " + item.name + ", Category: " + item.category;
+        var row = table.insertRow(i + 1); // Skip the header row
+
+        // Create cells and populate them with data
+        var idCell = row.insertCell(0);
+        idCell.textContent = item.id;
+
+        var nameCell = row.insertCell(1);
+        nameCell.textContent = item.name;
+
+        var categoryCell = row.insertCell(2);
+        categoryCell.textContent = item.category;
+    }
+    storageDiv.appendChild(table);
+    //search input
+    searchInput.addEventListener("input", function () {
+        searchTable(this.value, table);
+    });
+}
+
+function searchTable(query, table) {
+    query = query.toLowerCase().trim();
+    var rows = table.getElementsByTagName("tr");
+
+    for (var i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
+        var categoryCell = rows[i].getElementsByTagName("td")[2]; // Index 2 is the "Category" column
+
+        var cellText = categoryCell.textContent.toLowerCase();
+        var categories = query.split(',').map(cat => cat.trim());
+
+        var found = categories.some(category => cellText.includes(category));
+
+        if (found) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
     }
 }
 

@@ -75,16 +75,39 @@
     margin: 0 auto; /* Center the image horizontally */
 }
 
-#storage {
-    max-width: 600px; /* Adjust the maximum width as needed */
-    margin: 20px auto; /* Center the container */
-    padding: 20px;
-    border: 1px solid #ccc;
+/* Search Bar styles */
+#searchInput {
+  height: 35px;
+  width: 15%;
+  font-size: 14px;
+  margin-top: 20px; /*separate it from the buttons */
+  margin-bottom: 10px; /*separate it from the table */
 }
 
-#storage p {
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
+/* Borders */
+table, th, td {
+  border: 1px solid;
 }
+
+/* Table styles */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Header row styles */
+th {
+  padding: 8px;
+  background-color: #f2f2f2;
+}
+
+/* Rows styles */
+td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+
+
+
