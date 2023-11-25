@@ -319,3 +319,16 @@ app.get('/api/items', (req, res) => {
 	});
 });
 
+// Protect other user data so send only those for username
+app.get('/api/requests', (req, res) => {
+	let username = req.session.username;
+	db.query('SELECT * FROM requests WHERE username = ? ORDER BY date_requested DESC', [username], (err, results) => {
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ requests: results });
+	});
+});
+
