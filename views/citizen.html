@@ -43,7 +43,7 @@
             <!-- Item select -->
             <div id="table-select" class="table-select">
               <label class="dropdown">Choose a category:
-                <select id="categories" onchange="show_items(event)">
+                <select id="categories" onchange="showItems(event)">
                   <option value="-1">Please select a category</option></select>
               </label>
 
@@ -58,7 +58,7 @@
             <!-- Load categories right after div loads -->
             <script src="js/citizen.js"></script>
             <script>
-                show_categories();
+                showCategories();
                 // For first render
             </script>
         
@@ -72,7 +72,28 @@
             <button type="button" onclick="sendRequest()" class="btn btn-primary btn-block mb-4">Send request</button>
             <div id="error-message"></div>
           </form>
+
+        <table class="user_requests" id="user_requests">
+          <tr>
+            <th>Requested</th>
+            <th>Number of people</th>
+            <th>Request status</th>
+            <th>Requested on</th>
+            <th>Accepted on</th>
+            <th>Completed on</th>
+          </tr>
+        </table>
+        
+        <div id="empty_table"></div>
+        
+        <script src="js/citizen.js"></script>
+        <script>
+            loadRequestsTable();
+        </script>
+
         </div>
+
+
       </div>
     <!-- </div> -->
 

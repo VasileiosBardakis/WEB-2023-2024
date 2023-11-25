@@ -55,7 +55,7 @@ function sendRequest() {
 }
 
 
-function show_categories() {
+function showCategories() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/categories', true);
     xhr.onreadystatechange = function() {
@@ -76,7 +76,7 @@ function show_categories() {
     xhr.send();
 }
 
-function show_items(event) {
+function showItems(event) {
     // string
     var selected = event.target.value;
 
@@ -101,6 +101,50 @@ function show_items(event) {
                 option.text = item.name;
                 dropdown.appendChild(option);
             });
+        }
+    };
+    xhr.send();
+}
+
+function loadRequestsTable() {
+    var table = document.getElementById('user_requests');
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/requests', true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.response)
+
+            var requests = data.requests;
+
+            // Leave only headers
+            var table = document.getElementById("user_requests")
+            table.innerText = `
+            <tr>
+            <th>Requested</th>
+            <th>Number of people</th>
+            <th>Request status</th>
+            <th>Requested on</th>
+            <th>Accepted on</th>
+            <th>Completed on</th>
+            </tr>`;
+
+            // Populate the table with rows
+            requests.forEach(function(request) {
+                    let tr = document.createElement("tr");
+                    
+                    //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
+                    // Get the values of the current request in the JSON data
+                    let vals = Object.values(request);
+                    
+                    // Loop through the values and create table cells
+                    vals.forEach((elem) => {
+                       let td = document.createElement("td");
+                       td.innerText = elem; // Set the value as the text of the table cell
+                       tr.appendChild(td); // Append the table cell to the table row
+                    });
+                    table.appendChild(tr); // Append the table row to the table
+                 });
         }
     };
     xhr.send();
