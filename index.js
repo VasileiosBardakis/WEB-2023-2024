@@ -181,6 +181,32 @@ app.get('/citizen', (req, res) => {
 	});
 });
 
+app.post('/citizen/sendRequest', (req, res) => {
+	console.log(req.body)
+	let username = req.session.username;
+	let item_id = req.body.item_id;
+	let num_people = req.body.num_people
+	let status = 0;
+
+	if (item_id)
+
+	if (username && item_id && num_people) {
+		
+		//execute SQL query to insert announcement into the 'announce' table
+		db.query('INSERT INTO requests (username, item_id, num_people, status) VALUES (?, ?, ?, ?)', [username, item_id, num_people, status], function (error, results, fields) {
+			if (error) {
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
+				console.log('Request added');
+		});
+		res.end();
+	} else {
+		res.status(401).json({ error: 'Please select an item and write amount of people.' });
+		res.end();
+	}
+});
+
 app.get('/auth', (req, res) => {    //Pages go through /auth to see what permissions the user has and point them to the right page
 	let sql = 'SELECT * FROM accounts';
 	db.query(sql, (err, result) => {

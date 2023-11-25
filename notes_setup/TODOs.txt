@@ -51,3 +51,6 @@ table for db: PERSON requests ITEM for # PEOPLE and ITS STATUS
 List of requests (xhr), on click display details (type=completed,not completed etc)
 fetch based on username of request
 Make ul and div separate to prevent overlap 
+
+Handle SQL errors (e.g. when admin change db a user might be trying to access item that no longer exists) with sending response
+On server error, close connection instead of closing server

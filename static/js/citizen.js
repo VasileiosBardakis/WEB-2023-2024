@@ -11,7 +11,7 @@ function hideAll() {
     }
 }
 
-function makeRequest() {
+function showRequestPanel() {
     hideAll();
 
     var element = document.getElementById("makeRequest");
@@ -19,11 +19,23 @@ function makeRequest() {
 }
 
 function sendRequest() {
-    var people_num = document.getElementById('people_num').value;
+    var item_id = document.getElementById('items').value;
+    var num_people = document.getElementById('num_people').value;
     var errorMessageElement = document.getElementById('error-message');
+    errorMessageElement.innerText = '';
+
+    if (String(item_id) === '-1' || '') {
+        errorMessageElement.innerText = 'Invalid item, please try selecting another item.';
+        return;
+    } 
+
+    if (String(num_people) === '') {
+        errorMessageElement.innerText = 'Please enter number of people.';
+        return;
+    }
 
     var xhttp = new XMLHttpRequest();
-    xhttp.open('POST', '/sendRequest', true);
+    xhttp.open('POST', '/citizen/sendRequest', true);
     xhttp.setRequestHeader('Content-Type', 'application/json');
 
     xhttp.onreadystatechange = function () {
@@ -38,9 +50,10 @@ function sendRequest() {
         }
     };
 
-    var data = JSON.stringify({ people_num: people_num });
+    var data = JSON.stringify({ item_id: item_id, num_people: num_people });
     xhttp.send(data);
 }
+
 
 function show_categories() {
     var xhr = new XMLHttpRequest();
@@ -91,8 +104,4 @@ function show_items(event) {
         }
     };
     xhr.send();
-}
-
-function sendRequest() {
-    
 }

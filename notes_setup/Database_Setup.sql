@@ -6,7 +6,7 @@ CREATE DATABASE saviors;
 USE saviors;
 
 CREATE TABLE accounts (
-    username VARCHAR(30) NOT NULL,
+    username VARCHAR(30) PRIMARY KEY,
     password VARCHAR(30) NOT NULL,
     type TINYINT NOT NULL,
     fullname VARCHAR(60),
@@ -55,3 +55,16 @@ select * from details;
 select * from categories;
 select * from accounts;
 select * from announce;
+
+CREATE TABLE requests (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(30) NOT NULL,
+    item_id INT NOT NULL,
+    num_people INT UNSIGNED NOT NULL,
+    status INT UNSIGNED NOT NULL,
+    FOREIGN KEY (username) REFERENCES accounts(username),
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);
+
+SELECT 'requests' AS '';
+-- \! echo 'some text';
