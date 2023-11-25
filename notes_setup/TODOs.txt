@@ -23,6 +23,8 @@ Autocomplete:
 https://stackoverflow.com/questions/10711823/jquery-vs-dom-performance
 https://jqueryui.com/autocomplete/
 https://www.w3schools.com/js/js_json_html.asp
+https://www.w3schools.com/tags/tag_optgroup.asp#:~:text=The%20tag%20is%20used,to%20handle%20for%20a%20user.
+https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event
 
 Side by side inputs:
 <div>
@@ -43,3 +45,8 @@ div label {
 }
 
 MOBILE FIRST!!!! If media > 700px, make everything stack vertically
+
+For manage requests of civilian:
+table for db: PERSON requests ITEM for # PEOPLE and ITS STATUS
+List of requests (xhr), on click display details (type=completed,not completed etc)
+fetch based on username of request

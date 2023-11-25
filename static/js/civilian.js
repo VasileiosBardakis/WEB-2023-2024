@@ -1,3 +1,7 @@
+// Event listeners
+document.getElementById("items").addEventListener("change", (event) => show_items(event))
+
+// Functions
 function hideAll() {
     var nodes = document.getElementById('canvas').childNodes;
     for(var i=0; i<nodes.length; i++) {
@@ -38,37 +42,48 @@ function sendRequest() {
     xhttp.send(data);
 }
 
-function show_all_cats() {
-    const dbParam = JSON.stringify({table:sel});
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.onload = function() {
-      myObj = JSON.parse(this.responseText);
-      text = "<table border='1'>"
-      for (x in myObj) {
-        text += "<tr><td>" + myObj[x].name + "</td></tr>";
-      }
-      text += "</table>"    
-      document.getElementById("demo").innerHTML = text;
-    }
-    xmlhttp.open("POST", "/get_item_cats", true);
-    xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.send("x=" + dbParam);
+function show_categories() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/categories', true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+            console.log(data);
 
+            // Populate the dropdown with categories
+            var dropdown = document.getElementById("categories")
+            data.categories.forEach(function (cat) {
+                var option = document.createElement('option');
+                option.value = cat.id;
+                option.text = cat.category_name;
+                dropdown.appendChild(option);
+            });
+        }
+    };
+    xhr.send();
 }
 
-function change_cat(sel) {
-    const dbParam = JSON.stringify({table:sel});
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.onload = function() {
-      myObj = JSON.parse(this.responseText);
-      text = "<table border='1'>"
-      for (x in myObj) {
-        text += "<tr><td>" + myObj[x].name + "</td></tr>";
-      }
-      text += "</table>"    
-      document.getElementById("demo").innerHTML = text;
-    }
-    xmlhttp.open("POST", "json_demo_html_table.php", true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send("x=" + dbParam);
-  }
+function show_items(event) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/categories', true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText).filter(function (item) {
+                return item.category === event.target.value;
+            });
+
+            // Clear previous
+            // //
+
+            // Populate the dropdown with items
+            var dropdown = document.getElementById("items")
+            data.items.forEach(function (item) {
+                var option = document.createElement('option');
+                option.value = item.id;
+                option.text = item.name;
+                dropdown.appendChild(option);
+            });
+        }
+    };
+    xhr.send();
+}

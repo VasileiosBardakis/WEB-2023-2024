@@ -248,6 +248,21 @@ data.items.forEach((item) => {
 });
 
 // Set up a route to fetch items from the database
+
+app.get('/api/categories', (req, res) => {
+	const query = 'SELECT * FROM categories'; // Modify the query as needed
+	db.query(query, (err, results) => {
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ categories: results });
+	});
+});
+
+
+
 app.get('/api/items', (req, res) => {
 	const query = 'SELECT * FROM items'; // Modify the query as needed
 	db.query(query, (err, results) => {

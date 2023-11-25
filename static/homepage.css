@@ -16,7 +16,7 @@ div.canvas {
 }
 
 div.table-select {
-  column-count:3;
+  display:inline-block;
 
 }
   

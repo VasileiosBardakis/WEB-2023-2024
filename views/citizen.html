@@ -13,7 +13,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- Include the Bootstrap JS file -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
+    <script src="js/civilian.js" defer></script>
     <style>
     </style>
   </head>
@@ -40,13 +40,21 @@
         <form>
           <!-- Item select -->
           <div id="table-select" class="table-select">
-            
-            
+            <label for="categories">Choose a category:</label>
+            <select id="categories">
+            </select>
 
-
-
+            <label for="items">Choose an item:</label>
+            <select id="items">
+            </select>
 
           </div>
+          <!-- Load categories right after div loads -->
+          <script src="js/civilian.js"></script>
+          <script>
+              show_categories();
+          </script>
+      
           <!-- People num input -->
           <div class="form-outline mb-4">
             <input type="number" id="people_num" class="form-control" />
@@ -59,7 +67,7 @@
       </div>
     </div>
 
-      <script src="js/civilian.js" defer></script>
+
       <noscript>Sorry, your browser does not support JavaScript!</noscript>
   </body>
 </html>
