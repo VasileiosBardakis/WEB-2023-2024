@@ -45,11 +45,10 @@ CREATE TABLE categories (
 CREATE TABLE announce (
     id INT PRIMARY KEY auto_increment,
     title VARCHAR(255),
-    descr VARCHAR(255)
+    descr VARCHAR(255),
+    items JSON
 );
 
-INSERT INTO announce VALUES
-(null, 'Saviors are officialy open!', 'The Saviors platform allows rescuers to organize in an effective manner');
 
 SELECT * from items;
 select * from details;

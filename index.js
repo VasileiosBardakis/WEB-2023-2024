@@ -122,6 +122,24 @@ app.post('/register', (req, res) => {
 	}
 });
 
+app.post('/announce', (req, res) => {
+	let title = req.body.title;
+	let anText = req.body.anText;
+	let itemsJSON = JSON.stringify(req.body.dropdownValues); //convert dropdownValues array to a JSON
+
+	if (title && anText && (itemsJSON.length>2)) {
+		
+		//execute SQL query to insert announcement into the 'announce' table
+		db.query('INSERT INTO announce (title, descr, items) VALUES (?, ?, ?)', [title, anText, itemsJSON], function (error, results, fields) {
+			if (error) throw error;
+		});
+		res.end();
+	} else {
+		res.status(401).json({ error: 'Please insert a title, announcement text and item(s).' });
+		res.end();
+	}
+});
+
 
 app.get('/home', (req, res) => {
     let sql = 'SELECT * FROM accounts';
@@ -193,7 +211,7 @@ app.listen(PORT, () => {
 
 
 	//INSERT DATA
-// Clear existing data from tables
+//Clear existing data from tables
 
 db.query('DELETE FROM details', (err, results) => {
 	if (err) throw err;
