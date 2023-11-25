@@ -62,6 +62,9 @@ CREATE TABLE requests (
     item_id INT NOT NULL,
     num_people INT UNSIGNED NOT NULL,
     status INT UNSIGNED NOT NULL,
+    date_requested DATETIME default now(),
+    date_accepted DATETIME,
+    date_completed DATETIME,
     FOREIGN KEY (username) REFERENCES accounts(username),
     FOREIGN KEY (item_id) REFERENCES items(id)
 );

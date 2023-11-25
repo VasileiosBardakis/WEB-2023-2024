@@ -54,3 +54,8 @@ Make ul and div separate to prevent overlap
 
 Handle SQL errors (e.g. when admin change db a user might be trying to access item that no longer exists) with sending response
 On server error, close connection instead of closing server
+Bad input for make request
+
+Use # instead of . for unique elements
+
+On mobile: make sidebar scale with canvas size and make canvas scrollable (tables)
