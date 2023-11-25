@@ -2,5 +2,5 @@ Requirements:
 JS, Node.js, mySQL
 
 npm install package.json
-npm run http
+npm run devStart
 localhost:port

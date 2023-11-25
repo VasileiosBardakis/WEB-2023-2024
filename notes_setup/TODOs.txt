@@ -1,0 +1,45 @@
+npm install package
+pataw nodemon gia na mhn xreiazetai na to trexw kathe fora, apla kanw save
+npm run devStart
+
+Ta credentials ths sql tha eprepe na einai se .env omws exei bug to package
+
+Sto static/ mpainoun arxeia pou theloume na fortwsoume (.css, .png etc)
+
+To register sto test.html thewritika tha prepe na xei animation alla den doulevei
+https://mdbootstrap.com/docs/standard/extended/login/
+
+TODO: Fix sql auth (where username = ?)
+Handle show/hide in admin.html with css:
+Have vertical navbar to the left, upon pressing a button, show its text fields while hiding every other button's text fields
+Going back a page breaks the user flow (e.g. admin login -> backwards -> press register)
+Use css display instead of innerhtml rewrites (computationally expensive)
+https://stackoverflow.com/questions/11144274/javascript-changing-innerhtml-vs-display
+
+Might change canvas margins for leaflet
+https://stackoverflow.com/questions/4853563/how-do-i-submit-a-form-with-a-li-instead-of-a-submit-button
+
+Autocomplete:
+https://stackoverflow.com/questions/10711823/jquery-vs-dom-performance
+https://jqueryui.com/autocomplete/
+https://www.w3schools.com/js/js_json_html.asp
+
+Side by side inputs:
+<div>
+    <label>Hello</label>
+    <input type="text" />
+</div>
+<div>
+    <label>Hello</label>
+    <input type="text" />
+</div>
+
+div {
+    display: inline-block;
+}
+
+div label {
+    display: block;
+}
+
+MOBILE FIRST!!!! If media > 700px, make everything stack vertically
