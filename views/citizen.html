@@ -21,7 +21,7 @@
   <body>
 
     <!-- <img src="favicon.png" alt="Saviors Inc. logo" style="width:1.5em;position:relative"> -->
-    <div class="container">
+    <!-- <div class="container"> -->
       <ul class="sidebar">
         <li class="header">Civilian Hub</li>
         <li><a onclick="makeRequest()">Make a request</a></li>
@@ -33,46 +33,47 @@
           </form>
         </li>
       </ul>
-    </div>
-    
-    <!-- Experiment with % vs vh -->
-    <!-- This will be the canvas for everything -->
-    <div class="canvas" id="canvas">
-      <div id="makeRequest" class="hidden">
-        <form>
-          <!-- Item select -->
-          <div id="table-select" class="table-select">
-            <label class="dropdown">Choose a category: 
-              <select id="categories" onchange="show_items(event)"></select>
-            </label>
 
-            <label class="dropdown">Choose an item:
-              <select id="items">
-                <!-- Instead of blank dropdown -->
-                <option value="-1">Please select a category</option>
-              </select>
-            </label>
     
-          </div>
-          <!-- Load categories right after div loads -->
-          <script src="js/civilian.js"></script>
-          <script>
-              show_categories();
-              // For first render
-          </script>
+      <!-- Experiment with % vs vh -->
+      <!-- This will be the canvas for everything -->
+      <div class="canvas" id="canvas">
+        <div id="makeRequest" class="hidden">
+          <form>
+            <!-- Item select -->
+            <div id="table-select" class="table-select">
+              <label class="dropdown">Choose a category:
+                <select id="categories" onchange="show_items(event)">
+                  <option value="-1">Please select a category</option></select>
+              </label>
+
+              <label class="dropdown">Choose an item:
+                <select id="items">
+                  <!-- Instead of blank dropdown -->
+                  <option value="-1">Please select a category</option>
+                </select>
+              </label>
       
-          <!-- People num input -->
-          <div class="form-outline mb-4">
-            <input type="number" id="people_num" class="form-control" />
-            <label class="form-label" for="people_num">Number of people</label>
-          </div>
-    
-          <!-- Submit button -->
-          <button type="button" onclick="sendRequest()" class="btn btn-primary btn-block mb-4">Send request</button>
-        </form>
+            </div>
+            <!-- Load categories right after div loads -->
+            <script src="js/civilian.js"></script>
+            <script>
+                show_categories();
+                // For first render
+            </script>
+        
+            <!-- People num input -->
+            <div class="form-outline mb-4">
+              <input type="number" id="people_num" class="form-control" />
+              <label class="form-label" for="people_num">Number of people</label>
+            </div>
+      
+            <!-- Submit button -->
+            <button type="button" onclick="sendRequest()" class="btn btn-primary btn-block mb-4">Send request</button>
+          </form>
+        </div>
       </div>
-    </div>
-
+    <!-- </div> -->
 
       <noscript>Sorry, your browser does not support JavaScript!</noscript>
   </body>
