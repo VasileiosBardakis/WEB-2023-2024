@@ -50,3 +50,4 @@ For manage requests of civilian:
 table for db: PERSON requests ITEM for # PEOPLE and ITS STATUS
 List of requests (xhr), on click display details (type=completed,not completed etc)
 fetch based on username of request
+Make ul and div separate to prevent overlap 
