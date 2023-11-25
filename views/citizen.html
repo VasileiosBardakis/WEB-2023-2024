@@ -20,18 +20,20 @@
 
   <body>
 
-    <!-- Put logo above -->
-    <ul>
-      <li class="header">Civilian Hub</li>
-      <li><a onclick="makeRequest()">Make a request</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li><a href="#about">About</a></li>
-      <li>
-        <form action="/logout?_method=DELETE" method="post">
-          <button type="submit">Logout</button>
-        </form>
-      </li>
-    </ul>
+    <!-- <img src="favicon.png" alt="Saviors Inc. logo" style="width:1.5em;position:relative"> -->
+    <div class="container">
+      <ul class="sidebar">
+        <li class="header">Civilian Hub</li>
+        <li><a onclick="makeRequest()">Make a request</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#about">About</a></li>
+        <li>
+          <form action="/logout?_method=DELETE" method="post">
+            <button type="submit">Logout</button>
+          </form>
+        </li>
+      </ul>
+    </div>
     
     <!-- Experiment with % vs vh -->
     <!-- This will be the canvas for everything -->
@@ -40,19 +42,23 @@
         <form>
           <!-- Item select -->
           <div id="table-select" class="table-select">
-            <label for="categories">Choose a category:</label>
-            <select id="categories">
-            </select>
+            <label class="dropdown">Choose a category: 
+              <select id="categories" onchange="show_items(event)"></select>
+            </label>
 
-            <label for="items">Choose an item:</label>
-            <select id="items">
-            </select>
-
+            <label class="dropdown">Choose an item:
+              <select id="items">
+                <!-- Instead of blank dropdown -->
+                <option value="-1">Please select a category</option>
+              </select>
+            </label>
+    
           </div>
           <!-- Load categories right after div loads -->
           <script src="js/civilian.js"></script>
           <script>
               show_categories();
+              // For first render
           </script>
       
           <!-- People num input -->
@@ -63,7 +69,7 @@
     
           <!-- Submit button -->
           <button type="button" onclick="sendRequest()" class="btn btn-primary btn-block mb-4">Send request</button>
-        
+        </form>
       </div>
     </div>
 

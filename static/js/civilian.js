@@ -1,5 +1,5 @@
 // Event listeners
-document.getElementById("items").addEventListener("change", (event) => show_items(event))
+// document.getElementById("categories").addEventListener("change", (event) => show_items(event))
 
 // Functions
 function hideAll() {
@@ -48,7 +48,7 @@ function show_categories() {
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
-            console.log(data);
+            // console.log(data);
 
             // Populate the dropdown with categories
             var dropdown = document.getElementById("categories")
@@ -64,20 +64,25 @@ function show_categories() {
 }
 
 function show_items(event) {
+    // string
+    var selected = event.target.value;
+
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/api/categories', true);
+    xhr.open('GET', '/api/items', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText).filter(function (item) {
-                return item.category === event.target.value;
+            var data = JSON.parse(xhr.response)
+
+            var items = data.items.filter(function(item) {
+                return String(item.category) === String(selected);
             });
 
             // Clear previous
-            // //
+            var dropdown = document.getElementById("items")
+            dropdown.innerText = '';
 
             // Populate the dropdown with items
-            var dropdown = document.getElementById("items")
-            data.items.forEach(function (item) {
+            items.forEach(function (item) {
                 var option = document.createElement('option');
                 option.value = item.id;
                 option.text = item.name;
@@ -86,4 +91,8 @@ function show_items(event) {
         }
     };
     xhr.send();
+}
+
+function sendRequest() {
+    
 }
