@@ -14,12 +14,9 @@ CREATE TABLE accounts (
 );
 
 INSERT INTO accounts VALUES
-('admin','admin',0, null, null);
-INSERT INTO accounts VALUES
-('test_admin', 'zoowee', 0, null, null);
-INSERT INTO accounts VALUES
-('npc', 'npc', 1, null, null);
-INSERT INTO accounts VALUES
+('admin','admin',0, null, null),
+('test_admin', 'zoowee', 0, null, null),
+('npc', 'npc', 1, null, null),
 ('mister_helper', 'forfree', 2, null, null);
 
 
@@ -47,6 +44,7 @@ CREATE TABLE announce (
     title VARCHAR(255),
     descr VARCHAR(255),
     items JSON
+    -- date_announced DATETIME default now()
 );
 
 
@@ -65,9 +63,19 @@ CREATE TABLE requests (
     date_requested DATETIME default now(),
     date_accepted DATETIME,
     date_completed DATETIME,
-    FOREIGN KEY (username) REFERENCES accounts(username),
-    FOREIGN KEY (item_id) REFERENCES items(id)
+    FOREIGN KEY (username) REFERENCES accounts(username)
+    -- FOREIGN KEY (item_id) REFERENCES items(id)
+    -- FK item gets annoying when flushing db
 );
+
+CREATE TABLE request_status_code (
+    status INT UNSIGNED PRIMARY KEY,
+    meaning VARCHAR(30) NOT NULL
+);
+INSERT INTO request_status_code VALUES
+(0, 'Pending'),
+(1, 'Accepted'),
+(2, 'Completed');
 
 SELECT 'requests' AS '';
 -- \! echo 'some text';

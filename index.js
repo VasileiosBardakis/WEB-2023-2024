@@ -334,7 +334,14 @@ app.get('/api/items', (req, res) => {
 // Protect other user data so send only those for username
 app.get('/api/requests', (req, res) => {
 	let username = req.session.username;
-	db.query('SELECT * FROM requests WHERE username = ? ORDER BY date_requested DESC', [username], (err, results) => {
+	db.query(`SELECT
+			r.id as 'Request id', i.name as 'Requested', r.num_people as 'Number of people', rsc.meaning as 'Status',
+			r.date_requested as 'Date requested', r.date_accepted as 'Date accepted', 
+			r.date_completed as 'Date completed'
+			FROM requests r 
+			INNER JOIN request_status_code rsc on r.status = rsc.status
+			INNER JOIN items i ON r.item_id = i.id
+			WHERE username = ? ORDER BY date_requested DESC`, [username], (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
