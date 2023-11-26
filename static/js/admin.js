@@ -108,7 +108,7 @@ function shStore() {
                 displayData(jsonResponse);
             }
         };
-        xhrs.open("GET", "http://localhost:3000/api/items", true);
+        xhrs.open("GET", "http://localhost:3000/api/itemswcat", true);
         console.log("Before sending AJAX request");
         xhrs.send();
         console.log("After sending AJAX request");
