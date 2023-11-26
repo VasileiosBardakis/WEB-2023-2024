@@ -181,6 +181,19 @@ app.get('/citizen', (req, res) => {
 	});
 });
 
+app.get('/rescuer', (req, res) => {
+	let sql = 'SELECT * FROM accounts';
+	db.query(sql, (err, result) => {
+		if (err) throw err;
+		if (req.session.type == 2) {        //Checking to see if user is a rescuer
+
+			res.sendFile(path.join(__dirname, 'views', '/rescuer.html')); 
+		}
+		else { res.redirect('/auth'); }    //If not, redirect to the right page
+
+	});
+});
+
 app.post('/citizen/sendRequest', (req, res) => {
 	console.log(req.body)
 	let username = req.session.username;
@@ -320,6 +333,19 @@ app.get('/api/itemswcat', (req, res) => {
 });
 
 app.get('/api/items', (req, res) => {
+	const query = 'SELECT * FROM items'; // Modify the query as needed
+	db.query(query, (err, results) => {
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ items: results });
+	});
+});
+
+// NEED TO DO VEHICLE ITEMS 
+app.get('/api/itemsVehicle', (req, res) => {
 	const query = 'SELECT * FROM items'; // Modify the query as needed
 	db.query(query, (err, results) => {
 		if (err) {
