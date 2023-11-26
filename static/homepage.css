@@ -18,7 +18,7 @@
 
 div.canvas {
   margin-left:25%;
-  padding-top:10%;
+  padding-top:5%;
   padding-left:5%;
   padding-right:25%;
 }
@@ -100,9 +100,18 @@ li a:hover:not(.active) {
 }
 .canvas {
     padding-left: 230px;
-    text-align: center;
 }
   
+.announcement-box {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 16px;
+  background-color: #f5f5f5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
 /* 
   Extra small devices (phones, 600px and down):
   Make sidebar stack vertically with canvas
