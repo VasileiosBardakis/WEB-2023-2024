@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Saviors Inc. - Admin</title>
+<head>
+    <title>Saviors Inc. - Citizen</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" type="text/css" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-    />
+    <link rel="stylesheet" type="text/css" href="homepage.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Include the Bootstrap JS dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
+    <!-- Include the Bootstrap JS file -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="js/citizen.js" defer></script>
     <style>
     </style>
-  </head>
+</head>
 
   <body>
       <nav class="navbar navbar-default nav-background">
@@ -36,31 +37,35 @@
       </nav>
 
       <div class="admin">
-          <h1>Admin Hub</h1>
-
-
-
-
-          <button id="adRes" type="button" onclick="addRescuer()">Add a rescuer account</button>
-          <button id="shStats" type="button" onclick="shStats()">Service Statistics</button>
-          <button id="shStore" type="button" onclick="shStore()">Storage</button>
-          <button id="mkAn" type="button" onclick="mkAn()">Make an announcement</button>
-          <br>
-          <div id="error-message"></div>  <!--Error message is displayed here -->
-
-          <div id="inputFieldsDiv">
-              <!-- Input fields will be inserted here -->
-          </div>
-          <div id="storage">
-              <!--Storage is displayed here -->
-          </div>
-          <form action="/logout?_method=DELETE" method="post">
-              <button type="submit">Logout</button>
-          </form>
-
+          <ul class="sidebar">
+              <li class="header">Admin Hub</li>
+              <li><a onclick="addRescuer()">Add a rescuer account</a></li>
+              <li><a onclick="shStats()">Service Statistics</a></li>
+              <li><a onclick="shStore()">Storage</a></li>
+              <li><a onclick="mkAn()">Make an announcement</a></li>
+              <li>
+                  <form action="/logout?_method=DELETE" method="post">
+                      <button type="submit">Logout</button>
+                  </form>
+              </li>
+          </ul>
       </div>
 
 
+      <div class="fields" id="fields">
+              <br>
+              <div id="error-message"></div>  <!--Error message is displayed here -->
+
+              <div id="inputFieldsDiv">
+                  <!-- Input fields will be inserted here -->
+              </div>
+              <div id="storage">
+                  <!--Storage is displayed here -->
+              </div>
+              <form action="/logout?_method=DELETE" method="post">
+                  <button type="submit">Logout</button>
+              </form>
+      </div>
 
 
 
