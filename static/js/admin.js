@@ -15,6 +15,7 @@ xhr.onreadystatechange = function () {
 };
 
 function clearFields() {
+    clearFieldsMngDatabase();
     adResClick = false;
     mkAnClick = false;
     shStoreClick = false;
@@ -196,10 +197,12 @@ function searchTable(query, table) {
 
 
 function mkAn() {
+    
     dropdownCount = 1;
     if (!mkAnClick) {       //If make announcement isn't clicked, show input fields
         clearFields();
         mkAnClick = true;
+        
 
         //Html code for input fields
         var inputFieldsHTML = `
@@ -214,10 +217,11 @@ function mkAn() {
     <button type="button" onclick="moreItems()" class="btn btn-primary btn-block mb-4">Add an item</button>
      <label for="dropdown">Select your items::</label>
     `;
-
+        
         //insert the HTML content into the designated div
         document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
         document.getElementById('storage').innerHTML = '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
+        moreItems();
     }
     else {    //clear if mkAn fields are showing
         clearFields();
