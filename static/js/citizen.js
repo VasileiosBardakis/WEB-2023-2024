@@ -114,37 +114,45 @@ function loadRequestsTable() {
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.response)
+            console.log(data);
 
             var requests = data.requests;
 
-            // Leave only headers
             var table = document.getElementById("user_requests")
-            table.innerText = `
-            <tr>
-            <th>Requested</th>
-            <th>Number of people</th>
-            <th>Request status</th>
-            <th>Requested on</th>
-            <th>Accepted on</th>
-            <th>Completed on</th>
-            </tr>`;
 
-            // Populate the table with rows
-            requests.forEach(function(request) {
-                    let tr = document.createElement("tr");
-                    
-                    //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
-                    // Get the values of the current request in the JSON data
-                    let vals = Object.values(request);
-                    
-                    // Loop through the values and create table cells
-                    vals.forEach((elem) => {
-                       let td = document.createElement("td");
-                       td.innerText = elem; // Set the value as the text of the table cell
-                       tr.appendChild(td); // Append the table cell to the table row
-                    });
-                    table.appendChild(tr); // Append the table row to the table
-                 });
+            //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
+            
+            // Get the keys (column names) of the first object in the JSON data
+            let cols = Object.keys(data[0]);
+            
+            // Create the header element
+            let thead = document.createElement("thead");
+            let tr = document.createElement("tr");
+            
+            // Loop through the column names and create header cells
+            cols.forEach((colname) => {
+                let th = document.createElement("th");
+                th.innerText = colname; // Set the column name as the text of the header cell
+                tr.appendChild(th); // Append the header cell to the header row
+            });
+            thead.appendChild(tr); // Append the header row to the header
+            table.append(tr) // Append the header to the table
+            
+            // Loop through the JSON data and create table rows
+            data.forEach((item) => {
+                let tr = document.createElement("tr");
+                
+                // Get the values of the current object in the JSON data
+                let vals = Object.values(item);
+                
+                // Loop through the values and create table cells
+                vals.forEach((elem) => {
+                let td = document.createElement("td");
+                td.innerText = elem; // Set the value as the text of the table cell
+                tr.appendChild(td); // Append the table cell to the table row
+                });
+                table.appendChild(tr); // Append the table row to the table
+            });
         }
     };
     xhr.send();
