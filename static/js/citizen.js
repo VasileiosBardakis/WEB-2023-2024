@@ -16,6 +16,13 @@ function showRequestPanel() {
 
     var element = document.getElementById("makeRequest");
     element.classList.toggle("hidden");
+
+    // Keep it the same so it doesnt reset
+    // showCategories();
+
+    // Load table
+    // Happens every time you press the button so it updates also
+    loadRequestsTable();
 }
 
 function sendRequest() {
@@ -29,7 +36,7 @@ function sendRequest() {
         return;
     } 
 
-    if (String(num_people) === '') {
+    if ((parseInt(num_people) <= 0) || !num_people) {
         errorMessageElement.innerText = 'Please enter number of people.';
         return;
     }
@@ -52,6 +59,9 @@ function sendRequest() {
 
     var data = JSON.stringify({ item_id: item_id, num_people: num_people });
     xhttp.send(data);
+
+    // Load table to show new request
+    loadRequestsTable();
 }
 
 
@@ -61,10 +71,15 @@ function showCategories() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
-            // console.log(data);
+
+            // Clear previous
+            var dropdown = document.getElementById("categories");
+            dropdown.innerText = '';
+            let default_option = document.createElement('option');
+            default_option.innerText = 'Please select a category';
+            dropdown.appendChild(default_option);
 
             // Populate the dropdown with categories
-            var dropdown = document.getElementById("categories")
             data.categories.forEach(function (cat) {
                 var option = document.createElement('option');
                 option.value = cat.id;
@@ -108,6 +123,7 @@ function showItems(event) {
 
 function loadRequestsTable() {
     var table = document.getElementById('user_requests');
+    table.innerText='';
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/requests', true);
@@ -118,12 +134,18 @@ function loadRequestsTable() {
 
             var requests = data.requests;
 
-            var table = document.getElementById("user_requests")
+            // TODO: If empty, show no request button
+            if (requests.length === 0) {
+                var errorMessageElement = document.getElementById('is-empty-message');
+                errorMessageElement.innerHTML = 'You have not done any requests.';
+                return;
+            }
+            // TODO: If return, is xhr.send() not sent??
 
             //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
             
             // Get the keys (column names) of the first object in the JSON data
-            let cols = Object.keys(data[0]);
+            let cols = Object.keys(requests[0]);
             
             // Create the header element
             let thead = document.createElement("thead");
@@ -139,7 +161,7 @@ function loadRequestsTable() {
             table.append(tr) // Append the header to the table
             
             // Loop through the JSON data and create table rows
-            data.forEach((item) => {
+            requests.forEach((item) => {
                 let tr = document.createElement("tr");
                 
                 // Get the values of the current object in the JSON data
@@ -156,4 +178,17 @@ function loadRequestsTable() {
         }
     };
     xhr.send();
+}
+
+function showAnnouncementsPanel() {
+    hideAll();
+
+    var element = document.getElementById("seeAnnouncements");
+    element.classList.toggle("hidden");
+
+    loadAnnouncements();
+}
+
+function loadAnnouncements() {
+    
 }
