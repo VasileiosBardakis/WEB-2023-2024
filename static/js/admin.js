@@ -3,6 +3,7 @@ var adResClick = false; //Variable to see if 'add a rescuer' is clicked
 var mkAnClick = false; //Variable to see if 'make an announcement' is clicked
 var shStoreClick = false; //Variable to see if 'View current storage' is clicked
 var mngStoreClick = false; //Variable to see if 'Manage Storage' is clicked
+var mngCategoriesClick = false; 
 var dropdownCount;  // Variable to keep track of the number of dropdowns in make announcement button
 var xhr = new XMLHttpRequest();
 
@@ -14,13 +15,27 @@ xhr.onreadystatechange = function () {
 };
 
 function clearFields() {
+    clearFieldsMngDatabase();
     adResClick = false;
     mkAnClick = false;
     shStoreClick = false;
-    document.getElementById('inputFieldsDiv').innerHTML = '';  //For the addRescuer, make announcement button
-    document.getElementById('error-message').innerHTML = '';   //For error messages
-    document.getElementById('storage').innerHTML = '';        //For the view storage button
+    mngStoreClick = false;
+    document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
+    document.getElementById('error-message').innerHTML = '';   
+    document.getElementById('storage').innerHTML = '';   
+    document.getElementById('buttons').innerHTML = '';      
+    document.getElementById('buttons2').innerHTML = '';
+    document.getElementById('inputFieldsDiv2').innerHTML = '';
 
+}
+
+function clearFieldsMngDatabase() {
+    mngCategoriesClick = false;
+    document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
+    document.getElementById('inputFieldsDiv2').innerHTML = '';
+    document.getElementById('storage').innerHTML = '';
+    document.getElementById('error-message').innerHTML = ''; 
+    document.getElementById('buttons2').innerHTML = '';
 }
 function addRescuer() {
 
@@ -182,10 +197,12 @@ function searchTable(query, table) {
 
 
 function mkAn() {
+    
     dropdownCount = 1;
     if (!mkAnClick) {       //If make announcement isn't clicked, show input fields
         clearFields();
         mkAnClick = true;
+        
 
         //Html code for input fields
         var inputFieldsHTML = `
@@ -200,10 +217,11 @@ function mkAn() {
     <button type="button" onclick="moreItems()" class="btn btn-primary btn-block mb-4">Add an item</button>
      <label for="dropdown">Select your items::</label>
     `;
-
+        
         //insert the HTML content into the designated div
         document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
         document.getElementById('storage').innerHTML = '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
+        moreItems();
     }
     else {    //clear if mkAn fields are showing
         clearFields();
@@ -276,7 +294,12 @@ function mngStore() {
     if (!mngStoreClick) {
         clearFields()
         mngStoreClick = true;
+        
 
+        //insert the HTML content into the designated div
+        document.getElementById('buttons').innerHTML = `
+    <button type="button" onclick="mngCategories()" class="btn btn-primary btn-block mb-4">Manage categories</button>
+    `;;
 
 
 
@@ -288,3 +311,124 @@ function mngStore() {
 
 
 }
+
+
+function mngCategories() {
+    if (!mngCategoriesClick) {
+        clearFieldsMngDatabase();
+        mngCategoriesClick = true;
+        /* http request to populate table with categories*/
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/categories', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+
+                // Create a table
+                var table = document.createElement('table');
+
+                // Create a header row
+                var headerRow = table.insertRow(0);
+                var headers = ['ID', 'Name', 'Actions'];
+                for (var i = 0; i < headers.length; i++) {
+                    var headerCell = headerRow.insertCell(i);
+                    headerCell.textContent = headers[i];
+                }
+
+                // Populate the table with categories
+                data.categories.forEach(function (cat) {
+                    var row = table.insertRow(table.rows.length);
+
+                    // Create cells and populate them with data
+                    var idCell = row.insertCell(0);
+                    idCell.textContent = cat.id;
+
+                    var nameCell = row.insertCell(1);
+                    nameCell.textContent = cat.category_name;
+
+                    var actionsCell = row.insertCell(2); /* For the deletion buttons */
+                    var deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'X';
+                    deleteButton.onclick = function () {
+                        query = 'DELETE FROM categories WHERE id=' + cat.id;
+                        postQuery(query);
+                        console.log(query);
+                    };
+                    actionsCell.appendChild(deleteButton);
+                });
+
+
+                // Append the table to div
+                var categoryTableDiv = document.getElementById('inputFieldsDiv');
+                categoryTableDiv.innerHTML = '';
+                categoryTableDiv.appendChild(table);
+                document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
+
+            }
+        };
+        xhr.send();
+    }
+    else { clearFieldsMngDatabase; }
+}
+
+function postQuery(query) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('post', '/api/del', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                if (mngCategoriesClick) { mngCategoriesClick = false; mngCategories(); } //reload the categories on update
+                console.log('Database has been updated!');
+            } else {
+                console.error('Request failed with status:', xhr.status);
+            }
+        }
+    };
+
+    var jsonData = JSON.stringify({ query: query });
+    xhr.send(jsonData);
+    console.log('Data sent:',jsonData);
+}
+
+function addCategory() {
+    document.getElementById('inputFieldsDiv2').innerHTML = `<form id="myForm">
+    <input type="number" id="id" name="id" required>
+    <input type="text" id="name" name="name" required>
+    <input type="button" onclick="addCategoryButton()"  value="Submit">`;
+}
+function addCategoryButton() {
+    // Get values from input fields
+    var id = document.getElementById("id").value;
+    var name = document.getElementById("name").value;
+    errorMessageElement = document.getElementById('error-message');
+    // Validate that both id and name are provided
+    if (!id || !name) {
+        alert("Please enter both id and name.");
+        return;
+    }
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('POST', '/categories/add', true);
+    xhttp.setRequestHeader('Content-Type', 'application/json');
+
+    xhttp.onreadystatechange = function () {
+        if (xhttp.readyState === 4) {
+            if (xhttp.status === 401) {
+                // Handle incorrect username/password with AJAX
+                var response = JSON.parse(xhttp.responseText);
+                errorMessageElement.innerHTML = response.error;
+            }
+            else if (xhttp.status === 200) {
+                if (mngCategoriesClick) { mngCategoriesClick = false; mngCategories(); } //reload the categories on update
+                errorMessageElement.innerHTML = 'Category added successfully';
+            }
+            }
+    }
+
+    var data = JSON.stringify({ id:id,name:name});
+    xhttp.send(data);
+}
+
+

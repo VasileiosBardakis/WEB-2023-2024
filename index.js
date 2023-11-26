@@ -317,19 +317,63 @@ app.get('/api/categories', (req, res) => {
 		res.json({ categories: results });
 	});
 });
+app.post('/categories/add', (req, res) => {
+	let id = req.body.id;
+	let name = req.body.name;
 
+	db.query('SELECT * FROM categories WHERE (id = ? || category_name = ?)', [id,name], function (error, results, fields) {
+		// If there is an issue with the query, output the error
+		if (error) throw error;
+		// Category id
+		if (results.length > 0) {
+			res.status(401).json({ error: 'Category id and/or name is already being used' });
+		} else {
+			db.query('INSERT INTO categories VALUES (?,?)',[id,name], function (error, results, fields) {
+				if (error) {
+					throw error;
+				}
 
-app.get('/api/itemswcat', (req, res) => {
-	const query = 'SELECT items.id, items.name, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id';
+				console.log('Category added!');
+				res.end();
+			});
 
-	db.query(query, (err, results) => {
-		if (err) {
-			console.error('Error executing query:', err);
-			res.status(500).json({ error: 'Internal Server Error' });
-			return;
 		}
-		res.json({ items: results });
+		res.end();
 	});
+});
+
+/*The route needed to be added because it couldn't get a post method that contained a deletion query*/
+app.route('/api/del')
+.post((req, res) => {
+		const query = req.body.query;
+
+		//execute SQL query to delete from the database
+		db.query(query, function (error, results, fields) {
+			if (error) {
+				throw error;
+			}
+
+			console.log('Database has been updated!');
+			res.end();
+		});
+	});
+
+app.post('/announce', (req, res) => {
+	let title = req.body.title;
+	let anText = req.body.anText;
+	let itemsJSON = JSON.stringify(req.body.dropdownValues); //convert dropdownValues array to a JSON
+
+	if (title && anText && (itemsJSON.length > 2)) {
+
+		//execute SQL query to insert announcement into the 'announce' table
+		db.query('INSERT INTO announce (title, descr, items) VALUES (?, ?, ?)', [title, anText, itemsJSON], function (error, results, fields) {
+			if (error) throw error;
+		});
+		res.end();
+	} else {
+		res.status(401).json({ error: 'Please insert a title, announcement text and item(s).' });
+		res.end();
+	}
 });
 
 app.get('/api/items', (req, res) => {
