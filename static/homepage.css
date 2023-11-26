@@ -93,6 +93,15 @@ li a:hover:not(.active) {
   background-color: rgb(218, 92, 9);
   color: white;
 }
+
+.fields{
+    padding-left:230px;
+    text-align:center;
+}
+.canvas {
+    padding-left: 230px;
+    text-align: center;
+}
   
 /* 
   Extra small devices (phones, 600px and down):

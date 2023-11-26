@@ -58,7 +58,7 @@ function sendRequest() {
 function showCategories() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/categories', true);
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
             // console.log(data);
@@ -75,7 +75,6 @@ function showCategories() {
     };
     xhr.send();
 }
-
 function showItems(event) {
     // string
     var selected = event.target.value;

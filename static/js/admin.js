@@ -1,7 +1,8 @@
 
 var adResClick = false; //Variable to see if 'add a rescuer' is clicked
-var mkAnClick = false; //Variable to see if 'make announcement' is clicked
-var shStoreClick = false; //Variable to see if 'Storage' is clicked
+var mkAnClick = false; //Variable to see if 'make an announcement' is clicked
+var shStoreClick = false; //Variable to see if 'View current storage' is clicked
+var mngStoreClick = false; //Variable to see if 'Manage Storage' is clicked
 var dropdownCount;  // Variable to keep track of the number of dropdowns in make announcement button
 var xhr = new XMLHttpRequest();
 
@@ -120,7 +121,7 @@ function displayData(data) {
     /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
     var storageDiv = document.getElementById("storage");
     storageDiv.innerHTML = ""; //clear existing
-     // Create a search bar
+     /* Create a search bar */
      var searchInput = document.createElement("input");
      searchInput.type = "text";
      searchInput.placeholder = "Search by category...[;] for multiples";
@@ -136,8 +137,8 @@ function displayData(data) {
          headerCell.textContent = headers[i];
          headerCell.classList.add("fw-bold"); //bold header 
      }
-     // Populate the table with data
-     for (var i = 0; i < data.items.length; i++) {
+    // Populate the table with data
+    for (var i = 0; i < data.items.length; i++) {
         var item = data.items[i];
         var row = table.insertRow(i + 1); // Skip the header row
 
@@ -149,7 +150,7 @@ function displayData(data) {
         nameCell.textContent = item.name;
 
         var categoryCell = row.insertCell(2);
-        categoryCell.textContent = item.category;
+        categoryCell.textContent = item.category_name; // Use the category_name instead of category
     }
     storageDiv.appendChild(table);
     //search input
@@ -163,7 +164,7 @@ function searchTable(query, table) {
     var rows = table.getElementsByTagName("tr");
 
     for (var i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
-        var categoryCell = rows[i].getElementsByTagName("td")[2]; // Index 2 is the "Category" column
+        var categoryCell = rows[i].getElementsByTagName("td")[2]; // Index 2 is the category column
 
         var cellText = categoryCell.textContent.toLowerCase();
         var categories = query.split(',').map(cat => cat.trim());
@@ -268,4 +269,21 @@ function announceDatabase() {
 
     var data = JSON.stringify({ title: title, anText: anText, dropdownValues: dropdownValues});
     xhttp.send(data);
+}
+
+function mngStore() {
+    if (!mngStoreClick) {
+        clearFields()
+        mngStoreClick = true;
+
+
+
+
+    }
+    else {
+        clearFields();
+    }
+
+
+
 }

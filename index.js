@@ -307,8 +307,10 @@ app.get('/api/categories', (req, res) => {
 
 
 
+
 app.get('/api/items', (req, res) => {
-	const query = 'SELECT * FROM items'; // Modify the query as needed
+	const query = 'SELECT items.id, items.name, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id';
+
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
@@ -318,7 +320,6 @@ app.get('/api/items', (req, res) => {
 		res.json({ items: results });
 	});
 });
-
 // Protect other user data so send only those for username
 app.get('/api/requests', (req, res) => {
 	let username = req.session.username;
