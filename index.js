@@ -255,7 +255,7 @@ db.query('DELETE FROM categories', (err, results) => {
 });
 
 
-const data_path = path.join('data', 'data.json');
+const data_path = path.join('data', 'data.json')
 const jsonData = fs.readFileSync(data_path, 'utf-8');
 const data = JSON.parse(jsonData);
 
@@ -273,10 +273,10 @@ data.categories.forEach((category) => {
 data.items.forEach((item) => {
 	const itemId = item.id;
 	const itemName = item.name;
-	const categoryName = data.categories.find(category => category.id === item.category)?.category_name;
+	const category = item.category;
 
-	// Insert item into the 'items' table with category name
-	db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, categoryName], (err, results) => {
+	// Insert item into the 'items' table
+	db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
 		if (err) throw err;
 
 		// Insert details into the 'details' table
@@ -294,22 +294,23 @@ data.items.forEach((item) => {
 // Set up a route to fetch items from the database
 
 app.get('/api/categories', (req, res) => {
-	const query = 'SELECT DISTINCT category FROM items'; // Modify the query as needed
+	const query = 'SELECT * FROM categories'; // Modify the query as needed
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
 			return;
 		}
-		const categories = results.map(result => ({ category_name: result.category }));
-		res.json({ categories });
+		res.json({ categories: results });
 	});
 });
 
 
 
+
 app.get('/api/items', (req, res) => {
-	const query = 'SELECT * FROM items'; // Modify the query as needed
+	const query = 'SELECT items.id, items.name, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id';
+
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
@@ -319,7 +320,6 @@ app.get('/api/items', (req, res) => {
 		res.json({ items: results });
 	});
 });
-
 // Protect other user data so send only those for username
 app.get('/api/requests', (req, res) => {
 	let username = req.session.username;

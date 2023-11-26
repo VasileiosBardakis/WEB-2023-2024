@@ -137,8 +137,8 @@ function displayData(data) {
          headerCell.textContent = headers[i];
          headerCell.classList.add("fw-bold"); //bold header 
      }
-     // Populate the table with data
-     for (var i = 0; i < data.items.length; i++) {
+    // Populate the table with data
+    for (var i = 0; i < data.items.length; i++) {
         var item = data.items[i];
         var row = table.insertRow(i + 1); // Skip the header row
 
@@ -150,7 +150,7 @@ function displayData(data) {
         nameCell.textContent = item.name;
 
         var categoryCell = row.insertCell(2);
-        categoryCell.textContent = item.category;
+        categoryCell.textContent = item.category_name; // Use the category_name instead of category
     }
     storageDiv.appendChild(table);
     //search input

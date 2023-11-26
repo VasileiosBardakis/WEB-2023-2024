@@ -61,12 +61,13 @@ function showCategories() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
+            // console.log(data);
 
             // Populate the dropdown with categories
             var dropdown = document.getElementById("categories")
             data.categories.forEach(function (cat) {
                 var option = document.createElement('option');
-                option.value = cat.category_name;
+                option.value = cat.id;
                 option.text = cat.category_name;
                 dropdown.appendChild(option);
             });
@@ -74,7 +75,6 @@ function showCategories() {
     };
     xhr.send();
 }
-
 function showItems(event) {
     // string
     var selected = event.target.value;
