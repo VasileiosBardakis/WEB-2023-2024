@@ -249,10 +249,7 @@ db.query('DELETE FROM items', (err, results) => {
 	console.log('Deleted all records from the items table');
 });
 
-db.query('DELETE FROM categories', (err, results) => {
-	if (err) throw err;
-	console.log('Deleted all records from the categories table');
-});
+
 
 
 const data_path = path.join('data', 'data.json');
