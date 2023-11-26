@@ -22,12 +22,15 @@
 
     <!-- <img src="favicon.png" alt="Saviors Inc. logo" style="width:1.5em;position:relative"> -->
     <!-- <div class="container"> -->
-      <ul class="sidebar">
-        <li class="header">Citizen Hub</li>
+      <ul class="sidebar" id="sidebar">
+        <!-- Margin padding 0 for hub -->
+        <li class="header"><a onclick="showAnnouncementsPanel()">Citizen Hub</a></li>
         <li><a onclick="showRequestPanel()">Make a request</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="#about">About</a></li>
         <li>
+          <!-- TODO: Add username -->
+          <div id="login-name">Logged in as </div>
           <form action="/logout?_method=DELETE" method="post">
             <button type="submit">Logout</button>
           </form>
@@ -39,6 +42,7 @@
       <!-- This will be the canvas for everything -->
       <div class="canvas" id="canvas">
         <div id="makeRequest" class="hidden">
+          <h3>Make a request</h3>
           <form action="/citizen/makeRequest" method="post">
             <!-- Item select -->
             <div id="table-select" class="table-select">
@@ -59,7 +63,6 @@
             <script src="js/citizen.js"></script>
             <script>
                 showCategories();
-                // For first render
             </script>
         
             <!-- People num input -->
@@ -73,22 +76,43 @@
             <div id="error-message"></div>
           </form>
         
+        <h3>Your previous requests</h3>
+        <div id="is-empty-message"></div>
         <table class="user_requests" id="user_requests">
-          <div id="is_empty">You have not done any requests.</div>
         </table>
-        
-        <div id="empty_table"></div>
-        
-        <script src="js/citizen.js"></script>
-        <script>
-            loadRequestsTable();
-        </script>
 
+        </div>
+        
+        <!-- Default view -->
+        <div id="seeAnnouncements">
+          <h3>Site announcements</h3>
+          <!-- <div class="announcement-box">
+            <h5 style="margin:0;">Important Announcement</h5>
+            <p style="margin:0;">This is where you can write your announcement content. It can be multiple lines.</p>
+            <p style="text-align:right;opacity:0.5;margin:0;">5 hours ago</p>
+          </div> -->
+          
         </div>
 
 
       </div>
     <!-- </div> -->
+      <script>
+        // Dynamically set size of canvas to prevent overlap with sidebar
+        // TODO: Sidebar has static size, but might change to scale with screen size
+        // If so, make font scale with sidebar also
+        document.addEventListener("DOMContentLoaded", function () {
+          if (window.innerWidth > 300) {
+            var sidebarWidth = document.getElementById("sidebar").offsetWidth;
+            document.getElementById("canvas").style.marginLeft = sidebarWidth + "px";
+          }
+        });
+      
+        function handleClick(section) {
+          // Your custom logic here
+          console.log("Clicked on " + section);
+        }
+      </script>
 
       <noscript>Sorry, your browser does not support JavaScript!</noscript>
   </body>
