@@ -26,7 +26,7 @@ INSERT INTO accounts VALUES
 CREATE TABLE items (
     id INT PRIMARY KEY,
     name VARCHAR(255),
-    category INT
+    category VARCHAR(255)
 );
 
 CREATE TABLE details (
@@ -37,10 +37,6 @@ CREATE TABLE details (
     FOREIGN KEY (item_id) REFERENCES items(id)
 );
 
-CREATE TABLE categories (
-    id INT PRIMARY KEY,
-    category_name VARCHAR(255)
-);
 
 CREATE TABLE announce (
     id INT PRIMARY KEY auto_increment,
@@ -52,7 +48,6 @@ CREATE TABLE announce (
 
 SELECT * from items;
 select * from details;
-select * from categories;
 select * from accounts;
 select * from announce;
 

@@ -255,28 +255,18 @@ db.query('DELETE FROM categories', (err, results) => {
 });
 
 
-const data_path = path.join('data', 'data.json')
+const data_path = path.join('data', 'data.json');
 const jsonData = fs.readFileSync(data_path, 'utf-8');
 const data = JSON.parse(jsonData);
-
-data.categories.forEach((category) => {
-	const categoryId = category.id;
-	const categoryName = category.category_name;
-
-	// Insert category into the 'categories' table
-	db.query('INSERT INTO categories (id, category_name) VALUES (?, ?)', [categoryId, categoryName], (err, results) => {
-		if (err) throw err;
-	});
-});
 
 // Insert items into the database
 data.items.forEach((item) => {
 	const itemId = item.id;
 	const itemName = item.name;
-	const category = item.category;
+	const categoryName = data.categories.find(category => category.id === item.category)?.category_name;
 
-	// Insert item into the 'items' table
-	db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
+	// Insert item into the 'items' table with category name
+	db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, categoryName], (err, results) => {
 		if (err) throw err;
 
 		// Insert details into the 'details' table

@@ -41,7 +41,8 @@
               <li class="header">Admin Hub</li>
               <li><a onclick="addRescuer()">Add a rescuer account</a></li>
               <li><a onclick="shStats()">Service Statistics</a></li>
-              <li><a onclick="shStore()">Storage</a></li>
+              <li><a onclick="shStore()">View current storage</a></li>
+              <li><a onclick="mngStore()">Manage storage</a></li>
               <li><a onclick="mkAn()">Make an announcement</a></li>
               <li>
                   <form action="/logout?_method=DELETE" method="post">
@@ -62,9 +63,6 @@
               <div id="storage">
                   <!--Storage is displayed here -->
               </div>
-              <form action="/logout?_method=DELETE" method="post">
-                  <button type="submit">Logout</button>
-              </form>
       </div>
 
 

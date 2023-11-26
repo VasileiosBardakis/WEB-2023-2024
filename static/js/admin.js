@@ -1,7 +1,8 @@
 
 var adResClick = false; //Variable to see if 'add a rescuer' is clicked
-var mkAnClick = false; //Variable to see if 'make announcement' is clicked
-var shStoreClick = false; //Variable to see if 'Storage' is clicked
+var mkAnClick = false; //Variable to see if 'make an announcement' is clicked
+var shStoreClick = false; //Variable to see if 'View current storage' is clicked
+var mngStoreClick = false; //Variable to see if 'Manage Storage' is clicked
 var dropdownCount;  // Variable to keep track of the number of dropdowns in make announcement button
 var xhr = new XMLHttpRequest();
 
@@ -268,4 +269,21 @@ function announceDatabase() {
 
     var data = JSON.stringify({ title: title, anText: anText, dropdownValues: dropdownValues});
     xhttp.send(data);
+}
+
+function mngStore() {
+    if (!mngStoreClick) {
+        clearFields()
+        mngStoreClick = true;
+
+
+
+
+    }
+    else {
+        clearFields();
+    }
+
+
+
 }
