@@ -166,8 +166,9 @@ function searchTable(query, table) {
     for (var i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
         var categoryCell = rows[i].getElementsByTagName("td")[2]; // Index 2 is the category column
 
-        var cellText = categoryCell.textContent.toLowerCase();
-        var categories = query.split(',').map(cat => cat.trim());
+        /*Making the search bar case insensitive and able to search for multiple categories using ','*/
+        var cellText = categoryCell.textContent.toLowerCase();     
+        var categories = query.split(',').map(cat => cat.trim());  
 
         var found = categories.some(category => cellText.includes(category));
 

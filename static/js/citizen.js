@@ -75,17 +75,18 @@ function showCategories() {
     };
     xhr.send();
 }
+
 function showItems(event) {
     // string
     var selected = event.target.value;
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/items', true);
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.response)
 
-            var items = data.items.filter(function(item) {
+            var items = data.items.filter(function (item) {
                 return String(item.category) === String(selected);
             });
 
