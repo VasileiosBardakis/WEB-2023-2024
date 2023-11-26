@@ -59,3 +59,5 @@ Bad input for make request
 Use # instead of . for unique elements
 
 On mobile: make sidebar scale with canvas size and make canvas scrollable (tables)
+
+na valoume sto make announcement na patietai to select an item mia fora wste na exei apthn arxh ena dropdown
