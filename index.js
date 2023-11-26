@@ -284,14 +284,15 @@ data.items.forEach((item) => {
 // Set up a route to fetch items from the database
 
 app.get('/api/categories', (req, res) => {
-	const query = 'SELECT * FROM categories'; // Modify the query as needed
+	const query = 'SELECT DISTINCT category FROM items'; // Modify the query as needed
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
 			return;
 		}
-		res.json({ categories: results });
+		const categories = results.map(result => ({ category_name: result.category }));
+		res.json({ categories });
 	});
 });
 

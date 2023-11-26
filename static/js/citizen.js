@@ -58,16 +58,15 @@ function sendRequest() {
 function showCategories() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/categories', true);
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
-            // console.log(data);
 
             // Populate the dropdown with categories
             var dropdown = document.getElementById("categories")
             data.categories.forEach(function (cat) {
                 var option = document.createElement('option');
-                option.value = cat.id;
+                option.value = cat.category_name;
                 option.text = cat.category_name;
                 dropdown.appendChild(option);
             });
