@@ -123,7 +123,9 @@ function showItems(event) {
 
 function loadRequestsTable() {
     var table = document.getElementById('user_requests');
+    var errorMessageElement = document.getElementById('is-empty-message');
     table.innerText='';
+    errorMessageElement.innerHTML = '';
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/requests', true);
@@ -136,7 +138,6 @@ function loadRequestsTable() {
 
             // TODO: If empty, show no request button
             if (requests.length === 0) {
-                var errorMessageElement = document.getElementById('is-empty-message');
                 errorMessageElement.innerHTML = 'You have not done any requests.';
                 return;
             }
@@ -190,5 +191,44 @@ function showAnnouncementsPanel() {
 }
 
 function loadAnnouncements() {
+    var announcements_list = document.getElementById('announcements_list');
+    var emptyAnnouncementsElement = document.getElementById('no-announcement-message');
+    announcements_list.innerText='';
+    emptyAnnouncementsElement.innerHTML = '';
     
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/announcements', true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.response)
+            console.log(data);
+
+            var announcements = data.announcements;
+
+            // TODO: If empty, show no announcement
+            if (announcements.length === 0) {
+                emptyAnnouncementsElement.innerHTML = 'There are currently no announcements.';
+                return;
+            }
+
+            //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
+            
+            announcements.forEach((entry) => {
+                let announcement = document.createElement("div");
+                announcement.classList.add("announcement-box");
+
+                let title = document.createElement("h5");
+                title.innerText = entry.title;
+
+                let description = document.createElement("p");
+                description.innerText = entry.descr;
+
+                announcement.appendChild(title);
+                announcement.appendChild(description);
+
+                announcements_list.appendChild(announcement);
+            });
+        }
+    };
+    xhr.send();
 }

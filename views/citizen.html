@@ -85,13 +85,16 @@
         
         <!-- Default view -->
         <div id="seeAnnouncements">
-          <h3>Site announcements</h3>
-          <!-- <div class="announcement-box">
-            <h5 style="margin:0;">Important Announcement</h5>
-            <p style="margin:0;">This is where you can write your announcement content. It can be multiple lines.</p>
-            <p style="text-align:right;opacity:0.5;margin:0;">5 hours ago</p>
-          </div> -->
           
+          <h3>Site announcements</h3>
+          <div id="no-announcement-message"></div>
+          <div id="announcements_list">
+            <!-- <div class="announcement-box">
+              <h5>Important Announcement</h5>
+              <p>This is where you can write your announcement content. It can be multiple lines.</p>
+              <p class="timestamp">5 hours ago</p>
+            </div> -->
+          </div>
         </div>
 
 
@@ -108,10 +111,7 @@
           }
         });
       
-        function handleClick(section) {
-          // Your custom logic here
-          console.log("Clicked on " + section);
-        }
+        loadAnnouncements();
       </script>
 
       <noscript>Sorry, your browser does not support JavaScript!</noscript>

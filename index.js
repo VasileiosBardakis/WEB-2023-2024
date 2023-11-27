@@ -317,6 +317,19 @@ app.get('/api/categories', (req, res) => {
 		res.json({ categories: results });
 	});
 });
+
+app.get('/api/announcements', (req, res) => {
+	const query = 'SELECT * FROM announce'; // Modify the query as needed
+	db.query(query, (err, results) => {
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ announcements: results });
+	});
+});
+
 app.post('/categories/add', (req, res) => {
 	let id = req.body.id;
 	let name = req.body.name;

@@ -62,3 +62,5 @@ Use # instead of . for unique elements
 On mobile: make sidebar scale with canvas size and make canvas scrollable (tables)
 
 admin.js contains register(): Unused
+
+On table load: make each row appear with fade (end goal)
