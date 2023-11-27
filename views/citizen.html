@@ -20,13 +20,13 @@
 
   <body>
 
+    <div id="grid-container">
     <!-- <img src="favicon.png" alt="Saviors Inc. logo" style="width:1.5em;position:relative"> -->
     <!-- <div class="container"> -->
       <ul class="sidebar" id="sidebar">
         <!-- Margin padding 0 for hub -->
         <li class="header"><a onclick="showAnnouncementsPanel()">Citizen Hub</a></li>
         <li><a onclick="showRequestPanel()">Make a request</a></li>
-        <li><a href="#contact">Contact</a></li>
         <li><a href="#about">About</a></li>
         <li>
           <!-- TODO: Add username -->
@@ -50,7 +50,7 @@
                 <select id="categories" onchange="showItems(event)">
                   <option value="-1">Please select a category</option></select>
               </label>
-
+              <br>
               <label class="dropdown">Choose an item:
                 <select id="items">
                   <!-- Instead of blank dropdown -->
@@ -73,11 +73,11 @@
       
             <!-- Submit button -->
             <button type="button" onclick="sendRequest()" class="btn btn-primary btn-block mb-4">Send request</button>
-            <div id="error-message"></div>
+            <p id="error-message"></p>
           </form>
         
         <h3>Your previous requests</h3>
-        <div id="is-empty-message"></div>
+        <p id="is-empty-message"></p>
         <table class="user_requests" id="user_requests">
         </table>
 
@@ -87,7 +87,7 @@
         <div id="seeAnnouncements">
           
           <h3>Site announcements</h3>
-          <div id="no-announcement-message"></div>
+          <p id="no-announcement-message"></p>
           <div id="announcements_list">
             <!-- <div class="announcement-box">
               <h5>Important Announcement</h5>
@@ -100,6 +100,7 @@
 
       </div>
     <!-- </div> -->
+  </div>
       <script>
         // Dynamically set size of canvas to prevent overlap with sidebar
         // TODO: Sidebar has static size, but might change to scale with screen size

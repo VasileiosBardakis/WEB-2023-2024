@@ -10,13 +10,13 @@ To register sto test.html thewritika tha prepe na xei animation alla den douleve
 https://mdbootstrap.com/docs/standard/extended/login/
 
 TODO: Fix sql auth (where username = ?)
-Handle show/hide in admin.html with css:
-Have vertical navbar to the left, upon pressing a button, show its text fields while hiding every other button's text fields
+Handle show/hide buttons with css: Have vertical navbar to the left, upon pressing a button, show its text fields while hiding every other button's text fields
+
 Going back a page breaks the user flow (e.g. admin login -> backwards -> press register)
+
 Use css display instead of innerhtml rewrites (computationally expensive)
 https://stackoverflow.com/questions/11144274/javascript-changing-innerhtml-vs-display
 
-Might change canvas margins for leaflet
 https://stackoverflow.com/questions/4853563/how-do-i-submit-a-form-with-a-li-instead-of-a-submit-button
 
 Autocomplete:
@@ -44,7 +44,7 @@ div label {
     display: block;
 }
 
-MOBILE FIRST!!!! If media > 700px, make everything stack vertically
+If media > 700px, make everything stack vertically
 
 For manage requests of civilian:
 table for db: PERSON requests ITEM for # PEOPLE and ITS STATUS
@@ -64,3 +64,5 @@ On mobile: make sidebar scale with canvas size and make canvas scrollable (table
 admin.js contains register(): Unused
 
 On table load: make each row appear with fade (end goal)
+
+When scrolling, div goes inside sidebar
