@@ -31,7 +31,7 @@ function myCargo() {
                 displayData(jsonResponse);
             }
         };
-        xhrs.open("GET", "http://localhost:3000/api/itemsVehicle", true);
+        xhrs.open("GET", "http://localhost:3000/api/cargo", true);
         xhrs.send();
     }else{
         clearFields();

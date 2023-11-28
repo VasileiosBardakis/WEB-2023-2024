@@ -430,8 +430,8 @@ app.get('/api/itemswcat', (req, res) => {
 });
 
 // NEED TO DO VEHICLE ITEMS 
-app.get('/api/itemsVehicle', (req, res) => {
-	const query = 'SELECT * FROM items'; // Modify the query as needed
+app.get('/api/cargo', (req, res) => {
+	const query = 'SELECT * FROM cargo WHERE vehicle='; // Modify the query as needed
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
