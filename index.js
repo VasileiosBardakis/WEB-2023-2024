@@ -431,8 +431,8 @@ app.get('/api/itemswcat', (req, res) => {
 
 // NEED TO DO VEHICLE ITEMS 
 app.get('/api/cargo', (req, res) => {
-	const query = 'SELECT * FROM cargo where username = res_username'; // Modify the query as needed
-	db.query(query, (err, results) => {
+	let username = req.session.username;
+	db.query('SELECT * FROM cargo where username = (?)', [username], (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });

@@ -97,6 +97,10 @@ BEGIN
    
    DECLARE tempItem_name VARCHAR(255);
    DECLARE tempItem_category INT;
+   DECLARE tempQ INT;
+   
+   SELECT quantity INTO tempQ
+   FROM items WHERE id = item_tl_id; 
 
    SELECT name INTO tempItem_name
    FROM items WHERE id = item_tl_id; 
@@ -105,15 +109,20 @@ BEGIN
    FROM items WHERE id = item_tl_id;  
    
    IF(tempItem_name IS NOT NULL OR tempItem_category IS NOT NULL) THEN
+   IF(item_tl_quantity > tempQ) THEN
+   SIGNAL SQLSTATE VALUE '45000'
+   SET MESSAGE_TEXT = 'Not enough items';
+   
+   ELSE
+   UPDATE  items 
+   SET quantity = quantity-item_tl_quantity 
+   WHERE id = item_tl_id;
    
    INSERT INTO cargo 
    VALUES (res_username, item_tl_id, tempItem_name, tempItem_category,item_tl_quantity)
    ON duplicate key update
    res_quantity = res_quantity+item_tl_quantity;
-   
-   UPDATE  items 
-   SET quantity = quantity-item_tl_quantity 
-   WHERE id = item_tl_id;
+   END IF;
    
    ELSE 
    SIGNAL SQLSTATE VALUE '45000'
@@ -132,6 +141,10 @@ BEGIN
    
    DECLARE tempItem_name VARCHAR(255);
    DECLARE tempItem_category INT;
+   DECLARE tempQ INT;
+   
+   SELECT res_quantity INTO tempQ
+   FROM cargo WHERE item_id = item_td_id AND username = res_username; 
 
    SELECT item_name INTO tempItem_name
    FROM cargo WHERE item_id = item_td_id AND username = res_username; 
@@ -140,13 +153,21 @@ BEGIN
    FROM cargo WHERE item_id = item_td_id AND username = res_username;   
    
    IF(tempItem_name IS NOT NULL OR tempItem_category IS NOT NULL) THEN
-   UPDATE items 
-   SET quantity = quantity + item_td_quantity
-   WHERE id = item_td_id;
+   
+   IF(item_td_quantity > tempQ) THEN
+   SIGNAL SQLSTATE VALUE '45000'
+   SET MESSAGE_TEXT = 'Not enough items';
+   
+   ELSE
    UPDATE cargo 
    SET res_quantity = res_quantity - item_td_quantity 
    WHERE item_id = item_td_id;
    DELETE FROM cargo WHERE res_quantity =0;
+   
+   UPDATE items 
+   SET quantity = quantity + item_td_quantity
+   WHERE id = item_td_id;
+   END IF;
    
    ELSE 
    SIGNAL SQLSTATE VALUE '45000'
@@ -162,5 +183,5 @@ SELECT 'requests' AS '';
 SET SQL_SAFE_UPDATES = 0; /* NOT SAFE */
 SET SQL_SAFE_UPDATES = 1; /* SAFE */
 
-call cargoLoaded(31,11,'res');
-call cargoDelivered(31,1,'res');
+call cargoLoaded(31,5,'res');
+call cargoDelivered(31,6,'res');

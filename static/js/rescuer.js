@@ -46,26 +46,29 @@ function displayData(data) {
     var table = document.createElement("table"); 
      // Create a header row
      var headerRow = table.insertRow(0);
-     var headers = ["ID", "Name", "Category"];
+     var headers = ["ID", "Name", "Category","Quantity"];
      for (var i = 0; i < headers.length; i++) {
          var headerCell = headerRow.insertCell(i);
          headerCell.textContent = headers[i];
          headerCell.classList.add("fw-bold"); //bold header 
      }
     // Populate the table with data
-    for (var i = 0; i < data.items.length; i++) {
-        var item = data.items[i];
+    for (var i = 0; i < data.cargo.length; i++) {
+        var cargo = data.cargo[i];
         var row = table.insertRow(i + 1); // Skip the header row
 
         // Create cells and populate them with data
         var idCell = row.insertCell(0);
-        idCell.textContent = item.id;
+        idCell.textContent = cargo.item_id;
 
         var nameCell = row.insertCell(1);
-        nameCell.textContent = item.name;
+        nameCell.textContent = cargo.item_name;
 
         var categoryCell = row.insertCell(2);
-        categoryCell.textContent = item.category; // Use the category_name instead of category
+        categoryCell.textContent = cargo.item_category; // Use the category_name instead of category
+
+        var quantityCell = row.insertCell(3);
+        quantityCell.textContent = cargo.res_quantity; // show quantity
     }
     cargoDiv.appendChild(table);
 }
