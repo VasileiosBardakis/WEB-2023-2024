@@ -431,7 +431,7 @@ app.get('/api/itemswcat', (req, res) => {
 
 // NEED TO DO VEHICLE ITEMS 
 app.get('/api/cargo', (req, res) => {
-	const query = 'SELECT * FROM cargo WHERE vehicle='; // Modify the query as needed
+	const query = 'SELECT * FROM cargo where username = res_username'; // Modify the query as needed
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);

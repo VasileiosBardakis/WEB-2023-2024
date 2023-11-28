@@ -5,13 +5,14 @@ DROP DATABASE IF EXISTS saviors;
 CREATE DATABASE saviors;
 USE saviors;
 
+
 CREATE TABLE accounts (
     username VARCHAR(30) PRIMARY KEY,
     password VARCHAR(30) NOT NULL,
     type TINYINT NOT NULL,
     fullname VARCHAR(60),
     telephone VARCHAR(12)
-);
+)ENGINE=InnoDB;
 
 INSERT INTO accounts VALUES
 ('admin','admin',0, null, null);
@@ -28,28 +29,34 @@ INSERT INTO accounts VALUES
 CREATE TABLE items (
     id INT PRIMARY KEY,
     name VARCHAR(255),
-    category VARCHAR(255)
-);
+    category VARCHAR(255),
+    quantity INT,
+    CONSTRAINT ch_quantity CHECK (quantity > -1)
+)ENGINE=InnoDB;
 
+/* FOR TESTING */
+UPDATE  items 
+    SET quantity = 10 WHERE id>10; 
+    
 CREATE TABLE details (
     id INT AUTO_INCREMENT PRIMARY KEY,
     item_id INT,
     detail_name VARCHAR(255),
     detail_value VARCHAR(255),
     FOREIGN KEY (item_id) REFERENCES items(id)
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE categories (
     id INT PRIMARY KEY,
     category_name VARCHAR(255)
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE announce (
     id INT PRIMARY KEY auto_increment,
     title VARCHAR(255),
     descr VARCHAR(255),
     items JSON
-);
+)ENGINE=InnoDB;
 
 
 SELECT * from items;
@@ -69,23 +76,23 @@ CREATE TABLE requests (
     date_completed DATETIME,
     FOREIGN KEY (username) REFERENCES accounts(username),
     FOREIGN KEY (item_id) REFERENCES items(id)
-);
+)ENGINE=InnoDB;
 
-CREATE TABLE `cargo` (
-  `vehicle` enum('A','B','C') NOT NULL,
-  `item_id` int NOT NULL,
-  `item_name` varchar(255) DEFAULT NULL,
-  `item_category` int DEFAULT NULL,
-  PRIMARY KEY (`vehicle`),
-  KEY `VEHICLE_ITEMS` (`item_id`),
-  CONSTRAINT `VEHICLE_ITEMS` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-); 
+CREATE TABLE cargo (
+  username VARCHAR(30) NOT NULL,
+  item_id int NOT NULL,
+  item_name varchar(255) DEFAULT NULL,
+  item_category int DEFAULT NULL,
+  res_quantity int,
+  CONSTRAINT ch_res_quantity CHECK (res_quantity > -1),
+  FOREIGN KEY (username) REFERENCES accounts(username)
+)ENGINE=InnoDB; 
 
 DROP PROCEDURE IF EXISTS cargoLoaded;
 
 DELIMITER $$
 
-CREATE PROCEDURE cargoLoaded(IN item_tl_id INT,IN vehicle_tl ENUM('A','B','C'))
+CREATE PROCEDURE cargoLoaded(IN item_tl_id INT,IN item_tl_quantity INT, IN res_username VARCHAR(30))
 BEGIN 
    
    DECLARE tempItem_name VARCHAR(255);
@@ -97,11 +104,17 @@ BEGIN
    SELECT category INTO tempItem_category
    FROM items WHERE id = item_tl_id;  
    
-   IF(tempItem_name IS NULL OR tempItem_category IS NULL) THEN
-   INSERT INTO cargo 
-   VALUES (vehicle_tl, item_tl_id, tempItem_name, tempItem_category);
+   IF(tempItem_name IS NOT NULL OR tempItem_category IS NOT NULL) THEN
    
-   DELETE FROM items where id=item_tl_id;
+   INSERT INTO cargo 
+   VALUES (res_username, item_tl_id, tempItem_name, tempItem_category,item_tl_quantity)
+   ON duplicate key update
+   res_quantity = res_quantity+item_tl_quantity;
+   
+   UPDATE  items 
+   SET quantity = quantity-item_tl_quantity 
+   WHERE id = item_tl_id;
+   
    ELSE 
    SIGNAL SQLSTATE VALUE '45000'
    SET MESSAGE_TEXT = 'Item is out of stock';
@@ -114,23 +127,27 @@ DROP PROCEDURE IF EXISTS cargoDelivered;
 
 DELIMITER $$
 
-CREATE PROCEDURE cargoDelivered(IN item_td_id INT,IN vehicle_td ENUM('A','B','C'))
+CREATE PROCEDURE cargoDelivered(IN item_td_id INT,IN item_td_quantity INT, IN res_username VARCHAR(30))
 BEGIN 
    
    DECLARE tempItem_name VARCHAR(255);
    DECLARE tempItem_category INT;
 
    SELECT item_name INTO tempItem_name
-   FROM cargo WHERE item_id = item_td_id AND vehicle = vehicle_td; 
+   FROM cargo WHERE item_id = item_td_id AND username = res_username; 
 
    SELECT item_category INTO tempItem_category
-   FROM cargo WHERE item_id = item_td_id AND vehicle = vehicle_td;   
+   FROM cargo WHERE item_id = item_td_id AND username = res_username;   
    
-   IF(tempItem_name IS NULL OR tempItem_category IS NULL) THEN
-   INSERT INTO items 
-   VALUES (item_td_id, tempItem_name, tempItem_category);
+   IF(tempItem_name IS NOT NULL OR tempItem_category IS NOT NULL) THEN
+   UPDATE items 
+   SET quantity = quantity + item_td_quantity
+   WHERE id = item_td_id;
+   UPDATE cargo 
+   SET res_quantity = res_quantity - item_td_quantity 
+   WHERE item_id = item_td_id;
+   DELETE FROM cargo WHERE res_quantity =0;
    
-   DELETE FROM cargo where id=item_tl_id AND vehicle = vehicle_td; 
    ELSE 
    SIGNAL SQLSTATE VALUE '45000'
    SET MESSAGE_TEXT = 'Cargo is missing';
@@ -141,3 +158,9 @@ DELIMITER ;
 
 SELECT 'requests' AS '';
 -- \! echo 'some text';
+
+SET SQL_SAFE_UPDATES = 0; /* NOT SAFE */
+SET SQL_SAFE_UPDATES = 1; /* SAFE */
+
+call cargoLoaded(31,11,'res');
+call cargoDelivered(31,1,'res');
