@@ -401,6 +401,19 @@ app.get('/api/items', (req, res) => {
 	});
 });
 
+app.get('/api/itemswcat', (req, res) => {
+	const query = 'SELECT items.id, items.name, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id';
+
+	db.query(query, (err, results) => {
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ items: results });
+	});
+});
+
 // NEED TO DO VEHICLE ITEMS 
 app.get('/api/itemsVehicle', (req, res) => {
 	const query = 'SELECT * FROM items'; // Modify the query as needed
