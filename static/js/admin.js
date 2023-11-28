@@ -14,6 +14,8 @@ xhr.onreadystatechange = function () {
     }
 };
 
+
+/* Function for clearing fields from other buttons */
 function clearFields() {
     clearFieldsMngDatabase();
     adResClick = false;
@@ -29,14 +31,8 @@ function clearFields() {
 
 }
 
-function clearFieldsMngDatabase() {
-    mngCategoriesClick = false;
-    document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
-    document.getElementById('inputFieldsDiv2').innerHTML = '';
-    document.getElementById('storage').innerHTML = '';
-    document.getElementById('error-message').innerHTML = ''; 
-    document.getElementById('buttons2').innerHTML = '';
-}
+
+/* Function for add a rescuer button */
 function addRescuer() {
 
     if (!adResClick) {       //If addRescuer isn't clicked, show input fields
@@ -72,7 +68,7 @@ function addRescuer() {
 }
 
 
-
+/* Function for when submit is pressed in Add a Rescuer*/
 function register() {
     /*We get the input fields and make an http request to connect to the database and register the rescuer account*/
     var username = document.getElementById('username').value;     
@@ -107,6 +103,7 @@ function shStats() {
 
 }
 
+/* Function for Show Current Storage button */
 function shStore() {
     if (!shStoreClick) {       //If Storage isn't clicked, show input fields
         clearFields();
@@ -132,6 +129,7 @@ function shStore() {
     }
 }
 
+/* Function for displaying data in Show Current Storage */
 function displayData(data) {
     /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
     var storageDiv = document.getElementById("storage");
@@ -174,6 +172,7 @@ function displayData(data) {
     });
 }
 
+/* Function for search bar in Show Current Storage button */
 function searchTable(query, table) {
     query = query.toLowerCase().trim();
     var rows = table.getElementsByTagName("tr");
@@ -195,7 +194,7 @@ function searchTable(query, table) {
     }
 }
 
-
+/* Function for the button Make an Announcement */
 function mkAn() {
     
     dropdownCount = 1;
@@ -229,7 +228,7 @@ function mkAn() {
 
 }
 
-
+/* Function for when Add an item is pressed in Make an announcement*/
 function moreItems() {
     dropdownCount++;
     var newDropdown = document.createElement('select');
@@ -258,6 +257,8 @@ function moreItems() {
     document.getElementById('inputFieldsDiv').appendChild(newDropdown);
 }
 
+
+/* Function for when Submit is pressed in Make an Announcement */
 function announceDatabase() {
     console.log("announce");
     var title = document.getElementById('title').value;
@@ -290,87 +291,138 @@ function announceDatabase() {
     xhttp.send(data);
 }
 
+
+/* Function for Manage Storage button */
 function mngStore() {
-    if (!mngStoreClick) {
-        clearFields()
-        mngStoreClick = true;
-        
+    {
+        if (!mngStoreClick) {
+            clearFields();
+            mngStoreClick = true;
+            /* http request to populate table with categories*/
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/api/categories', true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
 
-        //insert the HTML content into the designated div
-        document.getElementById('buttons').innerHTML = `
-    <button type="button" onclick="mngCategories()" class="btn btn-primary btn-block mb-4">Manage categories</button>
-    `;;
+                    // Create a table
+                    var table = document.createElement('table');
+
+                    // Create a header row
+                    var headerRow = table.insertRow(0);
+                    var headers = ['ID', 'Name', 'Edit items in Category', 'Delete Category'];
+                    for (var i = 0; i < headers.length; i++) {
+                        var headerCell = headerRow.insertCell(i);
+                        headerCell.textContent = headers[i];
+                    }
+
+                    // Populate the table with categories
+                    data.categories.forEach(function (cat) {
+                        var row = table.insertRow(table.rows.length);
+
+                        // Create cells and populate them with data
+                        var idCell = row.insertCell(0);
+                        idCell.textContent = cat.id;
+
+                        var nameCell = row.insertCell(1);
+                        nameCell.textContent = cat.category_name;
+
+                        var editCell = row.insertCell(2); /* For the edit category items buttons */
+                        var editButton = document.createElement('button');
+                        editButton.textContent = 'edit';
+                        editButton.onclick = function () {
+                            itemsInCat(cat.id);
+                        };
+                        editCell.appendChild(editButton);
+
+                        var actionsCell = row.insertCell(3); /* For the delete category buttons */
+                        var deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'X';
+                        deleteButton.onclick = function () {
+                            query = 'DELETE FROM categories WHERE id=' + cat.id;
+                            postQuery(query);
+                            console.log(query);
+                        };
+                        actionsCell.appendChild(deleteButton);
+                    });
 
 
+                    // Append the table to div
+                    var categoryTableDiv = document.getElementById('inputFieldsDiv');
+                    categoryTableDiv.innerHTML = '';
+                    categoryTableDiv.appendChild(table);
+                    document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
 
-    }
-    else {
-        clearFields();
-    }
-
-
-
-}
-
-
-function mngCategories() {
-    if (!mngCategoriesClick) {
-        clearFieldsMngDatabase();
-        mngCategoriesClick = true;
-        /* http request to populate table with categories*/
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/categories', true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-
-                // Create a table
-                var table = document.createElement('table');
-
-                // Create a header row
-                var headerRow = table.insertRow(0);
-                var headers = ['ID', 'Name', 'Actions'];
-                for (var i = 0; i < headers.length; i++) {
-                    var headerCell = headerRow.insertCell(i);
-                    headerCell.textContent = headers[i];
                 }
-
-                // Populate the table with categories
-                data.categories.forEach(function (cat) {
-                    var row = table.insertRow(table.rows.length);
-
-                    // Create cells and populate them with data
-                    var idCell = row.insertCell(0);
-                    idCell.textContent = cat.id;
-
-                    var nameCell = row.insertCell(1);
-                    nameCell.textContent = cat.category_name;
-
-                    var actionsCell = row.insertCell(2); /* For the deletion buttons */
-                    var deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'X';
-                    deleteButton.onclick = function () {
-                        query = 'DELETE FROM categories WHERE id=' + cat.id;
-                        postQuery(query);
-                        console.log(query);
-                    };
-                    actionsCell.appendChild(deleteButton);
-                });
-
-
-                // Append the table to div
-                var categoryTableDiv = document.getElementById('inputFieldsDiv');
-                categoryTableDiv.innerHTML = '';
-                categoryTableDiv.appendChild(table);
-                document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
-
-            }
-        };
-        xhr.send();
+            };
+            xhr.send();
+        }
+        else { clearFields(); }
     }
-    else { clearFieldsMngDatabase; }
+
+
+
+}
+/*Function that is called when "edit" is pressed in manage storage*/
+function itemsInCat(selected) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/itemswdet', true);
+
+    /* AJAX to print items */
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.response)
+            var items = data.items.filter(function (item) {
+                return String(item.category) === String(selected);
+            });
+            var table = document.createElement('table');
+
+            
+            /* Header Row */
+            var headerRow = table.insertRow(0);
+            var headers = ['Name', 'Detail', 'Detail Value'];
+            for (var i = 0; i < headers.length; i++) {
+                var headerCell = headerRow.insertCell(i);
+                headerCell.textContent = headers[i];
+            }
+
+            // Populate the table with categories
+            items.forEach(function (item) {
+                var row = table.insertRow(table.rows.length);
+
+                /*Cells for item name and details*/
+                var idCell = row.insertCell(0);
+                idCell.innerHTML = '<input type="text" value="' + item.name + '">';
+
+                var nameCell = row.insertCell(1);
+                nameCell.innerHTML = '<input type="text" value="' + item.detail_name + '">';
+
+                var valueCell = row.insertCell(2);
+                valueCell.innerHTML = '<input type="text" value="' + item.detail_value + '">';
+            });
+
+            /*Append the table to div and add event listener to change items when enter is pressed*/
+
+            var categoryTableDiv = document.getElementById('inputFieldsDiv2');
+            document.getElementById('inputFieldsDiv2').addEventListener('keyup', function (event) {
+                if (event.key === 'Enter') {
+                    changeItem(event.target);
+                }
+            });
+            categoryTableDiv.innerHTML = '';
+            categoryTableDiv.appendChild(table);
+        }
+    };
+    xhr.send();
 }
 
+/*Function that is called when enter is pressed in manage storage->manage items->Changed input field*/
+function changeItem(input) {
+    console.log('Input changed:', input.value);
+}
+
+
+/*Function that posts a mysql query to change the database with AJAX */
 function postQuery(query) {
     var xhr = new XMLHttpRequest();
     xhr.open('post', '/api/del', true);
@@ -379,7 +431,7 @@ function postQuery(query) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
-                if (mngCategoriesClick) { mngCategoriesClick = false; mngCategories(); } //reload the categories on update
+                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
                 console.log('Database has been updated!');
             } else {
                 console.error('Request failed with status:', xhr.status);
@@ -392,13 +444,18 @@ function postQuery(query) {
     console.log('Data sent:',jsonData);
 }
 
+
+/*Function that gets called when Add a Category is pressed in manage storage */
 function addCategory() {
     document.getElementById('inputFieldsDiv2').innerHTML = `<form id="myForm">
     <input type="number" id="id" name="id" required>
     <input type="text" id="name" name="name" required>
-    <input type="button" onclick="addCategoryButton()"  value="Submit">`;
+    <input type="button" onclick="addCategorySubmit()"  value="Submit">`;
 }
-function addCategoryButton() {
+
+
+/* Function that is called when Submit button is pressed in manage storage -> add a category */
+function addCategorySubmit() {
     // Get values from input fields
     var id = document.getElementById("id").value;
     var name = document.getElementById("name").value;
@@ -421,7 +478,7 @@ function addCategoryButton() {
                 errorMessageElement.innerHTML = response.error;
             }
             else if (xhttp.status === 200) {
-                if (mngCategoriesClick) { mngCategoriesClick = false; mngCategories(); } //reload the categories on update
+                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
                 errorMessageElement.innerHTML = 'Category added successfully';
             }
             }

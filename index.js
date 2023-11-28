@@ -401,6 +401,21 @@ app.get('/api/items', (req, res) => {
 	});
 });
 
+/*Gets items with their details*/
+app.get('/api/itemswdet', (req, res) => {
+	const query = 'SELECT items.*, details.detail_name, details.detail_value FROM items INNER JOIN details ON items.id = details.item_id';
+
+	db.query(query, (err, results) => {
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ items: results });
+	});
+});
+
+/*Gets items with their categories*/
 app.get('/api/itemswcat', (req, res) => {
 	const query = 'SELECT items.id, items.name, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id';
 
