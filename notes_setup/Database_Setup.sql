@@ -57,10 +57,19 @@ CREATE TABLE categories (
 CREATE TABLE announce (
     id INT PRIMARY KEY auto_increment,
     title VARCHAR(255),
-    descr VARCHAR(255),
-    items JSON
+    descr VARCHAR(255)
+    -- items JSON
 )ENGINE=InnoDB;
 
+CREATE TABLE announce_items (
+    announce_id INT,
+    item_id INT,
+    
+    PRIMARY KEY (announce_id, item_id)
+
+    -- FOREIGN KEY (announce_id) REFERENCES announce(id),
+    -- FOREIGN KEY (item_id) REFERENCES items(id)
+)ENGINE=InnoDB;
 
 SELECT * from items;
 select * from details;

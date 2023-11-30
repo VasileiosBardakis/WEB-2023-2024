@@ -39,7 +39,7 @@ app.use(methodOverride('_method'));
 app.get('/', function(req, res) {
 	// Render login template
 	if (req.session.loggedin) {
-		res.redirect('/home');      //If logged in, redirect to home
+		res.redirect('/auth');      //If logged in, redirect to auth
 	}
 	else {
 		res.sendFile(path.join(__dirname, 'views', 'login.html'));   //If not logged in, show login page
@@ -48,32 +48,32 @@ app.get('/', function(req, res) {
 
 // authentication
 app.post('/', (req, res) => {
-	let username = req.body.username;
-	let password = req.body.password;
+		let username = req.body.username;
+		let password = req.body.password;
 
-	if (username && password) {
-		// Execute SQL query that'll select the account from the database based on the specified username and password
-		db.query('SELECT type FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
-			// Get specific account type
-			// If there is an issue with the query, output the error
-			if (error) throw error;
-			// If the account exists
-			if (results.length > 0) {
-				// Authenticate the user
-				req.session.loggedin = true;
-				req.session.username = username;
-				req.session.type = results[0].type;		//Give the account type to the session variable
-				// Direct to auth page
-				res.redirect('/auth');
+		if (username && password) {
+			// Execute SQL query that'll select the account from the database based on the specified username and password
+			db.query('SELECT type FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
+				// Get specific account type
+				// If there is an issue with the query, output the error
+				if (error) throw error;
+				// If the account exists
+				if (results.length > 0) {
+					// Authenticate the user
+					req.session.loggedin = true;
+					req.session.username = username;
+					req.session.type = results[0].type;		//Give the account type to the session variable
+					// Direct to auth page
+					res.redirect('/auth');
 
-			} else {
-				res.status(401).json({ error: 'Incorrect Username and/or Password, please try again!' });
-			}			
+				} else {
+					res.status(401).json({ error: 'Incorrect Username and/or Password, please try again!' });
+				}			
+				res.end();
+			});
+		} else {
 			res.end();
-		});
-	} else {
-		res.end();
-	}
+		}
 });
 
 
@@ -122,23 +122,6 @@ app.post('/register', (req, res) => {
 	}
 });
 
-app.post('/announce', (req, res) => {
-	let title = req.body.title;
-	let anText = req.body.anText;
-	let itemsJSON = JSON.stringify(req.body.dropdownValues); //convert dropdownValues array to a JSON
-
-	if (title && anText && (itemsJSON.length>2)) {
-		
-		//execute SQL query to insert announcement into the 'announce' table
-		db.query('INSERT INTO announce (title, descr, items) VALUES (?, ?, ?)', [title, anText, itemsJSON], function (error, results, fields) {
-			if (error) throw error;
-		});
-		res.end();
-	} else {
-		res.status(401).json({ error: 'Please insert a title, announcement text and item(s).' });
-		res.end();
-	}
-});
 
 
 app.get('/home', (req, res) => {
@@ -204,8 +187,6 @@ app.post('/citizen/sendRequest', (req, res) => {
 	if (item_id)
 
 	if (username && item_id && num_people) {
-		
-		//execute SQL query to insert announcement into the 'announce' table
 		db.query('INSERT INTO requests (username, item_id, num_people, status) VALUES (?, ?, ?, ?)', [username, item_id, num_people, status], function (error, results, fields) {
 			if (error) {
 				res.status(500).json({ error: 'Internal Server Error' });
@@ -319,14 +300,36 @@ app.get('/api/categories', (req, res) => {
 });
 
 app.get('/api/announcements', (req, res) => {
-	const query = 'SELECT * FROM announce'; // Modify the query as needed
-	db.query(query, (err, results) => {
+	const query = `SELECT a.*, aitems.item_id
+	FROM announce a INNER JOIN announce_items aitems 
+	ON a.id = aitems.announce_id`; // Modify the query as needed
+	db.query(query, (err, announcement_results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
 			return;
 		}
-		res.json({ announcements: results });
+
+		/* Json consists of two parts:
+		1. Announcements, with each item_id having a unique row
+		2. Mapping of item_id's to item names
+		*/
+		const mapQuery = `
+		SELECT DISTINCT aitems.item_id, i.name
+		FROM announce_items aitems
+		INNER JOIN items i ON aitems.item_id = i.id;
+		`;
+		db.query(mapQuery, (err, map_results) => {
+			if (err) {
+				console.error('Error executing query:', err);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
+			res.json({ announcements: announcement_results, mapping: map_results });
+			res.end();
+		});
+	//TODO: Is this needed?
+	// res.end();
 	});
 });
 
@@ -374,15 +377,47 @@ app.route('/api/del')
 app.post('/announce', (req, res) => {
 	let title = req.body.title;
 	let anText = req.body.anText;
-	let itemsJSON = JSON.stringify(req.body.dropdownValues); //convert dropdownValues array to a JSON
+	let items = req.body.dropdownValues;
 
-	if (title && anText && (itemsJSON.length > 2)) {
+	if (title && anText && (items.length > 0)) {
 
 		//execute SQL query to insert announcement into the 'announce' table
-		db.query('INSERT INTO announce (title, descr, items) VALUES (?, ?, ?)', [title, anText, itemsJSON], function (error, results, fields) {
-			if (error) throw error;
+		db.query('INSERT INTO announce (title, descr) VALUES (?, ?)', [title, anText], function (error, results, fields) {
+			if (error) {
+				// TODO: .json or just text?
+				// res.status(500).json({ error: 'Error inserting announcement to database.' });
+				// return;
+				throw error;
+			}
+
+			// Get id of generated announcement to use for referencing.
+			const anId = results.insertId;
+
+			// from item_id, create key-value pairs by concatenating anId for one-time insert
+			//TODO: Feels wonky
+			const itemsDict = items.map((itemId) => ({ an_id: anId, item_id: itemId}));
+			// const itemsDict = items.map((itemId) => ({ anId, itemId}));
+			const values = itemsDict.map(item => [item.an_id, item.item_id]);
+			console.log(itemsDict);
+			console.log(values);
+			db.query('INSERT INTO announce_items (announce_id, item_id) VALUES ?', [values], function (error, results) {
+				if (error) {
+					// TODO: .json or just text?
+					// res.status(500).json({ error: `Error inserting announcement's items to database.` });
+					// return;
+					throw error;
+				}
+				res.end();
+			});
+
 		});
-		res.end();
+
+
+
+
+		//TODO: Does .end default to status 200 or do I need to send?
+		// Inform user announcement was successful.
+		// above res.end()
 	} else {
 		res.status(401).json({ error: 'Please insert a title, announcement text and item(s).' });
 		res.end();
