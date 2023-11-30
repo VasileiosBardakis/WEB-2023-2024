@@ -1,4 +1,4 @@
-cargoDeliveredALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
 flush privileges;
 
 DROP DATABASE IF EXISTS saviors;
@@ -25,12 +25,12 @@ INSERT INTO accounts VALUES
 INSERT INTO accounts VALUES
 ('mister_helper', 'forfree', 2, null, null);
 
-
+-- all possible items in the database
 CREATE TABLE items (
     id INT PRIMARY KEY,
     name VARCHAR(255),
     category VARCHAR(255),
-    quantity INT,
+    quantity INT, -- current quantity in the central base
     CONSTRAINT ch_quantity CHECK (quantity > -1)
 )ENGINE=InnoDB;
 
@@ -38,11 +38,13 @@ CREATE TABLE items (
 UPDATE  items 
     SET quantity = 10 WHERE id>10; 
     
+-- alternative versions of items (e.g. 125ml water)
 CREATE TABLE details (
     id INT AUTO_INCREMENT PRIMARY KEY,
     item_id INT,
     detail_name VARCHAR(255),
     detail_value VARCHAR(255),
+
     FOREIGN KEY (item_id) REFERENCES items(id)
 )ENGINE=InnoDB;
 
@@ -51,6 +53,7 @@ CREATE TABLE categories (
     category_name VARCHAR(255)
 )ENGINE=InnoDB;
 
+-- admin announcements for 
 CREATE TABLE announce (
     id INT PRIMARY KEY auto_increment,
     title VARCHAR(255),
@@ -74,9 +77,19 @@ CREATE TABLE requests (
     date_requested DATETIME default now(),
     date_accepted DATETIME,
     date_completed DATETIME,
+
     FOREIGN KEY (username) REFERENCES accounts(username),
     FOREIGN KEY (item_id) REFERENCES items(id)
 )ENGINE=InnoDB;
+
+CREATE TABLE request_status_code (
+    status INT UNSIGNED PRIMARY KEY,
+    meaning VARCHAR(30) NOT NULL
+);
+INSERT INTO request_status_code VALUES
+(0, 'Pending'),
+(1, 'Accepted'),
+(2, 'Completed');
 
 CREATE TABLE cargo (
   username VARCHAR(30) NOT NULL,
@@ -84,9 +97,57 @@ CREATE TABLE cargo (
   item_name varchar(255) DEFAULT NULL,
   item_category int DEFAULT NULL,
   res_quantity int,
+  
   CONSTRAINT ch_res_quantity CHECK (res_quantity > -1),
+
   FOREIGN KEY (username) REFERENCES accounts(username)
 )ENGINE=InnoDB; 
+
+-- offers are in response to announcements
+CREATE TABLE offers (
+    id INT PRIMARY KEY,
+    username VARCHAR(30) NOT NULL,
+    announcement INT,
+    date_offered DATETIME default now(),
+    date_completed DATETIME,
+    status INT UNSIGNED NOT NULL,
+    -- 0 for not picked up, 1 for picked up, 2 for completed
+    -- TODO: if 1, cant delete 
+
+    FOREIGN KEY (username) REFERENCES accounts(username),
+
+    FOREIGN KEY (announcement) REFERENCES announce(id) 
+);
+
+CREATE TABLE offer_status_code (
+    status INT UNSIGNED PRIMARY KEY,
+    meaning VARCHAR(30) NOT NULL
+);
+INSERT INTO offer_status_code VALUES
+(0, 'Pending'),
+(1, 'Picked up'),
+(2, 'Delivered');
+
+
+-- joined with table offers to see every item from an offer (1 offer -> multiple items)
+CREATE TABLE offers_items (
+    id INT,
+    item_id INT,
+
+    PRIMARY KEY (id, item_id),
+
+    FOREIGN KEY (id) REFERENCES offers(id),
+    
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);
+
+-- vehicle: max 4 tasks
+-- tasks: either offers or requests
+/*
+CREATE TABLE tasks (
+    username VARCHAR(30),
+)
+*/
 
 DROP PROCEDURE IF EXISTS cargoLoaded;
 
@@ -109,20 +170,21 @@ BEGIN
    FROM items WHERE id = item_tl_id;  
    
    IF(tempItem_name IS NOT NULL OR tempItem_category IS NOT NULL) THEN
-   IF(item_tl_quantity > tempQ) THEN
-   SIGNAL SQLSTATE VALUE '45000'
-   SET MESSAGE_TEXT = 'Not enough items';
+
+       IF(item_tl_quantity > tempQ) THEN
+       SIGNAL SQLSTATE VALUE '45000'
+       SET MESSAGE_TEXT = 'Not enough items';
+
+       ELSE
+       UPDATE  items 
+       SET quantity = quantity-item_tl_quantity 
+       WHERE id = item_tl_id;
    
-   ELSE
-   UPDATE  items 
-   SET quantity = quantity-item_tl_quantity 
-   WHERE id = item_tl_id;
-   
-   INSERT INTO cargo 
-   VALUES (res_username, item_tl_id, tempItem_name, tempItem_category,item_tl_quantity)
-   ON duplicate key update
-   res_quantity = res_quantity+item_tl_quantity;
-   END IF;
+       INSERT INTO cargo 
+       VALUES (res_username, item_tl_id, tempItem_name, tempItem_category,item_tl_quantity)
+       ON duplicate key update
+       res_quantity = res_quantity+item_tl_quantity;
+       END IF;
    
    ELSE 
    SIGNAL SQLSTATE VALUE '45000'
@@ -185,3 +247,29 @@ SET SQL_SAFE_UPDATES = 1; /* SAFE */
 
 call cargoLoaded(31,5,'res');
 call cargoDelivered(31,6,'res');
+
+
+DELIMITER $$
+
+CREATE PROCEDURE cancelOffer(IN delete_offer_id INT)
+BEGIN 
+
+    DECLARE delete_offer_status INT UNSIGNED;
+
+    SELECT status INTO delete_offer_status
+    FROM offers WHERE id = delete_offer_id; 
+
+    -- TODO: = vs IS
+    -- if not picked up or completed, can delete
+    IF(delete_offer_status = 0) THEN
+        DELETE FROM offers
+        WHERE id = delete_offer_id;
+
+    ELSE
+        SIGNAL SQLSTATE VALUE '45000'
+        SET MESSAGE_TEXT = `Can't delete a picked-up offer.`;
+        
+    END IF;
+
+END $$
+DELIMITER ;
