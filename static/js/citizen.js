@@ -188,11 +188,12 @@ function showAnnouncementsPanel() {
     element.classList.toggle("hidden");
 
     loadAnnouncements();
+    loadOffersTable();
 }
 
 function loadAnnouncements() {
     var announcements_list = document.getElementById('announcements_list');
-    var emptyAnnouncementsElement = document.getElementById('no-announcement-message');
+    var emptyAnnouncementsElement = document.getElementById('no-announcements-message');
     announcements_list.innerText='';
     emptyAnnouncementsElement.innerHTML = '';
     
@@ -226,9 +227,97 @@ function loadAnnouncements() {
                 announcement.appendChild(title);
                 announcement.appendChild(description);
 
+                let extraDiv = document.createElement("div");
+                extraDiv.classList.add("announcement-extras");
+                let sample = document.createElement("p");
+                sample.innerText = "woah!!! what!!!!!";
+                extraDiv.appendChild(sample);
+
+                // https://stackoverflow.com/questions/3316207/add-onclick-event-to-newly-added-element-in-javascript
+                // announcement.setAttribute("onclick","aaaa()");
+                announcement.onclick = function () {toggleExpand(this)};
+                announcement.appendChild(extraDiv);
+
                 announcements_list.appendChild(announcement);
+
+                
             });
         }
+    };
+    xhr.send();
+}
+
+function toggleExpand(element) {
+    var tableContainer = element.querySelector('.announcement-extras');
+    tableContainer.style.maxHeight = tableContainer.style.maxHeight === '0px' ? '300px' : '0px';
+}
+
+function loadOffersTable() {
+    var table = document.getElementById('user_offers');
+    var errorMessageElement = document.getElementById('no-offers-message');
+    table.innerText='';
+    errorMessageElement.innerHTML = '';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/offers', true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.response)
+            console.log(data);
+
+            var offers = data.offers;
+
+            // TODO: If empty, show no request button
+            if (offers.length === 0) {
+                errorMessageElement.innerHTML = 'You have not done any offers.';
+                return;
+            }
+            // TODO: If return, is xhr.send() not sent??
+
+            //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
+            
+            // Get the keys (column names) of the first object in the JSON data
+            let cols = Object.keys(requests[0]);
+            
+            // Create the header element
+            let thead = document.createElement("thead");
+            let tr = document.createElement("tr");
+            
+            // Loop through the column names and create header cells
+            cols.forEach((colname) => {
+                let th = document.createElement("th");
+                th.innerText = colname; // Set the column name as the text of the header cell
+                tr.appendChild(th); // Append the header cell to the header row
+            });
+            // Add remove button also
+            let th_remove = document.createElement("th");
+            th_remove.innerText = 'Cancel'; // Set the column name as the text of the header cell
+            tr.appendChild(th_remove); // Append the header cell to the header row
+         
+            thead.appendChild(tr); // Append the header row to the header
+            table.append(tr) // Append the header to the table
+            
+            // Loop through the JSON data and create table rows
+            requests.forEach((item) => {
+                let tr = document.createElement("tr");
+                
+                // Get the values of the current object in the JSON data
+                let vals = Object.values(item);
+                
+                // Loop through the values and create table cells
+                vals.forEach((elem) => {
+                let td = document.createElement("td");
+                td.innerText = elem; // Set the value as the text of the table cell
+                tr.appendChild(td); // Append the table cell to the table row
+                // Now: for each table row we need option to cancel offer
+                // if offer picked up, grey out option
+                let button = document.createElement("button");
+            
+                tr.appendChild(button);
+                });
+                table.appendChild(tr); // Append the table row to the table
+            });
+        } //TODO: Handle endpoint error
     };
     xhr.send();
 }

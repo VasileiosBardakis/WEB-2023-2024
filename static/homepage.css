@@ -111,6 +111,14 @@ li a:hover:not(.active) {
   margin: 16px;
   background-color: #f5f5f5;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.announcement-extras {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-in-out;
 }
 
 /* All children of announcement-box have no margin */
