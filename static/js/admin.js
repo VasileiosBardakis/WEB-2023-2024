@@ -14,6 +14,14 @@ xhr.onreadystatechange = function () {
     }
 };
 
+function clearFieldsMngDatabase() {
+    mngCategoriesClick = false;
+    document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
+    document.getElementById('inputFieldsDiv2').innerHTML = '';
+    document.getElementById('storage').innerHTML = '';
+    document.getElementById('error-message').innerHTML = ''; 
+    document.getElementById('buttons2').innerHTML = '';
+}
 
 /* Function for clearing fields from other buttons */
 function clearFields() {
