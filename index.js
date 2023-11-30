@@ -403,7 +403,7 @@ app.get('/api/items', (req, res) => {
 
 /*Gets items with their details*/
 app.get('/api/itemswdet', (req, res) => {
-	const query = 'SELECT items.*, details.detail_name, details.detail_value FROM items INNER JOIN details ON items.id = details.item_id';
+	const query = 'SELECT items.*, details.item_id,details.id, details.detail_name, details.detail_value FROM items INNER JOIN details ON items.id = details.item_id';
 
 	db.query(query, (err, results) => {
 		if (err) {

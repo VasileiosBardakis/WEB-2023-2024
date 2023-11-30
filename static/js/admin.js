@@ -349,6 +349,7 @@ function mngStore() {
                         deleteButton.onclick = function () {
                             query = 'DELETE FROM categories WHERE id=' + cat.id;
                             postQuery(query);
+                            if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
                             console.log(query);
                         };
                         actionsCell.appendChild(deleteButton);
@@ -388,7 +389,7 @@ function itemsInCat(selected) {
             
             /* Header Row */
             var headerRow = table.insertRow(0);
-            var headers = ['Name', 'Detail', 'Detail Value'];
+            var headers = ['ID','Name', 'Detail ID','Detail', 'Detail Value'];
             for (var i = 0; i < headers.length; i++) {
                 var headerCell = headerRow.insertCell(i);
                 headerCell.textContent = headers[i];
@@ -400,33 +401,61 @@ function itemsInCat(selected) {
 
                 /*Cells for item name and details*/
                 var idCell = row.insertCell(0);
-                idCell.innerHTML = '<input type="text" value="' + item.name + '">';
+                idCell.innerHTML = '<input type="text" value="' + item.item_id + '" readonly style="background-color: #f0f0f0;">';
 
                 var nameCell = row.insertCell(1);
-                nameCell.innerHTML = '<input type="text" value="' + item.detail_name + '">';
+                nameCell.innerHTML = '<input type="text" value="' + item.name + '">';
 
-                var valueCell = row.insertCell(2);
+                var detailNameCell = row.insertCell(2);
+                detailNameCell.innerHTML = '<input type="text" value="' + item.id + '" readonly style="background-color: #f0f0f0;">';
+
+                var detailNameCell = row.insertCell(3);
+                detailNameCell.innerHTML = '<input type="text" value="' + item.detail_name + '">';
+
+                var valueCell = row.insertCell(4);
                 valueCell.innerHTML = '<input type="text" value="' + item.detail_value + '">';
             });
 
             /*Append the table to div and add event listener to change items when enter is pressed*/
 
             var categoryTableDiv = document.getElementById('inputFieldsDiv2');
-            document.getElementById('inputFieldsDiv2').addEventListener('keyup', function (event) {
-                if (event.key === 'Enter') {
-                    changeItem(event.target);
-                }
-            });
             categoryTableDiv.innerHTML = '';
             categoryTableDiv.appendChild(table);
+
+            // Add event listener to the table
+            table.addEventListener('keyup', function (event) {
+                if (event.key === 'Enter') {
+                    /* Closest function to get column index and id https://developer.mozilla.org/en-US/docs/Web/API/Element/closest */
+                    var columnIndex = event.target.closest('td').cellIndex;
+                    var id = event.target.closest('tr').cells[0].querySelector('input').value;
+                    var det_id = event.target.closest('tr').cells[2].querySelector('input').value;
+                    changeItem(id,det_id,columnIndex, event.target);
+                }
+            });
         }
     };
     xhr.send();
 }
 
 /*Function that is called when enter is pressed in manage storage->manage items->Changed input field*/
-function changeItem(input) {
-    console.log('Input changed:', input.value);
+function changeItem(id,det_id,columnIndex, input) {
+    // Get the corresponding header value from the headers array
+    // Print the result
+    console.log(id,det_id,columnIndex, input.value);
+
+
+    switch (columnIndex) {
+        case 1:
+            postQuery("UPDATE items SET name = '" + input.value + "' WHERE id = " + id + ";");
+            break;
+        case 3:
+            postQuery("UPDATE details SET detail_name = '" + input.value + "' WHERE id = " + det_id + ";");
+            break;
+        case 4:
+            postQuery("UPDATE details SET detail_value = '" + input.value + "' WHERE id = " + det_id + ";");
+            break;
+
+    }
 }
 
 
@@ -439,9 +468,10 @@ function postQuery(query) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
-                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
-                console.log('Database has been updated!');
+                document.getElementById('error-message').innerHTML = 'Database updated successfuly!'; 
+                console.error('Database updated successfuly!');
             } else {
+                document.getElementById('error-message').innerHTML = 'Request failed with status:'+ xhr.status; 
                 console.error('Request failed with status:', xhr.status);
             }
         }
