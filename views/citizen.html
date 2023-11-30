@@ -30,8 +30,7 @@
         <li><a href="#about">About</a></li>
         <li>
           <!-- TODO: Add username -->
-          <div id="login-name">Logged in as </div>
-          <form action="/logout?_method=DELETE" method="post">
+            <form action="/logout?_method=DELETE" method="post">
             <button type="submit">Logout</button>
           </form>
         </li>
@@ -87,7 +86,7 @@
         <div id="seeAnnouncements">
           
           <h3>Site announcements</h3>
-          <p id="no-announcement-message"></p>
+          <p id="no-announcements-message"></p>
           <div id="announcements_list">
             <!-- <div class="announcement-box">
               <h5>Important Announcement</h5>
@@ -95,6 +94,12 @@
               <p class="timestamp">5 hours ago</p>
             </div> -->
           </div>
+          
+          <h3>Your offers</h3>
+          <p id="no-offers-message"></p>
+          <table class="user_offers" id="user_offers">
+          </table>
+          
         </div>
 
 
@@ -112,7 +117,7 @@
           }
         });
       
-        loadAnnouncements();
+        showAnnouncementsPanel();
       </script>
 
       <noscript>Sorry, your browser does not support JavaScript!</noscript>
