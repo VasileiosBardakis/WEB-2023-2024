@@ -361,6 +361,7 @@ function mngStore() {
                     categoryTableDiv.innerHTML = '';
                     categoryTableDiv.appendChild(table);
                     document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
+                    document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addItem()" class="btn btn-primary btn-block mb-4">Add an Item</button>'
 
                 }
             };
@@ -432,6 +433,7 @@ function itemsInCat(selected) {
                     changeItem(id,det_id,columnIndex, event.target);
                 }
             });
+
         }
     };
     xhr.send();
@@ -469,7 +471,7 @@ function postQuery(query) {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
                 document.getElementById('error-message').innerHTML = 'Database updated successfuly!'; 
-                console.error('Database updated successfuly!');
+                console.log('Database updated successfuly!');
             } else {
                 document.getElementById('error-message').innerHTML = 'Request failed with status:'+ xhr.status; 
                 console.error('Request failed with status:', xhr.status);
@@ -486,9 +488,14 @@ function postQuery(query) {
 /*Function that gets called when Add a Category is pressed in manage storage */
 function addCategory() {
     document.getElementById('inputFieldsDiv2').innerHTML = `<form id="myForm">
-    <input type="number" id="id" name="id" required>
-    <input type="text" id="name" name="name" required>
-    <input type="button" onclick="addCategorySubmit()"  value="Submit">`;
+        <label for="id">Category Id:</label>
+        <input type="number" id="id" name="Category Id" required><br>
+
+        <label for="name">Category Name:</label>
+        <input type="text" id="name" name="Category Name" required><br>
+
+        <input type="button" onclick="addCategorySubmit()" value="Submit">
+    </form>`;
 }
 
 
@@ -526,4 +533,77 @@ function addCategorySubmit() {
     xhttp.send(data);
 }
 
+
+function addItem() {
+    var fields = document.getElementById('inputFieldsDiv2');
+    var dropdown = document.createElement('select');
+    dropdown.id = 'select';
+    var default_option = document.createElement('option');
+
+    // Add a default option
+    default_option.text = 'Please select a category';
+    dropdown.add(default_option);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/categories', true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+
+            // Populate the dropdown with categories
+            data.categories.forEach(function (cat) {
+                var option = document.createElement('option');
+                option.value = cat.id;
+                option.text = cat.category_name;
+                dropdown.add(option);
+            });
+
+            // Append the dropdown to the fields div
+            fields.appendChild(dropdown);
+
+            // Modify the inner HTML after appending the dropdown
+            fields.innerHTML += `<form id="myForm">
+                <label for="name">Item Name:</label>
+                <input type="text" id="name" name="Item Name" required><br>
+                
+                <label for="detailname">Detail Name:</label>
+                <input type="text" id="detailname" name="Detail Name"><br>
+
+                <label for="detailvalue">Detail Value:</label>
+                <input type="text" id="detailvalue" name="Detail Value"><br>
+
+                <input type="button" onclick="addItemSubmit()" value="Submit">
+            </form>`;
+        }
+    };
+    xhr.send();
+}
+
+
+/* Function that is called when Submit button is pressed in manage storage -> add a category */
+function addItemSubmit() {
+    // Get values from input fields
+    var name = document.getElementById("name").value;
+    var detailname = document.getElementById("detailname").value;
+    var detailvalue = document.getElementById("detailvalue").value;
+    var category = document.getElementById("select").value;
+    errorMessageElement = document.getElementById('error-message');
+    // Validate that both id and name are provided
+    if (!name) {
+        alert("Please enter a name.");
+        return;
+    }
+    query = 'INSERT INTO items(id,name, category, quantity) VALUES(null, "' + name + '", "' + category + '", "0");';
+    postQuery(query)
+
+
+    if (document.getElementById('error-message').innerHTML == 'Database updated successfuly!' && mngStoreClick)
+    {
+        mngStoreClick = false; mngStore()
+        document.getElementById('error-message').innerHTML == 'Item added successfuly!';
+    }; 
+   
+    
+
+}
 

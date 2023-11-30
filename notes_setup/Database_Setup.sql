@@ -27,7 +27,7 @@ INSERT INTO accounts VALUES
 
 -- all possible items in the database
 CREATE TABLE items (
-    id INT PRIMARY KEY,
+    id INT auto_increment PRIMARY KEY,
     name VARCHAR(255),
     category VARCHAR(255),
     quantity INT, -- current quantity in the central base

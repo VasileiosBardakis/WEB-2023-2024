@@ -355,6 +355,7 @@ app.post('/categories/add', (req, res) => {
 	});
 });
 
+
 /*The route needed to be added because it couldn't get a post method that contained a deletion query*/
 app.route('/api/del')
 .post((req, res) => {
@@ -365,7 +366,6 @@ app.route('/api/del')
 			if (error) {
 				throw error;
 			}
-
 			console.log('Database has been updated!');
 			res.end();
 		});
