@@ -452,13 +452,32 @@ app.get('/api/requests', (req, res) => {
 			FROM requests r 
 			INNER JOIN request_status_code rsc on r.status = rsc.status
 			INNER JOIN items i ON r.item_id = i.id
-			WHERE username = ? ORDER BY date_requested DESC`, [username], (err, results) => {
+			WHERE username = ? ORDER BY r.date_requested DESC`, [username], (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
 			return;
 		}
 		res.json({ requests: results });
+	});
+});
+
+app.get('/api/offers', (req, res) => {
+	let username = req.session.username;
+	db.query(`SELECT
+			o.id as 'Offer id', osc.meaning as 'Status',
+			o.date_offered as 'Date offered', o.date_completed as 'Date delivered'
+			FROM offers o
+			INNER JOIN offer_status_code osc on o.status = osc.status
+			WHERE username = ? ORDER BY o.date_offered DESC`, [username], (err, results) => {
+			//INNER JOIN items i ON r.item_id = i.id
+			// disabled for now
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ offers: results });
 	});
 });
 
