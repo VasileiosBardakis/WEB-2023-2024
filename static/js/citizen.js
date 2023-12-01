@@ -3,8 +3,8 @@
 
 // Functions
 function hideAll() {
-    var nodes = document.getElementById('canvas').childNodes;
-    for(var i=0; i<nodes.length; i++) {
+    let nodes = document.getElementById('canvas').childNodes;
+    for(let i=0; i<nodes.length; i++) {
         if (nodes[i].nodeName.toLowerCase() == 'div') {
             nodes[i].classList.add("hidden");
         }
@@ -14,7 +14,7 @@ function hideAll() {
 function showRequestPanel() {
     hideAll();
 
-    var element = document.getElementById("makeRequest");
+    let element = document.getElementById("makeRequest");
     element.classList.toggle("hidden");
 
     // Keep it the same so it doesnt reset
@@ -26,9 +26,9 @@ function showRequestPanel() {
 }
 
 function sendRequest() {
-    var item_id = document.getElementById('items').value;
-    var num_people = document.getElementById('num_people').value;
-    var errorMessageElement = document.getElementById('error-message');
+    let item_id = document.getElementById('items').value;
+    let num_people = document.getElementById('num_people').value;
+    let errorMessageElement = document.getElementById('error-message');
     errorMessageElement.innerText = '';
 
     if (String(item_id) === '-1' || '') {
@@ -41,7 +41,7 @@ function sendRequest() {
         return;
     }
 
-    var xhttp = new XMLHttpRequest();
+    let xhttp = new XMLHttpRequest();
     xhttp.open('POST', '/citizen/sendRequest', true);
     xhttp.setRequestHeader('Content-Type', 'application/json');
 
@@ -49,7 +49,7 @@ function sendRequest() {
         if (xhttp.readyState === 4) {
             if (xhttp.status === 401) {
                 // Handle incorrect request with AJAX
-                var response = JSON.parse(xhttp.responseText);
+                let response = JSON.parse(xhttp.responseText);
                 errorMessageElement.innerHTML = response.error;
             } else if (xhttp.status === 200) {
                 errorMessageElement.innerHTML = 'Request successfully submitted.';
@@ -57,7 +57,7 @@ function sendRequest() {
         }
     };
 
-    var data = JSON.stringify({ item_id: item_id, num_people: num_people });
+    let data = JSON.stringify({ item_id: item_id, num_people: num_people });
     xhttp.send(data);
 
     // Load table to show new request
@@ -66,14 +66,14 @@ function sendRequest() {
 
 
 function showCategories() {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/categories', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText);
+            let data = JSON.parse(xhr.responseText);
 
             // Clear previous
-            var dropdown = document.getElementById("categories");
+            let dropdown = document.getElementById("categories");
             dropdown.innerText = '';
             let default_option = document.createElement('option');
             default_option.innerText = 'Please select a category';
@@ -81,7 +81,7 @@ function showCategories() {
 
             // Populate the dropdown with categories
             data.categories.forEach(function (cat) {
-                var option = document.createElement('option');
+                let option = document.createElement('option');
                 option.value = cat.id;
                 option.text = cat.category_name;
                 dropdown.appendChild(option);
@@ -93,25 +93,25 @@ function showCategories() {
 
 function showItems(event) {
     // string
-    var selected = event.target.value;
+    let selected = event.target.value;
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/items', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
+            let data = JSON.parse(xhr.response)
 
-            var items = data.items.filter(function (item) {
+            let items = data.items.filter(function (item) {
                 return String(item.category) === String(selected);
             });
 
             // Clear previous
-            var dropdown = document.getElementById("items")
+            let dropdown = document.getElementById("items")
             dropdown.innerText = '';
 
             // Populate the dropdown with items
             items.forEach(function (item) {
-                var option = document.createElement('option');
+                let option = document.createElement('option');
                 option.value = item.id;
                 option.text = item.name;
                 dropdown.appendChild(option);
@@ -122,19 +122,19 @@ function showItems(event) {
 }
 
 function loadRequestsTable() {
-    var table = document.getElementById('user_requests');
-    var errorMessageElement = document.getElementById('is-empty-message');
+    let table = document.getElementById('user_requests');
+    let errorMessageElement = document.getElementById('is-empty-message');
     table.innerText='';
     errorMessageElement.innerHTML = '';
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/requests', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
+            let data = JSON.parse(xhr.response)
             console.log(data);
 
-            var requests = data.requests;
+            let requests = data.requests;
 
             // TODO: If empty, show no request button
             if (requests.length === 0) {
@@ -184,7 +184,7 @@ function loadRequestsTable() {
 function showAnnouncementsPanel() {
     hideAll();
 
-    var element = document.getElementById("seeAnnouncements");
+    let element = document.getElementById("seeAnnouncements");
     element.classList.toggle("hidden");
 
     loadAnnouncements();
@@ -192,19 +192,20 @@ function showAnnouncementsPanel() {
 }
 
 function loadAnnouncements() {
-    var announcements_list = document.getElementById('announcements_list');
-    var emptyAnnouncementsElement = document.getElementById('no-announcements-message');
+    let announcements_list = document.getElementById('announcements_list');
+    let emptyAnnouncementsElement = document.getElementById('no-announcements-message');
     announcements_list.innerText='';
     emptyAnnouncementsElement.innerHTML = '';
     
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/announcements', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
+            let data = JSON.parse(xhr.response)
             console.log(data);
 
-            var announcements = data.announcements;
+            let announcements = data.announcements;
+            let mapping = data.mapping;
 
             // TODO: If empty, show no announcement
             if (announcements.length === 0) {
@@ -224,16 +225,20 @@ function loadAnnouncements() {
                 let description = document.createElement("p");
                 description.innerText = entry.descr;
 
-                // TODO: Move this to index.js to handle
-                items = JSON.parse(entry.items);
-                console.log(items);
-
                 announcement.appendChild(title);
                 announcement.appendChild(description);
-
+                
+                // Houses the table
                 let extraDiv = document.createElement("div");
                 extraDiv.classList.add("announcement-extras");
                 let actionsTable = document.createElement("div");
+                
+                // Fill the table with items and offer buttons
+                items = JSON.parse(entry.items);
+                console.log(items);
+
+
+                extraDiv.appendChild(actionsTable);
 
                 /*
                 TODO: Change announcement to have another table reference
@@ -291,24 +296,24 @@ function loadAnnouncements() {
 }
 
 function toggleExpand(element) {
-    var tableContainer = element.querySelector('.announcement-extras');
+    let tableContainer = element.querySelector('.announcement-extras');
     tableContainer.style.maxHeight = tableContainer.style.maxHeight === '0px' ? '300px' : '0px';
 }
 
 function loadOffersTable() {
-    var table = document.getElementById('user_offers');
-    var errorMessageElement = document.getElementById('no-offers-message');
+    let table = document.getElementById('user_offers');
+    let errorMessageElement = document.getElementById('no-offers-message');
     table.innerText='';
     errorMessageElement.innerHTML = '';
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/offers', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
+            let data = JSON.parse(xhr.response)
             console.log(data);
 
-            var offers = data.offers;
+            let offers = data.offers;
 
             // TODO: If empty, show no request button
             if (offers.length === 0) {

@@ -292,7 +292,7 @@ app.get('/api/categories', (req, res) => {
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
-			res.status(500).json({ error: 'Internal Server Error' });
+			res.status(500).json(	{ error: 'Internal Server Error' });
 			return;
 		}
 		res.json({ categories: results });
@@ -300,9 +300,7 @@ app.get('/api/categories', (req, res) => {
 });
 
 app.get('/api/announcements', (req, res) => {
-	const query = `SELECT a.*, aitems.item_id
-	FROM announce a INNER JOIN announce_items aitems 
-	ON a.id = aitems.announce_id`; // Modify the query as needed
+	const query = `SELECT * FROM announce`; // Modify the query as needed
 	db.query(query, (err, announcement_results) => {
 		if (err) {
 			console.error('Error executing query:', err);
@@ -311,15 +309,27 @@ app.get('/api/announcements', (req, res) => {
 		}
 
 		/* Json consists of two parts:
-		1. Announcements, with each item_id having a unique row
-		2. Mapping of item_id's to item names
+		1. Announcements
+		2. Mapping of item_id's to item names, taken from json
 		*/
-		const mapQuery = `
-		SELECT DISTINCT aitems.item_id, i.name
-		FROM announce_items aitems
-		INNER JOIN items i ON aitems.item_id = i.id;
-		`;
-		db.query(mapQuery, (err, map_results) => {
+		const parsedData = announcement_results.map(row => {
+			return {
+				id: row.id,
+				title: row.title,
+				descr: row.descr,
+				items: JSON.parse(row.items)
+			}
+		});
+
+		// Get item jsons only
+		const allItems = parsedData.map(row => row['items']);
+		// Flatten array
+		const reducedItems = allItems.reduce((accumulator, currentArray) => {
+			return accumulator.concat(currentArray);
+		  }, []);
+
+		// Get names for mapping purposes
+		db.query('SELECT id, name FROM items WHERE id IN (?)', [reducedItems], (err, map_results) => {
 			if (err) {
 				console.error('Error executing query:', err);
 				res.status(500).json({ error: 'Internal Server Error' });
@@ -328,10 +338,11 @@ app.get('/api/announcements', (req, res) => {
 			res.json({ announcements: announcement_results, mapping: map_results });
 			res.end();
 		});
-	//TODO: Is this needed?
-	// res.end();
 	});
 });
+
+
+
 
 app.post('/categories/add', (req, res) => {
 	let id = req.body.id;
@@ -374,50 +385,23 @@ app.route('/api/del')
 		});
 	});
 
+app.post('/civilian/sendOffer', (req, res) => {
+	let username = req.session.username;
+	
+});
+
 app.post('/announce', (req, res) => {
 	let title = req.body.title;
 	let anText = req.body.anText;
-	let items = req.body.dropdownValues;
+	let itemsJSON = JSON.stringify(req.body.dropdownValues); //convert dropdownValues array to a JSON
 
-	if (title && anText && (items.length > 0)) {
-
+	if (title && anText && (itemsJSON.length>2)) {
+		
 		//execute SQL query to insert announcement into the 'announce' table
-		db.query('INSERT INTO announce (title, descr) VALUES (?, ?)', [title, anText], function (error, results, fields) {
-			if (error) {
-				// TODO: .json or just text?
-				// res.status(500).json({ error: 'Error inserting announcement to database.' });
-				// return;
-				throw error;
-			}
-
-			// Get id of generated announcement to use for referencing.
-			const anId = results.insertId;
-
-			// from item_id, create key-value pairs by concatenating anId for one-time insert
-			//TODO: Feels wonky
-			const itemsDict = items.map((itemId) => ({ an_id: anId, item_id: itemId}));
-			// const itemsDict = items.map((itemId) => ({ anId, itemId}));
-			const values = itemsDict.map(item => [item.an_id, item.item_id]);
-			console.log(itemsDict);
-			console.log(values);
-			db.query('INSERT INTO announce_items (announce_id, item_id) VALUES ?', [values], function (error, results) {
-				if (error) {
-					// TODO: .json or just text?
-					// res.status(500).json({ error: `Error inserting announcement's items to database.` });
-					// return;
-					throw error;
-				}
-				res.end();
-			});
-
+		db.query('INSERT INTO announce (title, descr, items) VALUES (?, ?, ?)', [title, anText, itemsJSON], function (error, results, fields) {
+			if (error) throw error;
 		});
-
-
-
-
-		//TODO: Does .end default to status 200 or do I need to send?
-		// Inform user announcement was successful.
-		// above res.end()
+		res.end();
 	} else {
 		res.status(401).json({ error: 'Please insert a title, announcement text and item(s).' });
 		res.end();

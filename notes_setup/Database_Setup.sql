@@ -57,8 +57,8 @@ CREATE TABLE categories (
 CREATE TABLE announce (
     id INT PRIMARY KEY auto_increment,
     title VARCHAR(255),
-    descr VARCHAR(255)
-    -- items JSON
+    descr VARCHAR(255),
+    items JSON
 )ENGINE=InnoDB;
 
 CREATE TABLE announce_items (
