@@ -72,28 +72,28 @@ li a:hover:not(.active) {
   color: white;
 }
 
-.user_requests {
-    font-family: Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-    overflow:auto;
-}
-  
-.user_requests td, .user_requests th {
-  border: 1px solid #ddd;
-  padding: 8px;
+.user_table {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  overflow:auto;
 }
 
-.user_requests tr:nth-child(even){background-color: #f2f2f2;}
+.user_table td, .user_table th {
+border: 1px solid #ddd;
+padding: 8px;
+}
 
-.user_requests tr:hover {background-color: #ddd;}
+.user_table tr:nth-child(even){background-color: #f2f2f2;}
 
-.user_requests th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: rgb(218, 92, 9);
-  color: white;
+.user_table tr:hover {background-color: #ddd;}
+
+.user_table th {
+padding-top: 12px;
+padding-bottom: 12px;
+text-align: left;
+background-color: rgb(218, 92, 9);
+color: white;
 }
 
 .fields{
