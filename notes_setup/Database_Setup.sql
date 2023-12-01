@@ -198,45 +198,22 @@ DROP PROCEDURE IF EXISTS cargoDelivered;
 
 DELIMITER $$
 
-CREATE PROCEDURE cargoDelivered(IN item_td_id INT,IN item_td_quantity INT, IN res_username VARCHAR(30))
+CREATE PROCEDURE cargoDelivered(IN res_username VARCHAR(30))
 BEGIN 
-   
-   DECLARE tempItem_name VARCHAR(255);
-   DECLARE tempItem_category INT;
-   DECLARE tempQ INT;
-   
-   SELECT res_quantity INTO tempQ
-   FROM cargo WHERE item_id = item_td_id AND username = res_username; 
+    DECLARE MESSAGE_TEXT VARCHAR(255);
 
-   SELECT item_name INTO tempItem_name
-   FROM cargo WHERE item_id = item_td_id AND username = res_username; 
+    IF EXISTS (SELECT 1 FROM cargo) THEN
+        UPDATE items
+        INNER JOIN cargo ON items.id = cargo.item_id
+        SET items.quantity = items.quantity + cargo.res_quantity;
 
-   SELECT item_category INTO tempItem_category
-   FROM cargo WHERE item_id = item_td_id AND username = res_username;   
-   
-   IF(tempItem_name IS NOT NULL OR tempItem_category IS NOT NULL) THEN
-   
-   IF(item_td_quantity > tempQ) THEN
-   SIGNAL SQLSTATE VALUE '45000'
-   SET MESSAGE_TEXT = 'Not enough items';
-   
-   ELSE
-   UPDATE cargo 
-   SET res_quantity = res_quantity - item_td_quantity 
-   WHERE item_id = item_td_id;
-   DELETE FROM cargo WHERE res_quantity =0;
-   
-   UPDATE items 
-   SET quantity = quantity + item_td_quantity
-   WHERE id = item_td_id;
-   END IF;
-   
-   ELSE 
-   SIGNAL SQLSTATE VALUE '45000'
-   SET MESSAGE_TEXT = 'Cargo is missing';
-   END IF;
-
+        DELETE FROM cargo;
+    ELSE
+        SIGNAL SQLSTATE VALUE '45000';
+        SET MESSAGE_TEXT = 'Cargo is missing';
+    END IF;
 END $$
+
 DELIMITER ;
 
 SELECT 'requests' AS '';

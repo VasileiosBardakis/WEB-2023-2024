@@ -509,10 +509,10 @@ app.get('/api/itemswcat', (req, res) => {
 	});
 });
 
-// NEED TO DO VEHICLE ITEMS 
+// VEHICLE ITEMS 
 app.get('/api/cargo', (req, res) => {
 	let username = req.session.username;
-	db.query('SELECT * FROM cargo where username = (?)', [username], (err, results) => {
+	db.query('SELECT cargo.item_id, cargo.item_name, cargo.item_category, cargo.res_quantity FROM cargo WHERE username = ?', [username], (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
@@ -520,6 +520,40 @@ app.get('/api/cargo', (req, res) => {
 		}
 		res.json({ items: results });
 	});
+ });
+
+ // CARGO MANAGEMENT
+/*
+ app.post('/api/load', (req, res) => {
+	let username = req.session.username;
+    const query = 'CALL cargoLoaded('','','username')';
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error loading your item...:', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+        }
+
+        // Handle the results if needed
+        res.json({ message: 'Item loaded successfully' });
+    });
+});
+*/
+ app.post('/api/Deliver', (req, res) => {
+	let username = req.session.username;
+	let sql = 'CALL cargoDelivered(?)'
+    db.query(sql, [username], (err, results) => {
+        if (err) {
+            console.error('Error delivering your cargo...', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+        }
+
+        // Handle the results if needed
+		console.log(results[0]);
+        res.json({ message: 'Cargo delivered successfully' });
+    });
 });
 
 // Protect other user data so send only those for username
