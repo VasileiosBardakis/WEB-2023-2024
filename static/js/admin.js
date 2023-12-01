@@ -360,9 +360,8 @@ function mngStore() {
                     var categoryTableDiv = document.getElementById('inputFieldsDiv');
                     categoryTableDiv.innerHTML = '';
                     categoryTableDiv.appendChild(table);
-                    document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
-                    document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addItem()" class="btn btn-primary btn-block mb-4">Add an Item</button>'
-
+                    document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addItem()" class="btn btn-primary btn-block mb-4">Add an Item</button>'
+                    document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
                 }
             };
             xhr.send();
@@ -550,7 +549,7 @@ function addItem() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
 
-            // Populate the dropdown with categories
+            /*Populate dropdown with categories*/
             data.categories.forEach(function (cat) {
                 var option = document.createElement('option');
                 option.value = cat.id;
@@ -558,10 +557,10 @@ function addItem() {
                 dropdown.add(option);
             });
 
-            // Append the dropdown to the fields div
-            fields.appendChild(dropdown);
 
-            // Modify the inner HTML after appending the dropdown
+            /*Clear and insert input fields with innerhtml*/
+            fields.innerHTML = '';
+            fields.appendChild(dropdown);
             fields.innerHTML += `<form id="myForm">
                 <label for="name">Item Name:</label>
                 <input type="text" id="name" name="Item Name" required><br>
@@ -593,17 +592,31 @@ function addItemSubmit() {
         alert("Please enter a name.");
         return;
     }
-    query = 'INSERT INTO items(id,name, category, quantity) VALUES(null, "' + name + '", "' + category + '", "0");';
-    postQuery(query)
+    if (category == 'Please select a category') {
+        alert("Please enter a category.");
+        return;
+    }
 
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('POST', '/items/add', true);
+    xhttp.setRequestHeader('Content-Type', 'application/json');
 
-    if (document.getElementById('error-message').innerHTML == 'Database updated successfuly!' && mngStoreClick)
-    {
-        mngStoreClick = false; mngStore()
-        document.getElementById('error-message').innerHTML == 'Item added successfuly!';
-    }; 
-   
-    
+    xhttp.onreadystatechange = function () {
+        if (xhttp.readyState === 4) {
+            if (xhttp.status === 401) {
+                // Handle incorrect username/password with AJAX
+                var response = JSON.parse(xhttp.responseText);
+                errorMessageElement.innerHTML = response.error;
+            }
+            else if (xhttp.status === 200) {
+                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+                errorMessageElement.innerHTML = 'Item added successfully';
+            }
+        }
+    }
+
+    var data = JSON.stringify({name: name, detail_name: detailname, detail_value: detailvalue,category: category });
+    xhttp.send(data);
 
 }
 

@@ -242,11 +242,12 @@ DELIMITER ;
 SELECT 'requests' AS '';
 -- \! echo 'some text';
 
-SET SQL_SAFE_UPDATES = 0; /* NOT SAFE */
-SET SQL_SAFE_UPDATES = 1; /* SAFE */
+--SET SQL_SAFE_UPDATES = 0; /* NOT SAFE */
+--SET SQL_SAFE_UPDATES = 1; /* SAFE */
 
-call cargoLoaded(31,5,'res');
-call cargoDelivered(31,6,'res');
+--call cargoLoaded(31,5,'res');
+--call cargoDelivered(31,6,'res');
+
 
 
 DELIMITER $$
@@ -273,3 +274,6 @@ BEGIN
 
 END $$
 DELIMITER ;
+
+
+

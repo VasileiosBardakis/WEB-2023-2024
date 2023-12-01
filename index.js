@@ -355,6 +355,62 @@ app.post('/categories/add', (req, res) => {
 	});
 });
 
+app.post('/items/add', (req, res) => {
+	let name = req.body.name;
+	let detail_name = req.body.detail_name;
+	let detail_value = req.body.detail_value;
+	let category = req.body.category;
+
+	db.query('SELECT * FROM items WHERE name = ?', [name], function (error, results, fields) {
+		// If there is an issue with the query, output the error
+		if (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal server error' });
+			return;
+		}
+
+		// Check if the item name already exists
+		if (results.length > 0) {
+			res.status(401).json({ error: 'Item name already being used' });
+		} else {
+			// Insert the item
+			db.query('INSERT INTO items VALUES (null, ?, ?, 0)', [name, category], function (error, results, fields) {
+				if (error) {
+					// Handle the error
+					console.error(error);
+					res.status(500).json({ error: 'Internal server error' });
+					return;
+				}
+
+				// Get the last insert ID
+				db.query('SELECT LAST_INSERT_ID() as lastInsertId', function (error, result, fields) {
+					if (error) {
+						// Handle the error
+						console.error(error);
+						res.status(500).json({ error: 'Internal server error' });
+						return;
+					}
+
+					const lastInsertId = result[0].lastInsertId;
+
+					// Insert details using the last insert ID
+					db.query('INSERT INTO details VALUES (null, ?, ?, ?)', [lastInsertId, detail_name, detail_value], function (error, results, fields) {
+						if (error) {
+							// Handle the error
+							console.error(error);
+							res.status(500).json({ error: 'Internal server error' });
+							return;
+						}
+
+						console.log('Item added!');
+						res.end();
+					});
+				});
+			});
+		}
+	});
+});
+
 
 /*The route needed to be added because it couldn't get a post method that contained a deletion query*/
 app.route('/api/del')
