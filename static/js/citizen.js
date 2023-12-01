@@ -3,8 +3,8 @@
 
 // Functions
 function hideAll() {
-    var nodes = document.getElementById('canvas').childNodes;
-    for(var i=0; i<nodes.length; i++) {
+    let nodes = document.getElementById('canvas').childNodes;
+    for(let i=0; i<nodes.length; i++) {
         if (nodes[i].nodeName.toLowerCase() == 'div') {
             nodes[i].classList.add("hidden");
         }
@@ -14,7 +14,7 @@ function hideAll() {
 function showRequestPanel() {
     hideAll();
 
-    var element = document.getElementById("makeRequest");
+    let element = document.getElementById("makeRequest");
     element.classList.toggle("hidden");
 
     // Keep it the same so it doesnt reset
@@ -26,9 +26,9 @@ function showRequestPanel() {
 }
 
 function sendRequest() {
-    var item_id = document.getElementById('items').value;
-    var num_people = document.getElementById('num_people').value;
-    var errorMessageElement = document.getElementById('error-message');
+    let item_id = document.getElementById('items').value;
+    let num_people = document.getElementById('num_people').value;
+    let errorMessageElement = document.getElementById('error-message');
     errorMessageElement.innerText = '';
 
     if (String(item_id) === '-1' || '') {
@@ -41,7 +41,7 @@ function sendRequest() {
         return;
     }
 
-    var xhttp = new XMLHttpRequest();
+    let xhttp = new XMLHttpRequest();
     xhttp.open('POST', '/citizen/sendRequest', true);
     xhttp.setRequestHeader('Content-Type', 'application/json');
 
@@ -49,7 +49,7 @@ function sendRequest() {
         if (xhttp.readyState === 4) {
             if (xhttp.status === 401) {
                 // Handle incorrect request with AJAX
-                var response = JSON.parse(xhttp.responseText);
+                let response = JSON.parse(xhttp.responseText);
                 errorMessageElement.innerHTML = response.error;
             } else if (xhttp.status === 200) {
                 errorMessageElement.innerHTML = 'Request successfully submitted.';
@@ -57,7 +57,7 @@ function sendRequest() {
         }
     };
 
-    var data = JSON.stringify({ item_id: item_id, num_people: num_people });
+    let data = JSON.stringify({ item_id: item_id, num_people: num_people });
     xhttp.send(data);
 
     // Load table to show new request
@@ -66,14 +66,14 @@ function sendRequest() {
 
 
 function showCategories() {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/categories', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText);
+            let data = JSON.parse(xhr.responseText);
 
             // Clear previous
-            var dropdown = document.getElementById("categories");
+            let dropdown = document.getElementById("categories");
             dropdown.innerText = '';
             let default_option = document.createElement('option');
             default_option.innerText = 'Please select a category';
@@ -81,7 +81,7 @@ function showCategories() {
 
             // Populate the dropdown with categories
             data.categories.forEach(function (cat) {
-                var option = document.createElement('option');
+                let option = document.createElement('option');
                 option.value = cat.id;
                 option.text = cat.category_name;
                 dropdown.appendChild(option);
@@ -93,25 +93,25 @@ function showCategories() {
 
 function showItems(event) {
     // string
-    var selected = event.target.value;
+    let selected = event.target.value;
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/items', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
+            let data = JSON.parse(xhr.response)
 
-            var items = data.items.filter(function (item) {
+            let items = data.items.filter(function (item) {
                 return String(item.category) === String(selected);
             });
 
             // Clear previous
-            var dropdown = document.getElementById("items")
+            let dropdown = document.getElementById("items")
             dropdown.innerText = '';
 
             // Populate the dropdown with items
             items.forEach(function (item) {
-                var option = document.createElement('option');
+                let option = document.createElement('option');
                 option.value = item.id;
                 option.text = item.name;
                 dropdown.appendChild(option);
@@ -122,19 +122,19 @@ function showItems(event) {
 }
 
 function loadRequestsTable() {
-    var table = document.getElementById('user_requests');
-    var errorMessageElement = document.getElementById('is-empty-message');
+    let table = document.getElementById('user_requests');
+    let errorMessageElement = document.getElementById('is-empty-message');
     table.innerText='';
     errorMessageElement.innerHTML = '';
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/requests', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
+            let data = JSON.parse(xhr.response)
             console.log(data);
 
-            var requests = data.requests;
+            let requests = data.requests;
 
             // TODO: If empty, show no request button
             if (requests.length === 0) {
@@ -184,7 +184,7 @@ function loadRequestsTable() {
 function showAnnouncementsPanel() {
     hideAll();
 
-    var element = document.getElementById("seeAnnouncements");
+    let element = document.getElementById("seeAnnouncements");
     element.classList.toggle("hidden");
 
     loadAnnouncements();
@@ -192,19 +192,29 @@ function showAnnouncementsPanel() {
 }
 
 function loadAnnouncements() {
-    var announcements_list = document.getElementById('announcements_list');
-    var emptyAnnouncementsElement = document.getElementById('no-announcements-message');
+    /*  
+    announcements_list
+        > announcement-box
+            > title
+            > description
+            > announcement-extras
+                > actionsTable
+                    > tr {item_id, button}
+    */
+    let announcements_list = document.getElementById('announcements_list');
+    let emptyAnnouncementsElement = document.getElementById('no-announcements-message');
     announcements_list.innerText='';
     emptyAnnouncementsElement.innerHTML = '';
-    
-    var xhr = new XMLHttpRequest();
+
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/announcements', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
-            console.log(data);
+            let data = JSON.parse(xhr.response)
+            // console.log(data);
 
-            var announcements = data.announcements;
+            let announcements = data.announcements;
+            let mapping = data.mapping;
 
             // TODO: If empty, show no announcement
             if (announcements.length === 0) {
@@ -213,7 +223,7 @@ function loadAnnouncements() {
             }
 
             //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
-            
+
             announcements.forEach((entry) => {
                 let announcement = document.createElement("div");
                 announcement.classList.add("announcement-box");
@@ -224,58 +234,60 @@ function loadAnnouncements() {
                 let description = document.createElement("p");
                 description.innerText = entry.descr;
 
-                // TODO: Move this to index.js to handle
-                items = JSON.parse(entry.items);
-                console.log(items);
-
                 announcement.appendChild(title);
                 announcement.appendChild(description);
-
+                
+                // Houses the table
                 let extraDiv = document.createElement("div");
                 extraDiv.classList.add("announcement-extras");
                 let actionsTable = document.createElement("div");
 
-                /*
-                TODO: Change announcement to have another table reference
-                to join for items
+                // Fill the table with items and offer buttons
+                items = JSON.parse(entry.items);
+                // Object.values(items) with items
 
-                From json, get item_id and name and add table with button to
-                offer the item (onclick)
-                */
-
-                /* Temp code
-                // Get the keys (column names) of the first object in the JSON data
-                let cols = Object.keys(actionsTable[0]);
-                
-                // Create the header element
-                let thead = document.createElement("thead");
-                let tr = document.createElement("tr");
-                
-                // Loop through the column names and create header cells
-                cols.forEach((colname) => {
-                    let th = document.createElement("th");
-                    th.innerText = colname; // Set the column name as the text of the header cell
-                    tr.appendChild(th); // Append the header cell to the header row
-                });
-                thead.appendChild(tr); // Append the header row to the header
-                table.append(tr) // Append the header to the table
-                
-                // Loop through the JSON data and create table rows
-                requests.forEach((item) => {
+                items.forEach((item) => {
+                    //Row for item and delete button
                     let tr = document.createElement("tr");
                     
-                    // Get the values of the current object in the JSON data
-                    let vals = Object.values(item);
+                    //item is item_id
+                    let item_td = document.createElement("td");
+                    item_td.innerText = item;
+
+                    let offer_button_td = document.createElement("td");
                     
-                    // Loop through the values and create table cells
-                    vals.forEach((elem) => {
-                    let td = document.createElement("td");
-                    td.innerText = elem; // Set the value as the text of the table cell
-                    tr.appendChild(td); // Append the table cell to the table row
-                    });
-                    table.appendChild(tr); // Append the table row to the table
-                */
-                extraDiv.appendChild(sample);
+                    let offer_button = document.createElement("button");
+                    offer_button.innerText = 'Offer';
+
+                    offer_button.onclick = function(item) {
+                        let xhttp = new XMLHttpRequest();
+                        xhttp.open('POST', '/citizen/sendOffer', true);
+                        // TODO: Maybe use json even if it's for one.
+                        xhttp.setRequestHeader('Content-Type', 'text/plain');
+
+                        xhttp.onreadystatechange = function () {
+                            if (xhttp.readyState === 4) {
+                                if (xhttp.status === 401) {
+                                    // Handle incorrect request with AJAX
+                                    let response = JSON.parse(xhttp.responseText);
+                                    // errorMessageElement.innerHTML = response.error;
+                                } else if (xhttp.status === 200) {
+                                    loadOffersTable();
+                                }
+                            }
+                        };
+                        let data = item.toString();
+                        console.log(data);
+                        xhttp.send(data);
+                    }.bind(null, item); // .bind() to pass the parameter
+
+                    offer_button_td.appendChild(offer_button);
+                    tr.appendChild(item_td);
+                    tr.appendChild(offer_button_td);
+                    actionsTable.appendChild(tr);
+                });
+
+                extraDiv.appendChild(actionsTable);
                 // https://stackoverflow.com/questions/3316207/add-onclick-event-to-newly-added-element-in-javascript
                 // announcement.setAttribute("onclick","aaaa()");
                 announcement.onclick = function () {toggleExpand(this)};
@@ -291,24 +303,24 @@ function loadAnnouncements() {
 }
 
 function toggleExpand(element) {
-    var tableContainer = element.querySelector('.announcement-extras');
+    let tableContainer = element.querySelector('.announcement-extras');
     tableContainer.style.maxHeight = tableContainer.style.maxHeight === '0px' ? '300px' : '0px';
 }
 
 function loadOffersTable() {
-    var table = document.getElementById('user_offers');
-    var errorMessageElement = document.getElementById('no-offers-message');
+    let table = document.getElementById('user_offers');
+    let errorMessageElement = document.getElementById('no-offers-message');
     table.innerText='';
     errorMessageElement.innerHTML = '';
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', '/api/offers', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
+            let data = JSON.parse(xhr.response)
             console.log(data);
 
-            var offers = data.offers;
+            let offers = data.offers;
 
             // TODO: If empty, show no request button
             if (offers.length === 0) {
@@ -320,7 +332,7 @@ function loadOffersTable() {
             //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
             
             // Get the keys (column names) of the first object in the JSON data
-            let cols = Object.keys(requests[0]);
+            let cols = Object.keys(offers[0]);
             
             // Create the header element
             let thead = document.createElement("thead");
@@ -334,30 +346,69 @@ function loadOffersTable() {
             });
             // Add remove button also
             let th_remove = document.createElement("th");
-            th_remove.innerText = 'Cancel'; // Set the column name as the text of the header cell
+            th_remove.innerText = 'Edit'; // Set the column name as the text of the header cell
             tr.appendChild(th_remove); // Append the header cell to the header row
          
             thead.appendChild(tr); // Append the header row to the header
             table.append(tr) // Append the header to the table
             
             // Loop through the JSON data and create table rows
-            requests.forEach((item) => {
+            offers.forEach((item) => {
+                console.log(item);
+                let offer_id = item.id;
+                let status = item.Status;
                 let tr = document.createElement("tr");
                 
                 // Get the values of the current object in the JSON data
                 let vals = Object.values(item);
-                
+
                 // Loop through the values and create table cells
                 vals.forEach((elem) => {
-                let td = document.createElement("td");
-                td.innerText = elem; // Set the value as the text of the table cell
-                tr.appendChild(td); // Append the table cell to the table row
+                    let td = document.createElement("td");
+                    td.innerText = elem; // Set the value as the text of the table cell
+                    tr.appendChild(td); // Append the table cell to the table row
+                });
+
                 // Now: for each table row we need option to cancel offer
                 // if offer picked up, grey out option
-                let button = document.createElement("button");
-            
-                tr.appendChild(button);
-                });
+                let button_td = document.createElement("td");
+                button_td.innerText = "Cancel";
+
+                // By default is greyed out
+                button_td.style.backgroundColor="#7a7474";
+                button_td.style.color="white";
+                console.log(typeof status);
+                console.log(status);
+                // If not picked up yet, cancellable
+                if (status === 'Pending') {
+                    button_td.style.backgroundColor="#e20909";
+                    button_td.style.color="white";
+                    button_td.style.cursor="pointer";
+
+                    button_td.onclick=function(offer_id) {
+                        let xhttp = new XMLHttpRequest();
+                        xhttp.open('POST', '/citizen/deleteOffer', true);
+                        xhttp.setRequestHeader('Content-Type', 'text/plain');
+                        
+                        xhttp.onreadystatechange = function () {
+                            if (xhttp.readyState === 4) {
+                                if (xhttp.status === 401) {
+                                    // Handle incorrect request with AJAX
+                                    let response = JSON.parse(xhttp.responseText);
+                                    // errorMessageElement.innerHTML = response.error;
+                                } else if (xhttp.status === 200) {
+                                    loadOffersTable();
+                                }
+                            }
+                        };
+
+                        let data = offer_id.toString();
+                        console.log(data);
+                        xhttp.send(data);
+                    }.bind(null, offer_id);
+                }
+
+                tr.appendChild(button_td);
                 table.appendChild(tr); // Append the table row to the table
             });
         } //TODO: Handle endpoint error
