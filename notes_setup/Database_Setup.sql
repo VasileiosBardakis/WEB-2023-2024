@@ -82,7 +82,7 @@ CREATE TABLE requests (
     username VARCHAR(30) NOT NULL,
     item_id INT NOT NULL,
     num_people INT UNSIGNED NOT NULL,
-    status INT UNSIGNED NOT NULL,
+    status INT UNSIGNED NOT NULL default 0,
     date_requested DATETIME default now(),
     date_accepted DATETIME,
     date_completed DATETIME,
@@ -114,18 +114,19 @@ CREATE TABLE cargo (
 
 -- offers are in response to announcements
 CREATE TABLE offers (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL,
-    announcement INT,
+    -- announcement INT,
     date_offered DATETIME default now(),
     date_completed DATETIME,
-    status INT UNSIGNED NOT NULL,
+    status INT UNSIGNED NOT NULL default 0,
+    item_id INT NOT NULL,
     -- 0 for not picked up, 1 for picked up, 2 for completed
     -- TODO: if 1, cant delete 
 
     FOREIGN KEY (username) REFERENCES accounts(username),
-
-    FOREIGN KEY (announcement) REFERENCES announce(id) 
+    FOREIGN KEY (item_id) REFERENCES items(id)
+    -- FOREIGN KEY (announcement) REFERENCES announce(id) 
 );
 
 CREATE TABLE offer_status_code (

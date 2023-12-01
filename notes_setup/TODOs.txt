@@ -1,3 +1,7 @@
+Paradoxes:
+Offer gia 1 item, kai de kanei reference to announcement.
+
+
 Info:
 SQL credentials se .env omws exei bug to package
 Sto static/ mpainoun arxeia pou theloume na fortwsoume (.css, .png etc)
