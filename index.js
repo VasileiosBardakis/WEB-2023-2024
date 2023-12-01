@@ -30,6 +30,7 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true
 }));
+app.use(express.text()); // parse plain/text
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'static')));
@@ -251,59 +252,60 @@ app.listen(PORT, () => {
 
 	//INSERT DATA
 //Clear existing data from tables
-
-db.query('DELETE FROM details', (err, results) => {
-	if (err) throw err;
-	console.log('Deleted all records from the details table');
-});
-
-db.query('DELETE FROM items', (err, results) => {
-	if (err) throw err;
-	console.log('Deleted all records from the items table');
-});
-
-db.query('DELETE FROM categories', (err, results) => {
-	if (err) throw err;
-	console.log('Deleted all records from the categories table');
-});
-
-
-const data_path = path.join('data', 'data.json')
-const jsonData = fs.readFileSync(data_path, 'utf-8');
-const data = JSON.parse(jsonData);
-
-data.categories.forEach((category) => {
-	const categoryId = category.id;
-	const categoryName = category.category_name;
-
-	// Insert category into the 'categories' table
-	db.query('INSERT INTO categories (id, category_name) VALUES (?, ?)', [categoryId, categoryName], (err, results) => {
+const DO_RESET = 0;
+if (DO_RESET) {
+	db.query('DELETE FROM details', (err, results) => {
 		if (err) throw err;
+		console.log('Deleted all records from the details table');
 	});
-});
-
-// Insert items into the database
-data.items.forEach((item) => {
-	const itemId = item.id;
-	const itemName = item.name;
-	const category = item.category;
-
-	// Insert item into the 'items' table
-	db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
+	
+	db.query('DELETE FROM items', (err, results) => {
 		if (err) throw err;
-
-		// Insert details into the 'details' table
-		item.details.forEach((detail) => {
-			const detailName = detail.detail_name;
-			const detailValue = detail.detail_value;
-
-			db.query('INSERT INTO details (item_id, detail_name, detail_value) VALUES (?, ?, ?)', [itemId, detailName, detailValue], (err, results) => {
-				if (err) throw err;
+		console.log('Deleted all records from the items table');
+	});
+	
+	db.query('DELETE FROM categories', (err, results) => {
+		if (err) throw err;
+		console.log('Deleted all records from the categories table');
+	});
+	
+	
+	const data_path = path.join('data', 'data.json')
+	const jsonData = fs.readFileSync(data_path, 'utf-8');
+	const data = JSON.parse(jsonData);
+	
+	data.categories.forEach((category) => {
+		const categoryId = category.id;
+		const categoryName = category.category_name;
+	
+		// Insert category into the 'categories' table
+		db.query('INSERT INTO categories (id, category_name) VALUES (?, ?)', [categoryId, categoryName], (err, results) => {
+			if (err) throw err;
+		});
+	});
+	
+	// Insert items into the database
+	data.items.forEach((item) => {
+		const itemId = item.id;
+		const itemName = item.name;
+		const category = item.category;
+	
+		// Insert item into the 'items' table
+		db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
+			if (err) throw err;
+	
+			// Insert details into the 'details' table
+			item.details.forEach((detail) => {
+				const detailName = detail.detail_name;
+				const detailValue = detail.detail_value;
+	
+				db.query('INSERT INTO details (item_id, detail_name, detail_value) VALUES (?, ?, ?)', [itemId, detailName, detailValue], (err, results) => {
+					if (err) throw err;
+				});
 			});
 		});
 	});
-});
-
+}
 // Set up a route to fetch items from the database
 
 app.get('/api/categories', (req, res) => {
@@ -319,14 +321,45 @@ app.get('/api/categories', (req, res) => {
 });
 
 app.get('/api/announcements', (req, res) => {
-	const query = 'SELECT * FROM announce'; // Modify the query as needed
-	db.query(query, (err, results) => {
+	//TODO: Throws 500 if announcements are empty
+	const query = `SELECT * FROM announce`; // Modify the query as needed
+	db.query(query, (err, announcement_results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
 			return;
 		}
-		res.json({ announcements: results });
+
+		/* Json consists of two parts:
+		1. Announcements
+		2. Mapping of item_id's to item names, taken from json
+		*/
+		const parsedData = announcement_results.map(row => {
+			return {
+				id: row.id,
+				title: row.title,
+				descr: row.descr,
+				items: JSON.parse(row.items)
+			}
+		});
+
+		// Get item jsons only
+		const allItems = parsedData.map(row => row['items']);
+		// Flatten array
+		const reducedItems = allItems.reduce((accumulator, currentArray) => {
+			return accumulator.concat(currentArray);
+		  }, []);
+
+		// Get names for mapping purposes
+		db.query('SELECT id, name FROM items WHERE id IN (?)', [reducedItems], (err, map_results) => {
+			if (err) {
+				console.error('Error executing query:', err);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
+			res.json({ announcements: announcement_results, mapping: map_results });
+			res.end();
+		});
 	});
 });
 
@@ -415,6 +448,7 @@ app.post('/items/add', (req, res) => {
 
 
 /*The route needed to be added because it couldn't get a post method that contained a deletion query*/
+//TODO: Dangerous
 app.route('/api/del')
 	.get((req, res) => {
 		const query = req.query.query;
@@ -560,9 +594,9 @@ app.get('/api/cargo', (req, res) => {
 app.get('/api/requests', (req, res) => {
 	let username = req.session.username;
 	db.query(`SELECT
-			r.id as 'Request id', i.name as 'Requested', r.num_people as 'Number of people', rsc.meaning as 'Status',
-			r.date_requested as 'Date requested', r.date_accepted as 'Date accepted', 
-			r.date_completed as 'Date completed'
+			r.id as 'id', i.name as 'Requested', r.num_people as 'People', rsc.meaning as 'Status',
+			r.date_requested as 'Requested on', r.date_accepted as 'Accepted on', 
+			r.date_completed as 'Completed on'
 			FROM requests r 
 			INNER JOIN request_status_code rsc on r.status = rsc.status
 			INNER JOIN items i ON r.item_id = i.id
@@ -579,10 +613,11 @@ app.get('/api/requests', (req, res) => {
 app.get('/api/offers', (req, res) => {
 	let username = req.session.username;
 	db.query(`SELECT
-			o.id as 'Offer id', osc.meaning as 'Status',
-			o.date_offered as 'Date offered', o.date_completed as 'Date delivered'
+			o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
+			o.date_offered as 'Offered on', o.date_completed as 'Delivered on'
 			FROM offers o
 			INNER JOIN offer_status_code osc on o.status = osc.status
+			INNER JOIN items i on o.item_id = i.id 
 			WHERE username = ? ORDER BY o.date_offered DESC`, [username], (err, results) => {
 			//INNER JOIN items i ON r.item_id = i.id
 			// disabled for now
@@ -593,5 +628,54 @@ app.get('/api/offers', (req, res) => {
 		}
 		res.json({ offers: results });
 	});
+});
+
+app.post('/citizen/sendOffer', (req, res) => {
+	let username = req.session.username;
+	item_id = req.body;
+	console.log(item_id);
+	// let item_id = req.body.item_id;
+
+	// TODO: for some reason plain text counts as 2 
+	if (username && item_id.length === 2) {
+		db.query('INSERT INTO offers (username, item_id) VALUES (?, ?)', [username, item_id], function (error, results) {
+			if (error) throw error;
+		})
+		res.end();
+	} else {
+		res.status(401).json({ error: 'Please insert a valid username and item.' });
+		res.end();		
+	}
+
+	
+});
+
+app.post('/citizen/deleteOffer', (req, res) => {
+	//TODO: Delete only if offer is from username
+	let username = req.session.username;
+	offer_id = req.body;
+	console.log(offer_id);
+
+	// TODO: for some reason plain text HERE counts as 1
+	if (username && offer_id.length === 1) {
+		// Ensure offer is from correct person
+		db.query('SELECT username FROM offers WHERE id = (?)', [offer_id], function (error, username_results) {
+			console.log(username_results);
+
+			// Has permission to delete their own offer
+			if (username_results.length > 0) {
+				db.query('DELETE FROM offers WHERE id = (?)', [offer_id], function (error, results) {
+					if (error) throw error;
+
+				})
+				res.end();
+			}
+		})
+	} else {
+		res.status(401).json({ error: 'Please insert a valid username and item.' });
+		res.end();		
+	}
+
+	
 });
 
