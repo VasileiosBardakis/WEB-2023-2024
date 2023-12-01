@@ -30,6 +30,7 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true
 }));
+app.use(express.text()); // parse plain/text
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'static')));
@@ -232,7 +233,8 @@ app.listen(PORT, () => {
 
 	//INSERT DATA
 //Clear existing data from tables
-
+const DO_RESET = 0;
+if (DO_RESET) {
 db.query('DELETE FROM details', (err, results) => {
 	if (err) throw err;
 	console.log('Deleted all records from the details table');
@@ -284,7 +286,7 @@ data.items.forEach((item) => {
 		});
 	});
 });
-
+}
 // Set up a route to fetch items from the database
 
 app.get('/api/categories', (req, res) => {
@@ -300,6 +302,7 @@ app.get('/api/categories', (req, res) => {
 });
 
 app.get('/api/announcements', (req, res) => {
+	//TODO: Throws 500 if announcements are empty
 	const query = `SELECT * FROM announce`; // Modify the query as needed
 	db.query(query, (err, announcement_results) => {
 		if (err) {
@@ -370,6 +373,7 @@ app.post('/categories/add', (req, res) => {
 });
 
 /*The route needed to be added because it couldn't get a post method that contained a deletion query*/
+//TODO: Dangerous
 app.route('/api/del')
 .post((req, res) => {
 		const query = req.body.query;
@@ -385,8 +389,52 @@ app.route('/api/del')
 		});
 	});
 
-app.post('/civilian/sendOffer', (req, res) => {
+app.post('/citizen/sendOffer', (req, res) => {
 	let username = req.session.username;
+	item_id = req.body;
+	console.log(item_id);
+	// let item_id = req.body.item_id;
+
+	// TODO: for some reason plain text counts as 2 
+	if (username && item_id.length === 2) {
+		db.query('INSERT INTO offers (username, item_id) VALUES (?, ?)', [username, item_id], function (error, results) {
+			if (error) throw error;
+		})
+		res.end();
+	} else {
+		res.status(401).json({ error: 'Please insert a valid username and item.' });
+		res.end();		
+	}
+
+	
+});
+
+app.post('/citizen/deleteOffer', (req, res) => {
+	//TODO: Delete only if offer is from username
+	let username = req.session.username;
+	offer_id = req.body;
+	console.log(offer_id);
+
+	// TODO: for some reason plain text HERE counts as 1
+	if (username && offer_id.length === 1) {
+		// Ensure offer is from correct person
+		db.query('SELECT username FROM offers WHERE id = (?)', [offer_id], function (error, username_results) {
+			console.log(username_results);
+
+			// Has permission to delete their own offer
+			if (username_results.length > 0) {
+				db.query('DELETE FROM offers WHERE id = (?)', [offer_id], function (error, results) {
+					if (error) throw error;
+
+				})
+				res.end();
+			}
+		})
+	} else {
+		res.status(401).json({ error: 'Please insert a valid username and item.' });
+		res.end();		
+	}
+
 	
 });
 
@@ -465,9 +513,9 @@ app.get('/api/cargo', (req, res) => {
 app.get('/api/requests', (req, res) => {
 	let username = req.session.username;
 	db.query(`SELECT
-			r.id as 'Request id', i.name as 'Requested', r.num_people as 'Number of people', rsc.meaning as 'Status',
-			r.date_requested as 'Date requested', r.date_accepted as 'Date accepted', 
-			r.date_completed as 'Date completed'
+			r.id as 'id', i.name as 'Requested', r.num_people as 'People', rsc.meaning as 'Status',
+			r.date_requested as 'Requested on', r.date_accepted as 'Accepted on', 
+			r.date_completed as 'Completed on'
 			FROM requests r 
 			INNER JOIN request_status_code rsc on r.status = rsc.status
 			INNER JOIN items i ON r.item_id = i.id
@@ -484,10 +532,11 @@ app.get('/api/requests', (req, res) => {
 app.get('/api/offers', (req, res) => {
 	let username = req.session.username;
 	db.query(`SELECT
-			o.id as 'Offer id', osc.meaning as 'Status',
-			o.date_offered as 'Date offered', o.date_completed as 'Date delivered'
+			o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
+			o.date_offered as 'Offered on', o.date_completed as 'Delivered on'
 			FROM offers o
 			INNER JOIN offer_status_code osc on o.status = osc.status
+			INNER JOIN items i on o.item_id = i.id 
 			WHERE username = ? ORDER BY o.date_offered DESC`, [username], (err, results) => {
 			//INNER JOIN items i ON r.item_id = i.id
 			// disabled for now
