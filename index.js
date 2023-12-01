@@ -362,7 +362,7 @@ app.post('/items/add', (req, res) => {
 	let category = req.body.category;
 
 	db.query('SELECT * FROM items WHERE name = ?', [name], function (error, results, fields) {
-		// If there is an issue with the query, output the error
+		/*error handling*/
 		if (error) {
 			console.error(error);
 			res.status(500).json({ error: 'Internal server error' });
@@ -381,20 +381,9 @@ app.post('/items/add', (req, res) => {
 					res.status(500).json({ error: 'Internal server error' });
 					return;
 				}
-
-				// Get the last insert ID
-				db.query('SELECT LAST_INSERT_ID() as lastInsertId', function (error, result, fields) {
-					if (error) {
-						// Handle the error
-						console.error(error);
-						res.status(500).json({ error: 'Internal server error' });
-						return;
-					}
-
-					const lastInsertId = result[0].lastInsertId;
-
-					// Insert details using the last insert ID
-					db.query('INSERT INTO details VALUES (null, ?, ?, ?)', [lastInsertId, detail_name, detail_value], function (error, results, fields) {
+				if (detail_name || detail_value) {
+					// Get the last insert ID
+					db.query('SELECT LAST_INSERT_ID() as lastInsertId', function (error, result, fields) {
 						if (error) {
 							// Handle the error
 							console.error(error);
@@ -402,10 +391,23 @@ app.post('/items/add', (req, res) => {
 							return;
 						}
 
-						console.log('Item added!');
-						res.end();
+						const lastInsertId = result[0].lastInsertId;
+
+						// Insert details using the last insert ID
+						db.query('INSERT INTO details VALUES (null, ?, ?, ?)', [lastInsertId, detail_name, detail_value], function (error, results, fields) {
+							if (error) {
+								// Handle the error
+								console.error(error);
+								res.status(500).json({ error: 'Internal server error' });
+								return;
+							}
+
+							
+						});
 					});
-				});
+				}
+				console.log('Item added!');
+				res.end();
 			});
 		}
 	});
@@ -414,10 +416,20 @@ app.post('/items/add', (req, res) => {
 
 /*The route needed to be added because it couldn't get a post method that contained a deletion query*/
 app.route('/api/del')
-.post((req, res) => {
+	.get((req, res) => {
+		const query = req.query.query;
+		// for select queries
+		db.query(query, function (error, results, fields) {
+			if (error) {
+				throw error;
+			}
+			res.json(results);
+		});
+	})
+	.post((req, res) => {
 		const query = req.body.query;
 
-		//execute SQL query to delete from the database
+		// For delete, update, post
 		db.query(query, function (error, results, fields) {
 			if (error) {
 				throw error;
@@ -459,7 +471,7 @@ app.get('/api/items', (req, res) => {
 
 /*Gets items with their details*/
 app.get('/api/itemswdet', (req, res) => {
-	const query = 'SELECT items.*, details.item_id,details.id, details.detail_name, details.detail_value FROM items INNER JOIN details ON items.id = details.item_id';
+	const query = 'SELECT items.*, details.item_id,details.detail_id, details.detail_name, details.detail_value FROM items LEFT JOIN details ON items.id = details.item_id';
 
 	db.query(query, (err, results) => {
 		if (err) {
@@ -471,6 +483,18 @@ app.get('/api/itemswdet', (req, res) => {
 	});
 });
 
+app.get('/api/details/:itemId', (req, res) => {
+	const itemId = req.params.itemId;
+	const query = `SELECT * FROM details WHERE item_id = ${itemId}`;
+	db.query(query, (err, results) => {
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ details: results });
+	});
+});
 /*Gets items with their categories*/
 app.get('/api/itemswcat', (req, res) => {
 	const query = 'SELECT items.id, items.name, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id';

@@ -318,7 +318,7 @@ function mngStore() {
 
                     // Create a header row
                     var headerRow = table.insertRow(0);
-                    var headers = ['ID', 'Name', 'Edit items in Category', 'Delete Category'];
+                    var headers = ['ID', 'Name', 'Edit items in Category'];
                     for (var i = 0; i < headers.length; i++) {
                         var headerCell = headerRow.insertCell(i);
                         headerCell.textContent = headers[i];
@@ -345,12 +345,15 @@ function mngStore() {
 
                         var actionsCell = row.insertCell(3); /* For the delete category buttons */
                         var deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'X';
+                        deleteButton.textContent = 'Delete Category';
                         deleteButton.onclick = function () {
-                            query = 'DELETE FROM categories WHERE id=' + cat.id;
-                            postQuery(query);
-                            if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
-                            console.log(query);
+                            var confirmation = confirm('Are you sure you want to delete this category and all of it`s items?');
+                            if (confirmation) {
+                                query = 'DELETE FROM categories WHERE id=' + cat.id;
+                                postQuery(query);
+                                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+                                console.log(query);
+                            }
                         };
                         actionsCell.appendChild(deleteButton);
                     });
@@ -362,6 +365,7 @@ function mngStore() {
                     categoryTableDiv.appendChild(table);
                     document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addItem()" class="btn btn-primary btn-block mb-4">Add an Item</button>'
                     document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
+                    document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addDetail()" class="btn btn-primary btn-block mb-4">Add a Detail</button>'
                 }
             };
             xhr.send();
@@ -374,22 +378,16 @@ function mngStore() {
 }
 /*Function that is called when "edit" is pressed in manage storage*/
 function itemsInCat(selected) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/api/itemswdet', true);
-
-    /* AJAX to print items */
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.response)
+    fetchMethod('/api/items')
+        .then(data => {
             var items = data.items.filter(function (item) {
                 return String(item.category) === String(selected);
             });
             var table = document.createElement('table');
 
-            
             /* Header Row */
             var headerRow = table.insertRow(0);
-            var headers = ['ID','Name', 'Detail ID','Detail', 'Detail Value'];
+            var headers = ['ID', 'Name', 'Quantity'];
             for (var i = 0; i < headers.length; i++) {
                 var headerCell = headerRow.insertCell(i);
                 headerCell.textContent = headers[i];
@@ -401,23 +399,38 @@ function itemsInCat(selected) {
 
                 /*Cells for item name and details*/
                 var idCell = row.insertCell(0);
-                idCell.innerHTML = '<input type="text" value="' + item.item_id + '" readonly style="background-color: #f0f0f0;">';
+                idCell.innerHTML = '<input type="text" value="' + item.id + '" readonly style="background-color: #f0f0f0;">';
 
                 var nameCell = row.insertCell(1);
                 nameCell.innerHTML = '<input type="text" value="' + item.name + '">';
 
-                var detailNameCell = row.insertCell(2);
-                detailNameCell.innerHTML = '<input type="text" value="' + item.id + '" readonly style="background-color: #f0f0f0;">';
+                var quanCell = row.insertCell(2);
+                quanCell.innerHTML = '<input type="text" value="' + item.quantity + '">';
 
-                var detailNameCell = row.insertCell(3);
-                detailNameCell.innerHTML = '<input type="text" value="' + item.detail_name + '">';
+                var editDetailsCell = row.insertCell(3);
+                var editDetailsButton = document.createElement('button');
+                editDetailsButton.textContent = 'Edit Details';
+                editDetailsButton.onclick = function () {
+                    editDetails(item.id);
+                };
+                editDetailsCell.appendChild(editDetailsButton);
 
-                var valueCell = row.insertCell(4);
-                valueCell.innerHTML = '<input type="text" value="' + item.detail_value + '">';
+                var actionsCell = row.insertCell(4); /* For the delete category buttons */
+                var deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete Item';
+                deleteButton.onclick = function () {
+                    var confirmation = confirm('Are you sure you want to delete this item and all of it`s details?');
+                    if (confirmation) {
+                        query = 'DELETE FROM items WHERE id=' + item.id;
+                        postQuery(query);
+                        if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+                        console.log(query);
+                    }
+                };
+                actionsCell.appendChild(deleteButton);
             });
 
             /*Append the table to div and add event listener to change items when enter is pressed*/
-
             var categoryTableDiv = document.getElementById('inputFieldsDiv2');
             categoryTableDiv.innerHTML = '';
             categoryTableDiv.appendChild(table);
@@ -425,37 +438,114 @@ function itemsInCat(selected) {
             // Add event listener to the table
             table.addEventListener('keyup', function (event) {
                 if (event.key === 'Enter') {
-                    /* Closest function to get column index and id https://developer.mozilla.org/en-US/docs/Web/API/Element/closest */
                     var columnIndex = event.target.closest('td').cellIndex;
                     var id = event.target.closest('tr').cells[0].querySelector('input').value;
-                    var det_id = event.target.closest('tr').cells[2].querySelector('input').value;
-                    changeItem(id,det_id,columnIndex, event.target);
+                    changeItem(id, columnIndex, event.target, false);
                 }
             });
+        })
+        .catch(error => {
+            console.error('Error fetching items:', error);
+        });
+}
 
+function editDetails(itemId) {
+    fetchMethod('/api/details/' + itemId)
+        .then(data => {
+            var details = data.details;
+
+            // Create a table
+            var table = document.createElement('table');
+
+            // Create header row
+            var headerRow = table.insertRow(0);
+            var headers = ['Detail ID', 'Detail Name', 'Detail Value'];
+            for (var i = 0; i < headers.length; i++) {
+                var headerCell = headerRow.insertCell(i);
+                headerCell.textContent = headers[i];
+            }
+
+            // Populate the table with details
+            details.forEach(function (detail) {
+                var row = table.insertRow(table.rows.length);
+
+                var detailNameCell = row.insertCell(0);
+                detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_id + '" readonly style="background-color: #f0f0f0;">';
+
+                var detailNameCell = row.insertCell(1);
+                detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_name + '">';
+
+                var valueCell = row.insertCell(2);
+                valueCell.innerHTML = '<input type="text" value="' + detail.detail_value + '">';
+
+                var deleteDetailCell = row.insertCell(3);
+                var deleteDetailButton = document.createElement('button');
+                deleteDetailButton.textContent = 'Delete Detail';
+                deleteDetailButton.onclick = function () {
+                    deleteDetail(detail.detail_id);
+                };
+                deleteDetailCell.appendChild(deleteDetailButton);
+            });
+
+            // Append the table to a container div next to the item
+            var containerDiv = document.getElementById('inputFieldsDiv2');
+            containerDiv.innerHTML = ''; // Clear previous content
+            containerDiv.appendChild(table);
+
+            // Add event listener to the table
+            table.addEventListener('keyup', function (event) {
+                if (event.key === 'Enter') {
+                    var columnIndex = event.target.closest('td').cellIndex;
+                    var id = event.target.closest('tr').cells[0].querySelector('input').value;
+                    console.log(id);
+                    changeItem(id, columnIndex, event.target, true);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching details:', error);
+        });
+}
+
+function deleteDetail(detailId) {
+    var confirmation = confirm('Are you sure you want to delete this detail?');
+
+    if (confirmation) {
+        var query = 'DELETE FROM details WHERE detail_id=' + detailId;
+        postQuery(query);
+        if (mngStoreClick) {
+            mngStoreClick = false;
+            mngStore(); // reload the details on update
         }
-    };
-    xhr.send();
+    }
 }
 
 /*Function that is called when enter is pressed in manage storage->manage items->Changed input field*/
-function changeItem(id,det_id,columnIndex, input) {
+function changeItem(id,columnIndex, input,detail) {
     // Get the corresponding header value from the headers array
     // Print the result
-    console.log(id,det_id,columnIndex, input.value);
+    console.log(id,columnIndex, input.value);
 
+    if (!detail) {
+        switch (columnIndex) {
+            case 1:
+                postQuery("UPDATE items SET name = '" + input.value + "' WHERE id = " + id + ";");
+                break;
+            case 2:
+                postQuery("UPDATE items SET quantity = '" + input.value + "' WHERE id = " + id + ";");
+                break;
+        }
+    }
+    else {
+        switch (columnIndex) {
+            case 1:
+                postQuery("UPDATE details SET detail_name = '" + input.value + "' WHERE detail_id = " + id + ";");
+                break;
+            case 2:
+                postQuery("UPDATE details SET detail_value = '" + input.value + "' WHERE detail_id = " + id + ";");
+                break;
 
-    switch (columnIndex) {
-        case 1:
-            postQuery("UPDATE items SET name = '" + input.value + "' WHERE id = " + id + ";");
-            break;
-        case 3:
-            postQuery("UPDATE details SET detail_name = '" + input.value + "' WHERE id = " + det_id + ";");
-            break;
-        case 4:
-            postQuery("UPDATE details SET detail_value = '" + input.value + "' WHERE id = " + det_id + ";");
-            break;
-
+        }
     }
 }
 
@@ -483,6 +573,37 @@ function postQuery(query) {
     console.log('Data sent:',jsonData);
 }
 
+
+/*Function that returns results of a get method with AJAX*/
+function fetchMethod(url, method = 'GET', query = null) {
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, url, true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    resolve(response);
+                } else {
+                    reject({
+                        status: xhr.status,
+                        message: 'Request failed with status: ' + xhr.status
+                    });
+                }
+            }
+        };
+
+        if (method === 'POST') {
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            var jsonData = JSON.stringify({ query: query });
+            xhr.send(jsonData);
+            console.log('Data sent:', jsonData);
+        } else {
+            xhr.send();
+        }
+    });
+}
 
 /*Function that gets called when Add a Category is pressed in manage storage */
 function addCategory() {
@@ -579,6 +700,34 @@ function addItem() {
 }
 
 
+function showItems(event) {
+    var selected = event.target.value;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/items', true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.response);
+
+            var items = data.items.filter(function (item) {
+                return String(item.category) === String(selected);
+            });
+
+            // Clear previous
+            var dropdown = document.getElementById("items");
+            dropdown.innerText = '';
+
+            // Populate the dropdown with items, storing both ID and name
+            items.forEach(function (item) {
+                var option = document.createElement('option');
+                option.value = item.id; // Store ID as the value
+                option.text = item.name;
+                dropdown.appendChild(option);
+            });
+        }
+    };
+    xhr.send();
+}
 /* Function that is called when Submit button is pressed in manage storage -> add a category */
 function addItemSubmit() {
     // Get values from input fields
@@ -620,3 +769,87 @@ function addItemSubmit() {
 
 }
 
+
+function addDetail() {
+    var fields = document.getElementById('inputFieldsDiv2');
+    var dropdown = document.createElement('select');
+    dropdown.id = 'select';
+    var default_option = document.createElement('option');
+
+    // Add a default option
+    default_option.text = 'Please select a category';
+    dropdown.add(default_option);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/categories', true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+
+            /*Populate dropdown with categories*/
+            data.categories.forEach(function (cat) {
+                var option = document.createElement('option');
+                option.value = cat.id;
+                option.text = cat.category_name;
+                dropdown.add(option);
+            });
+
+            // Add event listener to the category dropdown
+            dropdown.onchange = showItems;
+            dropdown.addEventListener('change', function (event) {
+                // Call the showItems function to populate the second dropdown with items
+                console.log("hi");
+                showItems(event);
+            });
+            fields.innerHTML = 'Choose a Category'; // Clear existing content
+            fields.appendChild(dropdown);
+            var labelDiv = document.createElement('div');
+            labelDiv.className = 'dropdown';
+            labelDiv.innerHTML = `
+                <label>Choose an item:
+                    <select id="items">
+                        <option value="-1">Please select a category first</option>
+                    </select>
+                </label>
+            `;
+            fields.appendChild(labelDiv);
+
+            var form = document.createElement('form');
+            form.id = 'myForm';
+            form.innerHTML = `
+                <input type="text" id="detail_name" class="form-control" />
+                <label class="form-label" for="num_people">Detail Name</label>
+
+                <input type="text" id="detail_value" class="form-control" />
+                <label class="form-label" for="detail_value">Detail Value</label>
+                <br>
+                <input type="button" onclick="addDetailSubmit()" value="Submit">
+            `;
+            fields.appendChild(form);
+
+
+        }
+
+    };
+    xhr.send();
+}
+
+function addDetailSubmit() {
+    // Get the selected item's ID
+    var selectedItemID = document.getElementById('items').value;
+    var detail_name = document.getElementById("detail_name").value;
+    var detail_value = document.getElementById("detail_value").value;
+    errorMessageElement = document.getElementById('error-message');
+    // Validate that both id and name are provided
+    if (!detail_name) {
+        alert("Please enter a detail name");
+        return;
+    }
+    if (!selectedItemID) {
+        alert("Please select an item.");
+        return;
+    }
+    // Rest of your addDetailSubmit logic using selectedItemID...
+    postQuery('INSERT INTO details (item_id, detail_name, detail_value) VALUES("' + selectedItemID + '","' + detail_name + '","' + detail_value + '"); ');
+    if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+}

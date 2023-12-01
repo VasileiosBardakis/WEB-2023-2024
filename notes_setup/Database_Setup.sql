@@ -27,7 +27,7 @@ INSERT INTO accounts VALUES
 
 -- all possible items in the database
 CREATE TABLE items (
-    id INT auto_increment PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     category VARCHAR(255),
     quantity INT, -- current quantity in the central base
@@ -40,7 +40,7 @@ UPDATE  items
     
 -- alternative versions of items (e.g. 125ml water)
 CREATE TABLE details (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
     item_id INT,
     detail_name VARCHAR(255),
     detail_value VARCHAR(255),
@@ -242,11 +242,6 @@ DELIMITER ;
 SELECT 'requests' AS '';
 -- \! echo 'some text';
 
---SET SQL_SAFE_UPDATES = 0; /* NOT SAFE */
---SET SQL_SAFE_UPDATES = 1; /* SAFE */
-
---call cargoLoaded(31,5,'res');
---call cargoDelivered(31,6,'res');
 
 
 
@@ -275,5 +270,14 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+DELIMITER //
+CREATE TRIGGER before_delete_item
+BEFORE DELETE ON items
+FOR EACH ROW
+BEGIN
+    DELETE FROM details
+    WHERE item_id = OLD.id;
+END;
+//
+DELIMITER ;
 
