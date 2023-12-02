@@ -107,16 +107,17 @@ CREATE TABLE cargo (
 CREATE TABLE offers (
     id INT PRIMARY KEY,
     username VARCHAR(30) NOT NULL,
-    announcement INT,
+    -- announcement INT,
     date_offered DATETIME default now(),
     date_completed DATETIME,
-    status INT UNSIGNED NOT NULL,
+    status INT UNSIGNED NOT NULL default 0,
+    item_id INT NOT NULL, /* 1 item per offer */
     -- 0 for not picked up, 1 for picked up, 2 for completed
     -- TODO: if 1, cant delete 
 
     FOREIGN KEY (username) REFERENCES accounts(username),
-
-    FOREIGN KEY (announcement) REFERENCES announce(id) 
+    FOREIGN KEY (item_id) REFERENCES items(id)
+    -- FOREIGN KEY (announcement) REFERENCES announce(id) 
 );
 
 CREATE TABLE offer_status_code (
@@ -127,19 +128,6 @@ INSERT INTO offer_status_code VALUES
 (0, 'Pending'),
 (1, 'Picked up'),
 (2, 'Delivered');
-
-
--- joined with table offers to see every item from an offer (1 offer -> multiple items)
-CREATE TABLE offers_items (
-    id INT,
-    item_id INT,
-
-    PRIMARY KEY (id, item_id),
-
-    FOREIGN KEY (id) REFERENCES offers(id),
-    
-    FOREIGN KEY (item_id) REFERENCES items(id)
-);
 
 -- vehicle: max 4 tasks
 -- tasks: either offers or requests
