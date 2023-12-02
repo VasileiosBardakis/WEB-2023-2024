@@ -96,9 +96,7 @@ app.post('/register', (req, res) => {
 	let name = req.body.name;
 	let telephone = req.body.telephone;
 
-	console.log(username);
-	console.log(name);
-	console.log(telephone);
+	console.log(`Register attempt ${username}, ${name}, ${telephone}`);
 
 	if (username && password) {
 		// Execute SQL query that'll register the account to the database
