@@ -131,7 +131,18 @@ color: white;
   opacity:0.5;
   margin:0;
 }
-  
+/* https://stackoverflow.com/questions/1257430/how-can-i-apply-a-border-only-inside-a-table */
+.actions-table td {
+  border-collapse:collapse;
+  border:1px solid;
+  padding: 0.3em;
+}
+
+/* The first of each row */
+/* .actions-table tr > :first-child {
+  border:1px solid;
+} */
+
 /* 
   Extra small devices (phones, 600px and down):
   Make sidebar stack vertically with canvas

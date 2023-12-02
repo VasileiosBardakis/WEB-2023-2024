@@ -211,10 +211,17 @@ function loadAnnouncements() {
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let data = JSON.parse(xhr.response)
-            // console.log(data);
+            console.log(data);
 
             let announcements = data.announcements;
             let mapping = data.mapping;
+            // TODO: Move this to index.js
+            let itemDict = {};
+            mapping.forEach(item => {
+                itemDict[item.id] = item.name;
+            });
+
+            console.log(mapping);
 
             // TODO: If empty, show no announcement
             if (announcements.length === 0) {
@@ -241,6 +248,9 @@ function loadAnnouncements() {
                 let extraDiv = document.createElement("div");
                 extraDiv.classList.add("announcement-extras");
                 let actionsTable = document.createElement("div");
+                actionsTable.classList.add("actions-table");
+                actionsTable.style.paddingBottom="10px";
+                actionsTable.style.paddingTop="10px";
 
                 // Fill the table with items and offer buttons
                 items = JSON.parse(entry.items);
@@ -252,12 +262,15 @@ function loadAnnouncements() {
                     
                     //item is item_id
                     let item_td = document.createElement("td");
-                    item_td.innerText = item;
+                    item_td.innerText = itemDict[item];
 
                     let offer_button_td = document.createElement("td");
                     
                     let offer_button = document.createElement("button");
                     offer_button.innerText = 'Offer';
+                    offer_button.style.border='none';
+                    offer_button.style.background='none';
+                    offer_button.style.backgroundColor='rgba(0, 255, 0, 0.5)'
 
                     offer_button.onclick = function(item) {
                         let xhttp = new XMLHttpRequest();
@@ -354,7 +367,6 @@ function loadOffersTable() {
             
             // Loop through the JSON data and create table rows
             offers.forEach((item) => {
-                console.log(item);
                 let offer_id = item.id;
                 let status = item.Status;
                 let tr = document.createElement("tr");
@@ -375,13 +387,13 @@ function loadOffersTable() {
                 button_td.innerText = "Cancel";
 
                 // By default is greyed out
-                button_td.style.backgroundColor="#7a7474";
+                button_td.style.backgroundColor="rgba(0, 0, 0, 0.2)";
                 button_td.style.color="white";
-                console.log(typeof status);
-                console.log(status);
+                button_td.style.cursor="not-allowed";
+
                 // If not picked up yet, cancellable
                 if (status === 'Pending') {
-                    button_td.style.backgroundColor="#e20909";
+                    button_td.style.backgroundColor="rgba(255, 0, 0, 0.6)";
                     button_td.style.color="white";
                     button_td.style.cursor="pointer";
 
