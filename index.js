@@ -13,7 +13,8 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "root",
-    database: 'saviors'
+    database: 'saviors',
+	timezone: 'local'
 })
 
 db.connect((err) => { 
