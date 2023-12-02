@@ -8,12 +8,18 @@
     <link rel="stylesheet" type="text/css" href="/css/styles.css" />
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"/>
+
     <!-- Include the Bootstrap JS dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- Include the Bootstrap JS file -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+    <script src="js/register.js" defer></script>
     <style>
     </style>
   </head>
@@ -57,8 +63,14 @@
             <label class="form-label" for="telephone">Telephone</label>
           </div>
 
-          <!-- TODO: Position in map?? -->
+          <!-- Location input -->
+          <div id="mapid"></div>
+          <!-- TODO: Add realtime updating coordinate text form -->
+          <label class="form-label" for="mapid">Location</label>
     
+
+          <div id="error-message"></div>
+
           <!-- Submit button -->
           <button type="button" onclick="register()" class="btn btn-primary btn-block mb-4">Sign up</button>
   
@@ -66,37 +78,44 @@
           <div class="text-center">
             <p>Have an account? Go back to <a href="/">Login</a></p>
           </div>
-  
-          <div id="error-message"></div>
-  
+
           <script>
               function register() {
+                //https://stackoverflow.com/questions/16036824/find-latitude-longitude-of-saved-marker-in-leaflet
                 var username = document.getElementById('username').value;
                 var password = document.getElementById('password').value;
                 var name = document.getElementById('name').value;
                 var type = 1;
                 var telephone = document.getElementById('telephone').value;
+                var coordinates = location_marker.getLatLng();
+                console.log(coordinates);
+
                 var errorMessageElement = document.getElementById('error-message');
-  
-                var xhttp = new XMLHttpRequest();
-                xhttp.open('POST', '/register', true);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-  
-                xhttp.onreadystatechange = function () {
-                  if (xhttp.readyState === 4) {
-                    if (xhttp.status === 401) {
-                      // Handle incorrect username/password with AJAX
-                      var response = JSON.parse(xhttp.responseText);
-                      errorMessageElement.innerHTML = response.error;
-                    } else if (xhttp.status === 200) {
-                      // Redirect on successful login if needed
-                      window.location.href = '/auth';
+                
+                //TODO: Some info isnt required
+                if (username && password && coordinates) {
+                  var xhttp = new XMLHttpRequest();
+                  xhttp.open('POST', '/register', true);
+                  xhttp.setRequestHeader('Content-Type', 'application/json');
+    
+                  xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState === 4) {
+                      if (xhttp.status === 401) {
+                        // Handle incorrect username/password with AJAX
+                        var response = JSON.parse(xhttp.responseText);
+                        errorMessageElement.innerHTML = response.error;
+                      } else if (xhttp.status === 200) {
+                        // Redirect on successful login if needed
+                        window.location.href = '/auth';
+                      }
                     }
-                  }
-                };
-  
-                var data = JSON.stringify({ username: username, password: password,type:type, name: name, telephone: telephone });
-                xhttp.send(data);
+                  };
+
+                  var data = JSON.stringify({ username: username, password: password,type:type, name: name, telephone: telephone, coordinates: coordinates });
+                  xhttp.send(data);
+                } else {
+                  errorMessageElement.innerText = 'Invalid request, please check your input.';
+                }
               }
           </script>
         </form>

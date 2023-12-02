@@ -14,6 +14,20 @@ CREATE TABLE accounts (
     telephone VARCHAR(12)
 )ENGINE=InnoDB;
 
+/* e.g.
+INSERT INTO account_coordinates
+VALUES
+(aaaa, POINT(40.71727401 -74.00898606));
+
+select username, ST_X(coordinate), ST_Y(coordinate) from account_coordinates;
+*/
+-- Coordinates are for rescuers (vehicles) and citizens.
+CREATE TABLE account_coordinates (
+    username VARCHAR(30) PRIMARY KEY,
+    coordinate POINT NOT NULL,
+    FOREIGN KEY (username) REFERENCES accounts(username)
+)ENGINE=InnoDB;
+
 INSERT INTO accounts VALUES
 ('admin','admin',0, null, null);
 INSERT INTO accounts VALUES

@@ -1,18 +1,16 @@
-npm install package
-pataw nodemon gia na mhn xreiazetai na to trexw kathe fora, apla kanw save
-npm run devStart
+Paradoxes:
+Offer gia 1 item, kai de kanei reference to announcement.
 
-Ta credentials ths sql tha eprepe na einai se .env omws exei bug to package
 
+Info:
+SQL credentials se .env omws exei bug to package
 Sto static/ mpainoun arxeia pou theloume na fortwsoume (.css, .png etc)
 
-To register sto test.html thewritika tha prepe na xei animation alla den doulevei
-https://mdbootstrap.com/docs/standard/extended/login/
+Announcements are independent to offers. Offers can be generated endlessly, but announcements can be deleted without impacting them.
 
-TODO: Fix sql auth (where username = ?)
-Handle show/hide buttons with css: Have vertical navbar to the left, upon pressing a button, show its text fields while hiding every other button's text fields
-
-Going back a page breaks the user flow (e.g. admin login -> backwards -> press register)
+For manage requests of civilian:
+PERSON requests ITEM for # PEOPLE and ITS STATUS
+List of requests (xhr), on click display details (type=completed,not completed etc)
 
 Use css display instead of innerhtml rewrites (computationally expensive)
 https://stackoverflow.com/questions/11144274/javascript-changing-innerhtml-vs-display
@@ -44,25 +42,35 @@ div label {
     display: block;
 }
 
+
+TODO: 
+Fix sql auth (where username = ?)
+When scrolling, div goes inside sidebar
+admin.js contains register(), remove it
+Going back a page breaks user flow (e.g. admin login -> backwards -> press register)
+post/gets are checked twice: Once client-side to show proper errors or successes
+and once more server side to check for good request and sql injections
+
+HAVE TO THINK ABOUT FOREIGN KEYS (DELETING IS TORTURE)
+
+Mobile and desktop compatibility:
 If media > 700px, make everything stack vertically
+On mobile make sidebar scale with canvas size and make canvas scrollable (tables)
 
-For manage requests of civilian:
-table for db: PERSON requests ITEM for # PEOPLE and ITS STATUS
-List of requests (xhr), on click display details (type=completed,not completed etc)
-fetch based on username of request
-Make ul and div separate to prevent overlap 
-Have to format request table properly
+For mapping (status codes, item id's) do DISTINCT query val -> map
 
-Handle SQL errors (e.g. when admin change db a user might be trying to access item that no longer exists) with sending response
-On server error, close connection instead of closing server
-Bad input for make request
+
+Finishing touches:
+Register: To column scalearei me to megalutero item, kanta aneksartita
 
 Use # instead of . for unique elements
 
-On mobile: make sidebar scale with canvas size and make canvas scrollable (tables)
-
-admin.js contains register(): Unused
-
 On table load: make each row appear with fade (end goal)
 
-When scrolling, div goes inside sidebar
+Handle SQL errors (e.g. when admin change db a user might be trying to access item that no longer exists) with sending response
+On server error, close connection instead of closing server
+
+Bad input for make request
+
+To register sto test.html thewritika tha prepe na xei animation alla den doulevei
+https://mdbootstrap.com/docs/standard/extended/login/

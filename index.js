@@ -96,10 +96,11 @@ app.post('/register', (req, res) => {
 	let type = req.body.type;
 	let name = req.body.name;
 	let telephone = req.body.telephone;
+	let coordinates_obj = req.body.coordinates;
 
-	console.log(`Register attempt ${username}, ${name}, ${telephone}`);
+	console.log(`Register attempt ${username}, ${name}, ${telephone}, ${coordinates_obj}`);
 
-	if (username && password) {
+	if (username && password && coordinates_obj) {
 		// Execute SQL query that'll register the account to the database
 		db.query('SELECT * FROM accounts WHERE username = ?', [username], function (error, results, fields) {
 			// If there is an issue with the query, output the error
@@ -111,9 +112,13 @@ app.post('/register', (req, res) => {
 			} else {
 				db.query('INSERT INTO accounts VALUES (?,?,?,?,?)', [username,password,type,name,telephone], function (error, results, fields) {
 					if (error) throw error;
+
+					db.query('INSERT INTO account_coordinates VALUES (?, POINT(?, ?))', [username, coordinates_obj['lat'], coordinates_obj['lng']], function (error) {
+						if (error) throw error;
+						console.log('Register successful');
+					});
 				});
 				res.redirect('/');
-
 			}
 			res.end();
 		});
@@ -234,7 +239,7 @@ app.listen(PORT, () => {
 
 	//INSERT DATA
 //Clear existing data from tables
-const DO_RESET = 0;
+const DO_RESET = 1;
 if (DO_RESET) {
 	db.query('DELETE FROM details', (err, results) => {
 		if (err) throw err;

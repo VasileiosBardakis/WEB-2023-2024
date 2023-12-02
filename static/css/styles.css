@@ -108,6 +108,9 @@ td {
   border-bottom: 1px solid #ddd;
 }
 
-
+#mapid { 
+  height: 260px;
+  width: 300px;
+}
 
 
