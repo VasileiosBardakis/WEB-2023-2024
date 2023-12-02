@@ -41,7 +41,7 @@ app.use(methodOverride('_method'));
 app.get('/', function(req, res) {
 	// Render login template
 	if (req.session.loggedin) {
-		res.redirect('/home');      //If logged in, redirect to home
+		res.redirect('/auth');      //If logged in, redirect to auth
 	}
 	else {
 		res.sendFile(path.join(__dirname, 'views', 'login.html'));   //If not logged in, show login page
@@ -140,24 +140,9 @@ app.post('/announce', (req, res) => {
 	}
 });
 
-
-app.get('/home', (req, res) => {
-    let sql = 'SELECT * FROM accounts';
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-		if (req.session.type==1) {			//Checking to see if user is a citizen
-			
-			res.send('Welcome back, ' + req.session.username);
-		}
-		else { res.redirect('/auth'); }    //If not, redirect to the right page
-			
-    });
-});
-
-
 app.get('/admin', (req, res) => {
-	let sql = 'SELECT * FROM accounts';
-	db.query(sql, (err, result) => {
+	let username = req.session.username;
+	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
 		if (err) throw err;
 		if (req.session.type == 0) {        //Checking to see if user is an admin
 
@@ -169,8 +154,8 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/citizen', (req, res) => {
-	let sql = 'SELECT * FROM accounts';
-	db.query(sql, (err, result) => {
+	let username = req.session.username;
+	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
 		if (err) throw err;
 		if (req.session.type == 1) {        //Checking to see if user is a citizen
 
@@ -182,8 +167,8 @@ app.get('/citizen', (req, res) => {
 });
 
 app.get('/rescuer', (req, res) => {
-	let sql = 'SELECT * FROM accounts';
-	db.query(sql, (err, result) => {
+	let username = req.session.username;
+	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
 		if (err) throw err;
 		if (req.session.type == 2) {        //Checking to see if user is a rescuer
 
@@ -200,8 +185,6 @@ app.post('/citizen/sendRequest', (req, res) => {
 	let item_id = req.body.item_id;
 	let num_people = req.body.num_people
 	let status = 0;
-
-	if (item_id)
 
 	if (username && item_id && num_people) {
 		
@@ -221,8 +204,8 @@ app.post('/citizen/sendRequest', (req, res) => {
 });
 
 app.get('/auth', (req, res) => {    //Pages go through /auth to see what permissions the user has and point them to the right page
-	let sql = 'SELECT * FROM accounts';
-	db.query(sql, (err, result) => {
+	let username = req.session.username;
+	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
 		if (err) throw err;
 		if (req.session.loggedin) {
 			if (req.session.type == 0) { res.redirect('/admin'); }
