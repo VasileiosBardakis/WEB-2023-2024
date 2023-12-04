@@ -519,7 +519,7 @@ app.get('/api/details/:itemId', (req, res) => {
 });
 /*Gets items with their categories*/
 app.get('/api/itemswcat', (req, res) => {
-	const query = 'SELECT items.id, items.name, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id';
+	const query = 'SELECT items.id, items.name,items.quantity, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id WHERE items.quantity>0';
 
 	db.query(query, (err, results) => {
 		if (err) {
