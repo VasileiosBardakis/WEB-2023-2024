@@ -293,8 +293,9 @@ if (DO_RESET) {
 		});
 	});
 }
-// Set up a route to fetch items from the database
 
+
+/*Method for getting categories from the database*/
 app.get('/api/categories', (req, res) => {
 	const query = 'SELECT * FROM categories'; // Modify the query as needed
 	db.query(query, (err, results) => {
@@ -306,7 +307,7 @@ app.get('/api/categories', (req, res) => {
 		res.json({ categories: results });
 	});
 });
-
+/*Method for getting announcements from the database*/
 app.get('/api/announcements', (req, res) => {
 	//TODO: Throws 500 if announcements are empty
 	const query = `SELECT * FROM announce`; // Modify the query as needed
@@ -349,7 +350,7 @@ app.get('/api/announcements', (req, res) => {
 		});
 	});
 });
-
+/*Method for adding categories to the database*/
 app.post('/categories/add', (req, res) => {
 	let id = req.body.id;
 	let name = req.body.name;
@@ -374,7 +375,7 @@ app.post('/categories/add', (req, res) => {
 		res.end();
 	});
 });
-
+/*Method for adding items to the database */
 app.post('/items/add', (req, res) => {
 	let name = req.body.name;
 	let detail_name = req.body.detail_name;
@@ -459,7 +460,7 @@ app.route('/api/del')
 			res.end();
 		});
 	});
-
+/*Makes an insertion in table announcements */
 app.post('/announce', (req, res) => {
 	let title = req.body.title;
 	let anText = req.body.anText;
@@ -477,7 +478,7 @@ app.post('/announce', (req, res) => {
 		res.end();
 	}
 });
-
+/*Returns all items in database*/
 app.get('/api/items', (req, res) => {
 	const query = 'SELECT * FROM items'; // Modify the query as needed
 	db.query(query, (err, results) => {
@@ -503,7 +504,7 @@ app.get('/api/itemswdet', (req, res) => {
 		res.json({ items: results });
 	});
 });
-
+/*Gets details from just one item*/
 app.get('/api/details/:itemId', (req, res) => {
 	const itemId = req.params.itemId;
 	const query = `SELECT * FROM details WHERE item_id = ${itemId}`;
