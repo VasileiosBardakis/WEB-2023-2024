@@ -74,3 +74,8 @@ Bad input for make request
 
 To register sto test.html thewritika tha prepe na xei animation alla den doulevei
 https://mdbootstrap.com/docs/standard/extended/login/
+
+
+-plat
+prettier error handling when request bigger than existing quantity 
+-
