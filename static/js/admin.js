@@ -129,9 +129,7 @@ function shStore() {
             }
         };
         xhrs.open("GET", "http://localhost:3000/api/itemswcat", true);
-        console.log("Before sending AJAX request");
         xhrs.send();
-        console.log("After sending AJAX request");
     } else {    //clear if storage table is showing
         clearFields();
     }
@@ -148,9 +146,8 @@ function displayData(data) {
      searchInput.placeholder = "Search by category...[;] for multiples";
      searchInput.id = "searchInput";
      storageDiv.appendChild(searchInput);
-     // create table
     var table = document.createElement("table"); 
-     // Create a header row
+     /*Headers*/
      var headerRow = table.insertRow(0);
      var headers = ["ID", "Name", "Category","Quantity"];
      for (var i = 0; i < headers.length; i++) {
@@ -158,7 +155,7 @@ function displayData(data) {
          headerCell.textContent = headers[i];
          headerCell.classList.add("fw-bold"); //bold header 
      }
-    // Populate the table with data
+    /*Populate the table with data*/
     for (var i = 0; i < data.items.length; i++) {
         var items = data.items[i];
         var row = table.insertRow(i + 1); // Skip the header row

@@ -44,7 +44,7 @@ CREATE TABLE items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     category VARCHAR(255),
-    quantity INT, -- current quantity in the central base
+    quantity INT DEFAULT 1, -- current quantity in the central base !! SET TO 1 FOR TESTING !!
     CONSTRAINT ch_quantity CHECK (quantity > -1)
 )ENGINE=InnoDB;
 

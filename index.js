@@ -518,7 +518,7 @@ app.get('/api/details/:itemId', (req, res) => {
 });
 /*Gets items with their categories*/
 app.get('/api/itemswcat', (req, res) => {
-	const query = 'SELECT items.id, items.name, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id';
+	const query = 'SELECT items.id, items.name, items.quantity, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id WHERE quantity>0';
 
 	db.query(query, (err, results) => {
 		if (err) {
@@ -544,12 +544,13 @@ app.get('/api/cargo', (req, res) => {
  });
 
  // CARGO MANAGEMENT
-/*
+
  app.post('/api/load', (req, res) => {
 	let username = req.session.username;
-    const query = 'CALL cargoLoaded('','','username')';
+	let { itemId, wantedQuantity } = req.body;
+    let sql = 'CALL cargoLoaded(?,?,?)'
 
-    db.query(query, (err, results) => {
+    db.query(sql, [itemId, wantedQuantity, username], (err, results) => {
         if (err) {
             console.error('Error loading your item...:', err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -560,7 +561,7 @@ app.get('/api/cargo', (req, res) => {
         res.json({ message: 'Item loaded successfully' });
     });
 });
-*/
+
  app.post('/api/Deliver', (req, res) => {
 	let username = req.session.username;
 	let sql = 'CALL cargoDelivered(?)'
