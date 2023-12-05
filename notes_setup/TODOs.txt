@@ -46,8 +46,7 @@ div label {
 TODO: 
 Fix sql auth (where username = ?)
 When scrolling, div goes inside sidebar
-admin.js contains register(), remove it
-Going back a page breaks user flow (e.g. admin login -> backwards -> press register)
+Going back a page breaks user flow (e.g. admin login -> backwards -> press register) (Πρέπει να κάνεις logout για να μπορείς να πάς στο Login page κανονικά, doesn't seem like a problem to me)
 post/gets are checked twice: Once client-side to show proper errors or successes
 and once more server side to check for good request and sql injections
 

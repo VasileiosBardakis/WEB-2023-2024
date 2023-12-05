@@ -268,11 +268,11 @@ function moreItems() {
 
 /* Function for when Submit is pressed in Make an Announcement */
 function announceDatabase() {
-    console.log("announce");
+    /*Get the values from the input fields and send them to the correct method using AJAX*/
     var title = document.getElementById('title').value;
     var anText = document.getElementById('anText').value;
     var dropdownValues = [];
-    var dropdowns = document.querySelectorAll('select');  // Assuming all dropdowns have the same class
+    var dropdowns = document.querySelectorAll('select'); 
     var errorMessageElement = document.getElementById('error-message');
 
     dropdowns.forEach(function (dropdown) {
@@ -312,11 +312,9 @@ function mngStore() {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     var data = JSON.parse(xhr.responseText);
-
-                    // Create a table
                     var table = document.createElement('table');
 
-                    // Create a header row
+                    /*Headers*/
                     var headerRow = table.insertRow(0);
                     var headers = ['ID', 'Name', 'Edit items in Category'];
                     for (var i = 0; i < headers.length; i++) {
@@ -324,11 +322,10 @@ function mngStore() {
                         headerCell.textContent = headers[i];
                     }
 
-                    // Populate the table with categories
+                    /* Populate the table with categories*/
                     data.categories.forEach(function (cat) {
                         var row = table.insertRow(table.rows.length);
 
-                        // Create cells and populate them with data
                         var idCell = row.insertCell(0);
                         idCell.textContent = cat.id;
 
@@ -449,15 +446,15 @@ function itemsInCat(selected) {
         });
 }
 
+/*Function for editing details in Manage Storage*/
 function editDetails(itemId) {
+    /*Fetch the detail data for all the items using fetchMethod*/
     fetchMethod('/api/details/' + itemId)
         .then(data => {
             var details = data.details;
-
-            // Create a table
             var table = document.createElement('table');
 
-            // Create header row
+            /*Create headers*/
             var headerRow = table.insertRow(0);
             var headers = ['Detail ID', 'Detail Name', 'Detail Value'];
             for (var i = 0; i < headers.length; i++) {
@@ -465,7 +462,7 @@ function editDetails(itemId) {
                 headerCell.textContent = headers[i];
             }
 
-            // Populate the table with details
+            /*Populate the table with the results of the method*/
             details.forEach(function (detail) {
                 var row = table.insertRow(table.rows.length);
 
@@ -487,12 +484,12 @@ function editDetails(itemId) {
                 deleteDetailCell.appendChild(deleteDetailButton);
             });
 
-            // Append the table to a container div next to the item
+            /*Append the table with innerHTML*/
             var containerDiv = document.getElementById('inputFieldsDiv2');
             containerDiv.innerHTML = ''; // Clear previous content
             containerDiv.appendChild(table);
 
-            // Add event listener to the table
+            /*Add event listener to the table*/
             table.addEventListener('keyup', function (event) {
                 if (event.key === 'Enter') {
                     var columnIndex = event.target.closest('td').cellIndex;
@@ -507,6 +504,7 @@ function editDetails(itemId) {
         });
 }
 
+/*Function for deleting details in Manage Storage*/
 function deleteDetail(detailId) {
     var confirmation = confirm('Are you sure you want to delete this detail?');
 
@@ -625,7 +623,7 @@ function addCategorySubmit() {
     var id = document.getElementById("id").value;
     var name = document.getElementById("name").value;
     errorMessageElement = document.getElementById('error-message');
-    // Validate that both id and name are provided
+    // Validate that both id and name are given
     if (!id || !name) {
         alert("Please enter both id and name.");
         return;
@@ -655,12 +653,13 @@ function addCategorySubmit() {
 
 
 function addItem() {
+    /*InnerHTML fields*/
     var fields = document.getElementById('inputFieldsDiv2');
     var dropdown = document.createElement('select');
     dropdown.id = 'select';
     var default_option = document.createElement('option');
 
-    // Add a default option
+    /*Default Option*/
     default_option.text = 'Please select a category';
     dropdown.add(default_option);
 
@@ -699,7 +698,7 @@ function addItem() {
     xhr.send();
 }
 
-
+/*Function that prints the items when a category is selected in add a detail in manage storage*/
 function showItems(event) {
     var selected = event.target.value;
 
@@ -717,7 +716,7 @@ function showItems(event) {
             var dropdown = document.getElementById("items");
             dropdown.innerText = '';
 
-            // Populate the dropdown with items, storing both ID and name
+            // Populate the dropdown with items, storing ID and name
             items.forEach(function (item) {
                 var option = document.createElement('option');
                 option.value = item.id; // Store ID as the value
@@ -758,7 +757,7 @@ function addItemSubmit() {
                 errorMessageElement.innerHTML = response.error;
             }
             else if (xhttp.status === 200) {
-                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload on update
                 errorMessageElement.innerHTML = 'Item added successfully';
             }
         }
@@ -769,14 +768,14 @@ function addItemSubmit() {
 
 }
 
-
+/*Function for adding a detail in Manage Storage*/
 function addDetail() {
     var fields = document.getElementById('inputFieldsDiv2');
     var dropdown = document.createElement('select');
     dropdown.id = 'select';
     var default_option = document.createElement('option');
 
-    // Add a default option
+    /*Default option*/
     default_option.text = 'Please select a category';
     dropdown.add(default_option);
 
@@ -794,14 +793,13 @@ function addDetail() {
                 dropdown.add(option);
             });
 
-            // Add event listener to the category dropdown
+            /*Add event listener to the category dropdown*/
             dropdown.onchange = showItems;
             dropdown.addEventListener('change', function (event) {
-                // Call the showItems function to populate the second dropdown with items
-                console.log("hi");
+                /*ShowItems populates the items table*/
                 showItems(event);
             });
-            fields.innerHTML = 'Choose a Category'; // Clear existing content
+            fields.innerHTML = 'Choose a Category'; 
             fields.appendChild(dropdown);
             var labelDiv = document.createElement('div');
             labelDiv.className = 'dropdown';
@@ -833,14 +831,14 @@ function addDetail() {
     };
     xhr.send();
 }
-
+/*Function used when Submit is pressed in add a detail in Manage Storage*/
 function addDetailSubmit() {
-    // Get the selected item's ID
+    /*Get the selected item's ID*/
     var selectedItemID = document.getElementById('items').value;
     var detail_name = document.getElementById("detail_name").value;
     var detail_value = document.getElementById("detail_value").value;
     errorMessageElement = document.getElementById('error-message');
-    // Validate that both id and name are provided
+    /*check if item and detail name are given*/
     if (!detail_name) {
         alert("Please enter a detail name");
         return;
@@ -849,7 +847,6 @@ function addDetailSubmit() {
         alert("Please select an item.");
         return;
     }
-    // Rest of your addDetailSubmit logic using selectedItemID...
     postQuery('INSERT INTO details (item_id, detail_name, detail_value) VALUES("' + selectedItemID + '","' + detail_name + '","' + detail_value + '"); ');
-    if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+    if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload on update
 }
