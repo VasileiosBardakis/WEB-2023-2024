@@ -363,6 +363,8 @@ function mngStore() {
                     document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addItem()" class="btn btn-primary btn-block mb-4">Add an Item</button>'
                     document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
                     document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addDetail()" class="btn btn-primary btn-block mb-4">Add a Detail</button>'
+                    document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="importJSON(false)" class="btn btn-primary btn-block mb-4">Import items from repository</button>'
+                    document.getElementById('buttons2').innerHTML += ` <label for="jsonFileInput">Import items through JSON file:  </label> <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(true)">`;
                 }
             };
             xhr.send();
@@ -849,4 +851,68 @@ function addDetailSubmit() {
     }
     postQuery('INSERT INTO details (item_id, detail_name, detail_value) VALUES("' + selectedItemID + '","' + detail_name + '","' + detail_value + '"); ');
     if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload on update
+}
+
+
+/*Function used when importing a JSON either from a file or repository in Manage Storage*/
+function importJSON(file) {
+    var jsonData;
+
+    if (file) {  /*Case where a file is provided */
+        var fileInput = document.getElementById('jsonFileInput');
+       
+
+        if (fileInput.files.length > 0) {
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (event) {
+                jsonData = JSON.parse(event.target.result);
+                console.log('JSON Data:', jsonData);
+
+                // Move the code that depends on jsonData here
+                importJSONrequest(jsonData);
+            };
+
+            reader.readAsText(file);
+        } else {
+            console.error('No file selected.');
+        }
+    } else {
+            /*Case where file is not provided*/
+            importJSONrequest();
+     }
+    
+}
+
+/*Function that sends the request to the server side for importing a JSON*/
+function importJSONrequest(data) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('POST', '/import-data', true);
+    xhttp.setRequestHeader('Content-Type', 'application/json');
+    errorMessageElement = document.getElementById('error-message');
+
+    xhttp.onreadystatechange = function () {
+        if (xhttp.readyState === 4) {
+            var response;
+
+            if (xhttp.status === 401) {
+                response = JSON.parse(xhttp.responseText);
+                console.log(response.error);
+            } else if (xhttp.status === 200) {
+                if (mngStoreClick) {
+                    mngStoreClick = false;
+                    mngStore();
+                }
+                errorMessageElement.innerHTML = 'JSON imported successfully';
+            }
+        }
+    };
+
+    if (data) {
+        console.log(data);
+        xhttp.send(JSON.stringify(data));
+    } else {
+        xhttp.send();
+    }
 }

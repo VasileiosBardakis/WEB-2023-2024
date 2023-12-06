@@ -294,10 +294,64 @@ if (DO_RESET) {
 	});
 }
 
+/*Async method that gets json file from url/upload and imports the contents ignoring the duplicates with 'INSERT IGNORE'*/
+
+app.post('/import-data', async (req, res) => {
+	try { 
+		let jsonData;
+
+		/*Check if a json file has been given*/
+		if (req.body) {
+			jsonData = req.body;
+		} else {
+			/*if not fetch the data from the repository url*/
+			const response = await fetch('http://usidas.ceid.upatras.gr/web/2023/export.php');
+			jsonData = await response.json();
+		}
+
+		/*Import everything into the database */
+		// categories
+		jsonData.categories.forEach((category) => {
+			const categoryId = category.id;
+			const categoryName = category.category_name;
+			db.query('INSERT IGNORE INTO categories (id, category_name) VALUES (?, ?)', [categoryId, categoryName], (err, results) => {
+				if (err) throw err;
+			});
+		});
+
+		// items
+		jsonData.items.forEach((item) => {
+			const itemId = item.id;
+			const itemName = item.name;
+			const category = item.category;
+
+			db.query('INSERT IGNORE INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
+				if (err) throw err;
+
+				// details
+				item.details.forEach((detail) => {
+					const detailName = detail.detail_name;
+					const detailValue = detail.detail_value;
+
+					db.query('INSERT IGNORE INTO details (item_id, detail_name, detail_value) VALUES (?, ?, ?)', [itemId, detailName, detailValue], (err, results) => {
+						if (err) throw err;
+					});
+				});
+			});
+		});
+
+		res.send('Data imported successfully!');
+	} catch (error) {
+		console.error(error);
+		res.status(500).send('Internal Server Error');
+	}
+});
+
+
 
 /*Method for getting categories from the database*/
 app.get('/api/categories', (req, res) => {
-	const query = 'SELECT * FROM categories'; // Modify the query as needed
+	const query = 'SELECT * FROM categories';
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
@@ -310,7 +364,7 @@ app.get('/api/categories', (req, res) => {
 /*Method for getting announcements from the database*/
 app.get('/api/announcements', (req, res) => {
 	//TODO: Throws 500 if announcements are empty
-	const query = `SELECT * FROM announce`; // Modify the query as needed
+	const query = `SELECT * FROM announce`; 
 	db.query(query, (err, announcement_results) => {
 		if (err) {
 			console.error('Error executing query:', err);
@@ -480,7 +534,7 @@ app.post('/announce', (req, res) => {
 });
 /*Returns all items in database*/
 app.get('/api/items', (req, res) => {
-	const query = 'SELECT * FROM items'; // Modify the query as needed
+	const query = 'SELECT * FROM items';
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
@@ -558,7 +612,6 @@ app.get('/api/cargo', (req, res) => {
             return;
         }
 
-        // Handle the results if needed
         res.json({ message: 'Item loaded successfully' });
     });
 });
@@ -573,7 +626,6 @@ app.get('/api/cargo', (req, res) => {
             return;
         }
 
-        // Handle the results if needed
 		console.log(results[0]);
         res.json({ message: 'Cargo delivered successfully' });
     });
