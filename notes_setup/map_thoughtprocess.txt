@@ -33,6 +33,9 @@ map + base
             vehicles
                 once all 3 are loaded, draw lines
                     filters
+
+for each vehicle:
+    query on offers and requests WHERE 
 Extras:
 upon clicking on a offer from panel, go to coordinate linked to that and vice versa
 write them on an offers box and display them on the side (see figure)

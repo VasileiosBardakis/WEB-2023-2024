@@ -996,8 +996,21 @@ function loadMap() {
                 }
             });
             
-            
+            // Vehicles
+            let xhr_vehicles = new XMLHttpRequest();
+            xhr_vehicles.open('GET', '/map/vehicles', true);
+            xhr_vehicles.onreadystatechange = function() {
+                if (xhr_vehicles.readyState === 4 && xhr_vehicles.status === 200) {
+                    let data = JSON.parse(xhr_vehicles.response)
 
+                    let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {
+                        draggable: true
+                    }).addTo(mymap);
+                    base_marker.bindPopup("<b>Organization base</b>");
+
+                }
+            }
+            
         } //TODO: Handle endpoint error
     };
     xhr_init_base.send();

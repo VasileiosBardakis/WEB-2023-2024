@@ -156,10 +156,20 @@ INSERT INTO offer_status_code VALUES
 -- tasks: either offers or requests
 /*
 CREATE TABLE tasks (
-    username VARCHAR(30),
+    id INT PRIMARY KEY,
+    account_id INT,
+    offer_id INT,
+    request_id INT,
+    -- other task-related columns
+    FOREIGN KEY (account_id) REFERENCES accounts(account_id),
+    FOREIGN KEY (offer_id) REFERENCES offers(offer_id),
+    FOREIGN KEY (request_id) REFERENCES requests(request_id),
+    CHECK (
+        (offer_id IS NOT NULL AND request_id IS NULL) OR
+        (offer_id IS NULL AND request_id IS NOT NULL)
+    )
 )
 */
-
 DROP PROCEDURE IF EXISTS cargoLoaded;
 
 DELIMITER $$
