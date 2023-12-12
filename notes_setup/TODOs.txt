@@ -44,6 +44,13 @@ div label {
 
 
 TODO:
+When something changes:
+    base relocation
+    new offer
+    new announcement
+have sql watcher and update everyone's currently logged in homepage
++ cross validate sql entries in case they are on older data and they're not valid yet
+
 On button press, restore default settings
 Fix sql auth (where username = ?)
 When scrolling, div goes inside sidebar

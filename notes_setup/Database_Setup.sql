@@ -28,6 +28,9 @@ CREATE TABLE account_coordinates (
     FOREIGN KEY (username) REFERENCES accounts(username)
 )ENGINE=InnoDB;
 
+/*
+select ST_X(coordinate), ST_Y(coordinate) from base_coordinates;
+*/
 CREATE TABLE base_coordinates (
     id INT PRIMARY KEY,
     coordinate POINT NOT NULL

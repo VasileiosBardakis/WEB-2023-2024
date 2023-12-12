@@ -941,17 +941,13 @@ function loadMap() {
     }
     
 
-    let organizationBase = { lat: 38.361427, lng: 21.712058 };
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', '/map/base', true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            let data = JSON.parse(xhr.response)
+    // Map creation, base coordinates found and base relocation function
+    let xhr_init_base = new XMLHttpRequest();
+    xhr_init_base.open('GET', '/map/base', true);
+    xhr_init_base.onreadystatechange = function() {
+        if (xhr_init_base.readyState === 4 && xhr_init_base.status === 200) {
+            let data = JSON.parse(xhr_init_base.response)
             let baseCoordinates = data.base[0].coordinate;
-
-            console.log(baseCoordinates);
-
-
 
             let mymap = L.map("mapid");
             let osmUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
@@ -991,36 +987,37 @@ function loadMap() {
                             }
                         }
                     };
-                    /*
-                    let data = {
-                        lat: base_marker.getLatLng().lat,
-                        lng: base_marker.getLatLng().lng
-                    }
-                    vs:
-                    */
-                   //TODO: Json values must be string else crash
-                    let lat = String(base_marker.getLatLng().lat);
-                    let lng = String(base_marker.getLatLng().lng);
-                   let data = JSON.stringify({ lat: lat, lng: lng});
 
-                    console.log(data);
+                    let data = JSON.stringify({
+                        lat: base_marker.getLatLng().lat, 
+                        lng: base_marker.getLatLng().lng
+                    });
                     xhttp.send(data);
                 }
             });
             
-            function markerClick(event) {
-              this.getPopup()
-                .setLatLng(event.latlng)
             
-                // .setContent(event.latlng.lat + ", " + event.latlng.lng);
-                // Rounded
-                .setContent(roundDecimal(event.latlng.lat, 3) + ', ' + roundDecimal(event.latlng.lng, 3));
-            }
-            
+
         } //TODO: Handle endpoint error
     };
-    xhr.send();
+    xhr_init_base.send();
+
+    // Vehicles
+
+    // Offers, offer markers
+
+    // Requests, request markers
+
+    // After all 3, draw lines from each to each of them
+
+
+
+    function markerClick(event) {
+      this.getPopup()
+        .setLatLng(event.latlng)
     
-    
-    
+        // .setContent(event.latlng.lat + ", " + event.latlng.lng);
+        // Rounded
+        .setContent(roundDecimal(event.latlng.lat, 3) + ', ' + roundDecimal(event.latlng.lng, 3));
+    }
 }
