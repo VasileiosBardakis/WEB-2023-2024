@@ -1,0 +1,29 @@
+Have separate tables for the coordinates:
+base coordinates
+account_coordinates:
+    rescuer coordinates
+    citizen coordinates
+
+╭――――――――╮
+│side│   │
+│bar │map│
+│    │   │
+╰――――――――╯
+
+offers JOIN coordinates on username, color them based on status int
+requests JOIN coordinates on username, write them on a requests box and color them based on status int
+
+if many offers/requests from 1 username, put 1 marker only and update that tooltip
+
+to draw map:
+    sequential GET for each part of ui
+
+
+Extras:
+upon clicking on a offer from panel, go to coordinate linked to that and vice versa
+write them on an offers box and display them on the side (see figure)
+╭―――――――――――――――――╮
+│side│   │offers  │
+│bar │map│――――――――│
+│    │   │requests│
+╰―――――――――――――――――╯

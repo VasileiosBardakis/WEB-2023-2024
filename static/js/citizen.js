@@ -58,6 +58,7 @@ function sendRequest() {
     };
 
     let data = JSON.stringify({ item_id: item_id, num_people: num_people });
+    console.log(data);
     xhttp.send(data);
 
     // Load table to show new request
@@ -214,6 +215,12 @@ function loadAnnouncements() {
             console.log(data);
 
             let announcements = data.announcements;
+
+            if (announcements.length === 0) {
+                emptyAnnouncementsElement.innerHTML = 'There are currently no announcements.';
+                return;
+            }
+
             let mapping = data.mapping;
             // TODO: Move this to index.js
             let itemDict = {};
@@ -222,12 +229,6 @@ function loadAnnouncements() {
             });
 
             console.log(mapping);
-
-            // TODO: If empty, show no announcement
-            if (announcements.length === 0) {
-                emptyAnnouncementsElement.innerHTML = 'There are currently no announcements.';
-                return;
-            }
 
             //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
 
@@ -310,6 +311,9 @@ function loadAnnouncements() {
 
                 
             });
+        } else {
+            console.log('error');
+
         }
     };
     xhr.send();

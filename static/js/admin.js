@@ -4,6 +4,7 @@ var mkAnClick = false; //Variable to see if 'make an announcement' is clicked
 var shStoreClick = false; //Variable to see if 'View current storage' is clicked
 var mngStoreClick = false; //Variable to see if 'Manage Storage' is clicked
 var mngCategoriesClick = false; 
+var mapClick = false;
 var dropdownCount;  // Variable to keep track of the number of dropdowns in make announcement button
 var xhr = new XMLHttpRequest();
 
@@ -30,12 +31,14 @@ function clearFields() {
     mkAnClick = false;
     shStoreClick = false;
     mngStoreClick = false;
+    mapClick = false;
     document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
     document.getElementById('error-message').innerHTML = '';   
     document.getElementById('storage').innerHTML = '';   
     document.getElementById('buttons').innerHTML = '';      
     document.getElementById('buttons2').innerHTML = '';
     document.getElementById('inputFieldsDiv2').innerHTML = '';
+    document.getElementById('mapid').innerHTML = '';
 
 }
 
@@ -915,4 +918,109 @@ function importJSONrequest(data) {
     } else {
         xhttp.send();
     }
+}
+
+function mapTab() {
+    if (!adResClick) {       //If addRescuer isn't clicked, show input fields
+        //Html code for input fields
+        clearFields();
+        loadMap();
+        mapClick = true;
+        var inputFieldsHTML = ``;
+        //insert the HTML content into the designated div
+        document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
+    } else {
+        clearFields();
+    }
+
+}
+
+function loadMap() {
+    function roundDecimal(float, decimal_places) {
+        return (Math.round(float * Math.pow(10,decimal_places)) / Math.pow(10,decimal_places)).toFixed(decimal_places);
+    }
+    
+
+    let organizationBase = { lat: 38.361427, lng: 21.712058 };
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', '/map/base', true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            let data = JSON.parse(xhr.response)
+            let baseCoordinates = data.base[0].coordinate;
+
+            console.log(baseCoordinates);
+
+
+
+            let mymap = L.map("mapid");
+            let osmUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+            let osmAttrib ='© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a>';
+            let osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
+            mymap.addLayer(osm);
+            mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
+            
+            let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {
+                draggable: true
+            }).addTo(mymap);
+            base_marker.bindPopup("<b>Organization base</b>");
+
+            var originalLatLng; // To store the original position
+            base_marker.on('dragstart', function (event) {
+                originalLatLng = base_marker.getLatLng(); // Store the original position
+            });
+
+            base_marker.on('dragend', function (event) {
+                // Display a confirmation dialog
+                confirmDrag = confirm(`Move base's position?`);
+                if (!confirmDrag) {
+                    // If the user cancels, revert the dragging
+                    base_marker.setLatLng(originalLatLng);
+                } else {
+                    let xhttp = new XMLHttpRequest();
+                    xhttp.open('POST', '/map/relocateBase', true);
+                    xhttp.setRequestHeader('Content-Type', 'text/plain');
+                    
+                    xhttp.onreadystatechange = function () {
+                        if (xhttp.readyState === 4) {
+                            if (xhttp.status === 401) {
+                                // Handle incorrect request with AJAX
+                                let response = JSON.parse(xhttp.responseText);
+                                console.log(response);
+                                // errorMessageElement.innerHTML = response.error;
+                            }
+                        }
+                    };
+                    /*
+                    let data = {
+                        lat: base_marker.getLatLng().lat,
+                        lng: base_marker.getLatLng().lng
+                    }
+                    vs:
+                    */
+                   //TODO: Json values must be string else crash
+                    let lat = String(base_marker.getLatLng().lat);
+                    let lng = String(base_marker.getLatLng().lng);
+                   let data = JSON.stringify({ lat: lat, lng: lng});
+
+                    console.log(data);
+                    xhttp.send(data);
+                }
+            });
+            
+            function markerClick(event) {
+              this.getPopup()
+                .setLatLng(event.latlng)
+            
+                // .setContent(event.latlng.lat + ", " + event.latlng.lng);
+                // Rounded
+                .setContent(roundDecimal(event.latlng.lat, 3) + ', ' + roundDecimal(event.latlng.lng, 3));
+            }
+            
+        } //TODO: Handle endpoint error
+    };
+    xhr.send();
+    
+    
+    
 }

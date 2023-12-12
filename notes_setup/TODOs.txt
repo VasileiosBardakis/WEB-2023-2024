@@ -43,7 +43,8 @@ div label {
 }
 
 
-TODO: 
+TODO:
+On button press, restore default settings
 Fix sql auth (where username = ?)
 When scrolling, div goes inside sidebar
 Going back a page breaks user flow (e.g. admin login -> backwards -> press register) (Πρέπει να κάνεις logout για να μπορείς να πάς στο Login page κανονικά, doesn't seem like a problem to me)
@@ -70,6 +71,8 @@ Handle SQL errors (e.g. when admin change db a user might be trying to access it
 On server error, close connection instead of closing server
 
 Bad input for make request
+
+Reorganize each route to different js folders (like app/, storage/ etc. so index.js is not as cluttered)
 
 To register sto test.html thewritika tha prepe na xei animation alla den doulevei
 https://mdbootstrap.com/docs/standard/extended/login/

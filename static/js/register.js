@@ -15,6 +15,7 @@ let base_marker = L.marker([organizationBase['lat'], organizationBase['lng']]);
 base_marker.addTo(mymap);
 base_marker.bindPopup("<b>Organization base</b>");
 
+// TODO: Popup tooltip saying "drag marker to your location"
 let location_marker = L.marker([organizationBase['lat'], organizationBase['lng']], { draggable: "true" });
 location_marker.addTo(mymap);
 location_marker.bindPopup();

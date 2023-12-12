@@ -28,6 +28,12 @@ CREATE TABLE account_coordinates (
     FOREIGN KEY (username) REFERENCES accounts(username)
 )ENGINE=InnoDB;
 
+CREATE TABLE base_coordinates (
+    id INT PRIMARY KEY,
+    coordinate POINT NOT NULL
+)ENGINE=InnoDB;
+INSERT INTO base_coordinates VALUES (0, POINT(38.361427, 21.712058));
+
 INSERT INTO accounts VALUES
 ('admin','admin',0, null, null);
 INSERT INTO accounts VALUES

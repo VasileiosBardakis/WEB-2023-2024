@@ -188,7 +188,7 @@ app.post('/citizen/sendRequest', (req, res) => {
 	console.log(req.body)
 	let username = req.session.username;
 	let item_id = req.body.item_id;
-	let num_people = req.body.num_people
+	let num_people = req.body.num_people;
 	let status = 0;
 
 	if (username && item_id && num_people) {
@@ -369,6 +369,11 @@ app.get('/api/announcements', (req, res) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		if (!announcement_results.length) {
+			// cant execute query so 0 announcements 
+			res.status(200).json({ announcements: [] });
 			return;
 		}
 
@@ -708,10 +713,10 @@ app.post('/citizen/deleteOffer', (req, res) => {
 				db.query('DELETE FROM offers WHERE id = (?)', [offer_id], function (error, results) {
 					if (error) throw error;
 
-				})
+				});
 				res.end();
 			}
-		})
+		});
 	} else {
 		res.status(401).json({ error: 'Please insert a valid username and item.' });
 		res.end();		
@@ -720,3 +725,82 @@ app.post('/citizen/deleteOffer', (req, res) => {
 	
 });
 
+// Modular requests
+app.get('/map/base', (req, res) => {
+	//TODO: Doesnt need c.st_x???
+	db.query('SELECT * FROM base_coordinates WHERE id=0', function (error, results) {
+		if (error) {
+			console.error('Error executing query:', error);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+
+		if (results.length === 0) {
+			res.status(401).json({ error: 'Base coordinates not found.'});
+			return;	
+		}
+		// TODO: res.end?
+		res.json({ base: results });
+	});
+});
+
+app.post('/map/relocateBase', (req, res) => {
+	let username = req.session.username;
+	console.log(req.body);
+	lat = req.body.lat;
+	lng = req.body.lng;
+
+	console.log(lat);
+	console.log(lng);
+
+	// TODO: for some reason plain text counts as 2 
+	if (username) {
+		// Ensure offer is from actual admin
+		db.query('SELECT * FROM accounts WHERE username = (?) AND type=0', [username], function (error, username_results) {
+			if (username_results.length > 0) {
+				db.query('UPDATE base_coordinates SET coordinate = POINT(?,?) WHERE id=0', [lat, lng], function (error, results) {
+					if (error) throw error;
+
+				});
+				res.end();
+			}
+		});
+	} else {
+		res.status(401).json({ error: 'Please insert a valid username and item.' });
+		res.end();		
+	}
+});
+
+app.get('/map/requests', (req, res) => {
+	let sql = `SELECT r.*, c.ST_X(coordinate), c.ST_Y(coordinate)
+	FROM requests r JOIN account_coordinates c 
+	ON r.username = c.username`
+	db.query(sql, function (error, results) {
+		if (error) {
+			console.error('Error executing query:', error);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+
+		// TODO: For empty set, sends empty
+
+		// TODO: res.end?
+		res.json({ map_requests: results });
+	});
+});
+
+app.get('/map/offers', (req, res) => {
+	let sql = `SELECT o.*, c.ST_X(coordinate) as lat, c.ST_Y(coordinate) as lng
+	FROM offers o JOIN account_coordinates c 
+	ON o.username = c.username`
+	db.query(sql, function (error, results) {
+		if (error) {
+			console.error('Error executing query:', error);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+
+		// TODO: res.end?
+		res.json({ map_offers: results });
+	});
+});
