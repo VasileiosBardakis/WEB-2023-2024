@@ -979,7 +979,7 @@ function loadMap() {
                 } else {
                     let xhttp = new XMLHttpRequest();
                     xhttp.open('POST', '/map/relocateBase', true);
-                    xhttp.setRequestHeader('Content-Type', 'text/plain');
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
                     
                     xhttp.onreadystatechange = function () {
                         if (xhttp.readyState === 4) {
