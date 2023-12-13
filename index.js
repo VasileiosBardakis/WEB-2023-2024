@@ -770,37 +770,3 @@ app.post('/map/relocateBase', (req, res) => {
 		res.end();		
 	}
 });
-
-app.get('/map/requests', (req, res) => {
-	let sql = `SELECT r.*, c.ST_X(coordinate), c.ST_Y(coordinate)
-	FROM requests r JOIN account_coordinates c 
-	ON r.username = c.username`
-	db.query(sql, function (error, results) {
-		if (error) {
-			console.error('Error executing query:', error);
-			res.status(500).json({ error: 'Internal Server Error' });
-			return;
-		}
-
-		// TODO: For empty set, sends empty
-
-		// TODO: res.end?
-		res.json({ map_requests: results });
-	});
-});
-
-app.get('/map/offers', (req, res) => {
-	let sql = `SELECT o.*, c.ST_X(coordinate) as lat, c.ST_Y(coordinate) as lng
-	FROM offers o JOIN account_coordinates c 
-	ON o.username = c.username`
-	db.query(sql, function (error, results) {
-		if (error) {
-			console.error('Error executing query:', error);
-			res.status(500).json({ error: 'Internal Server Error' });
-			return;
-		}
-
-		// TODO: res.end?
-		res.json({ map_offers: results });
-	});
-});
