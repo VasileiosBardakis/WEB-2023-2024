@@ -3,7 +3,6 @@ var adResClick = false; //Variable to see if 'add a rescuer' is clicked
 var mkAnClick = false; //Variable to see if 'make an announcement' is clicked
 var shStoreClick = false; //Variable to see if 'View current storage' is clicked
 var mngStoreClick = false; //Variable to see if 'Manage Storage' is clicked
-var mngCategoriesClick = false; 
 var dropdownCount;  // Variable to keep track of the number of dropdowns in make announcement button
 var xhr = new XMLHttpRequest();
 
@@ -15,7 +14,6 @@ xhr.onreadystatechange = function () {
 };
 
 function clearFieldsMngDatabase() {
-    mngCategoriesClick = false;
     document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
     document.getElementById('inputFieldsDiv2').innerHTML = '';
     document.getElementById('storage').innerHTML = '';
@@ -379,69 +377,78 @@ function mngStore() {
 function itemsInCat(selected) {
     fetchMethod('/api/items')
         .then(data => {
-            var items = data.items.filter(function (item) {
-                return String(item.category) === String(selected);
-            });
-            var table = document.createElement('table');
+            
+                var items = data.items.filter(function (item) {
+                    return String(item.category) === String(selected);
+                });
 
-            /* Header Row */
-            var headerRow = table.insertRow(0);
-            var headers = ['ID', 'Name', 'Quantity'];
-            for (var i = 0; i < headers.length; i++) {
-                var headerCell = headerRow.insertCell(i);
-                headerCell.textContent = headers[i];
-            }
-
-            // Populate the table with categories
-            items.forEach(function (item) {
-                var row = table.insertRow(table.rows.length);
-
-                /*Cells for item name and details*/
-                var idCell = row.insertCell(0);
-                idCell.innerHTML = '<input type="text" value="' + item.id + '" readonly style="background-color: #f0f0f0;">';
-
-                var nameCell = row.insertCell(1);
-                nameCell.innerHTML = '<input type="text" value="' + item.name + '">';
-
-                var quanCell = row.insertCell(2);
-                quanCell.innerHTML = '<input type="text" value="' + item.quantity + '">';
-
-                var editDetailsCell = row.insertCell(3);
-                var editDetailsButton = document.createElement('button');
-                editDetailsButton.textContent = 'Edit Details';
-                editDetailsButton.onclick = function () {
-                    editDetails(item.id);
-                };
-                editDetailsCell.appendChild(editDetailsButton);
-
-                var actionsCell = row.insertCell(4); /* For the delete category buttons */
-                var deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete Item';
-                deleteButton.onclick = function () {
-                    var confirmation = confirm('Are you sure you want to delete this item and all of it`s details?');
-                    if (confirmation) {
-                        query = 'DELETE FROM items WHERE id=' + item.id;
-                        postQuery(query);
-                        if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
-                        console.log(query);
-                    }
-                };
-                actionsCell.appendChild(deleteButton);
-            });
-
-            /*Append the table to div and add event listener to change items when enter is pressed*/
-            var categoryTableDiv = document.getElementById('inputFieldsDiv2');
-            categoryTableDiv.innerHTML = '';
-            categoryTableDiv.appendChild(table);
-
-            // Add event listener to the table
-            table.addEventListener('keyup', function (event) {
-                if (event.key === 'Enter') {
-                    var columnIndex = event.target.closest('td').cellIndex;
-                    var id = event.target.closest('tr').cells[0].querySelector('input').value;
-                    changeItem(id, columnIndex, event.target, false);
+                /* Case where the category has no items */
+                if (Object.keys(items).length == 0) {
+                    document.getElementById('inputFieldsDiv2').innerHTML = `This category has no items, you can add some though!`;
                 }
-            });
+                else {
+
+
+                var table = document.createElement('table');
+                /* Header Row */
+                var headerRow = table.insertRow(0);
+                var headers = ['ID', 'Name', 'Quantity'];
+                for (var i = 0; i < headers.length; i++) {
+                    var headerCell = headerRow.insertCell(i);
+                    headerCell.textContent = headers[i];
+                }
+
+                // Populate the table with categories
+                items.forEach(function (item) {
+                    var row = table.insertRow(table.rows.length);
+
+                    /*Cells for item name and details*/
+                    var idCell = row.insertCell(0);
+                    idCell.innerHTML = '<input type="text" value="' + item.id + '" readonly style="background-color: #f0f0f0;">';
+
+                    var nameCell = row.insertCell(1);
+                    nameCell.innerHTML = '<input type="text" value="' + item.name + '">';
+
+                    var quanCell = row.insertCell(2);
+                    quanCell.innerHTML = '<input type="text" value="' + item.quantity + '">';
+
+                    var editDetailsCell = row.insertCell(3);
+                    var editDetailsButton = document.createElement('button');
+                    editDetailsButton.textContent = 'Edit Details';
+                    editDetailsButton.onclick = function () {
+                        editDetails(item.id);
+                    };
+                    editDetailsCell.appendChild(editDetailsButton);
+
+                    var actionsCell = row.insertCell(4); /* For the delete category buttons */
+                    var deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete Item';
+                    deleteButton.onclick = function () {
+                        var confirmation = confirm('Are you sure you want to delete this item and all of it`s details?');
+                        if (confirmation) {
+                            query = 'DELETE FROM items WHERE id=' + item.id;
+                            postQuery(query);
+                            if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+
+                        }
+                    };
+                    actionsCell.appendChild(deleteButton);
+                });
+
+                /*Append the table to div and add event listener to change items when enter is pressed*/
+                var categoryTableDiv = document.getElementById('inputFieldsDiv2');
+                categoryTableDiv.innerHTML = '';
+                categoryTableDiv.appendChild(table);
+
+                // Add event listener to the table
+                table.addEventListener('keyup', function (event) {
+                    if (event.key === 'Enter') {
+                        var columnIndex = event.target.closest('td').cellIndex;
+                        var id = event.target.closest('tr').cells[0].querySelector('input').value;
+                        changeItem(id, columnIndex, event.target, false);
+                    }
+                });
+            }
         })
         .catch(error => {
             console.error('Error fetching items:', error);
@@ -456,51 +463,58 @@ function editDetails(itemId) {
             var details = data.details;
             var table = document.createElement('table');
 
-            /*Create headers*/
-            var headerRow = table.insertRow(0);
-            var headers = ['Detail ID', 'Detail Name', 'Detail Value'];
-            for (var i = 0; i < headers.length; i++) {
-                var headerCell = headerRow.insertCell(i);
-                headerCell.textContent = headers[i];
+
+            /* Case where the item has no details */
+            if (Object.keys(data.details).length == 0) {
+                document.getElementById('inputFieldsDiv2').innerHTML = `This item has no details, you can add them though!`;
             }
-
-            /*Populate the table with the results of the method*/
-            details.forEach(function (detail) {
-                var row = table.insertRow(table.rows.length);
-
-                var detailNameCell = row.insertCell(0);
-                detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_id + '" readonly style="background-color: #f0f0f0;">';
-
-                var detailNameCell = row.insertCell(1);
-                detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_name + '">';
-
-                var valueCell = row.insertCell(2);
-                valueCell.innerHTML = '<input type="text" value="' + detail.detail_value + '">';
-
-                var deleteDetailCell = row.insertCell(3);
-                var deleteDetailButton = document.createElement('button');
-                deleteDetailButton.textContent = 'Delete Detail';
-                deleteDetailButton.onclick = function () {
-                    deleteDetail(detail.detail_id);
-                };
-                deleteDetailCell.appendChild(deleteDetailButton);
-            });
-
-            /*Append the table with innerHTML*/
-            var containerDiv = document.getElementById('inputFieldsDiv2');
-            containerDiv.innerHTML = ''; // Clear previous content
-            containerDiv.appendChild(table);
-
-            /*Add event listener to the table*/
-            table.addEventListener('keyup', function (event) {
-                if (event.key === 'Enter') {
-                    var columnIndex = event.target.closest('td').cellIndex;
-                    var id = event.target.closest('tr').cells[0].querySelector('input').value;
-                    console.log(id);
-                    changeItem(id, columnIndex, event.target, true);
+            else {
+                /*Create headers*/
+                var headerRow = table.insertRow(0);
+                var headers = ['Detail ID', 'Detail Name', 'Detail Value'];
+                for (var i = 0; i < headers.length; i++) {
+                    var headerCell = headerRow.insertCell(i);
+                    headerCell.textContent = headers[i];
                 }
-            });
-        })
+
+                /*Populate the table with the results of the method*/
+                details.forEach(function (detail) {
+                    var row = table.insertRow(table.rows.length);
+
+                    var detailNameCell = row.insertCell(0);
+                    detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_id + '" readonly style="background-color: #f0f0f0;">';
+
+                    var detailNameCell = row.insertCell(1);
+                    detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_name + '">';
+
+                    var valueCell = row.insertCell(2);
+                    valueCell.innerHTML = '<input type="text" value="' + detail.detail_value + '">';
+
+                    var deleteDetailCell = row.insertCell(3);
+                    var deleteDetailButton = document.createElement('button');
+                    deleteDetailButton.textContent = 'Delete Detail';
+                    deleteDetailButton.onclick = function () {
+                        deleteDetail(detail.detail_id);
+                    };
+                    deleteDetailCell.appendChild(deleteDetailButton);
+                });
+
+                /*Append the table with innerHTML*/
+                var containerDiv = document.getElementById('inputFieldsDiv2');
+                containerDiv.innerHTML = ''; // Clear previous content
+                containerDiv.appendChild(table);
+
+                /*Add event listener to the table*/
+                table.addEventListener('keyup', function (event) {
+                    if (event.key === 'Enter') {
+                        var columnIndex = event.target.closest('td').cellIndex;
+                        var id = event.target.closest('tr').cells[0].querySelector('input').value;
+                        changeItem(id, columnIndex, event.target, true);
+                    }
+                });
+            }
+            })
+
         .catch(error => {
             console.error('Error fetching details:', error);
         });
@@ -520,11 +534,10 @@ function deleteDetail(detailId) {
     }
 }
 
-/*Function that is called when enter is pressed in manage storage->manage items->Changed input field*/
+/*Function that is called when enter is pressed when editing an item's or detail's values in manage storage->manage items->Changed input field*/
 function changeItem(id,columnIndex, input,detail) {
     // Get the corresponding header value from the headers array
     // Print the result
-    console.log(id,columnIndex, input.value);
 
     if (!detail) {
         switch (columnIndex) {

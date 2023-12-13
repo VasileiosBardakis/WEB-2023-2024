@@ -301,7 +301,7 @@ app.post('/import-data', async (req, res) => {
 		let jsonData;
 
 		/*Check if a json file has been given*/
-		if (req.body) {
+		if (Object.keys(req.body).length !== 0) {
 			jsonData = req.body;
 		} else {
 			/*if not fetch the data from the repository url*/

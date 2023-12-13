@@ -44,6 +44,7 @@ div label {
 
 
 TODO: 
+Sto telos na valoume kai to admin xwris express etsi opws to eixame kanei
 Fix sql auth (where username = ?)
 When scrolling, div goes inside sidebar
 Going back a page breaks user flow (e.g. admin login -> backwards -> press register) (Πρέπει να κάνεις logout για να μπορείς να πάς στο Login page κανονικά, doesn't seem like a problem to me)
