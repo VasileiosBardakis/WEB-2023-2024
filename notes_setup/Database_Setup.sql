@@ -28,6 +28,15 @@ CREATE TABLE account_coordinates (
     FOREIGN KEY (username) REFERENCES accounts(username)
 )ENGINE=InnoDB;
 
+/*
+select ST_X(coordinate), ST_Y(coordinate) from base_coordinates;
+*/
+CREATE TABLE base_coordinates (
+    id INT PRIMARY KEY,
+    coordinate POINT NOT NULL
+)ENGINE=InnoDB;
+INSERT INTO base_coordinates VALUES (0, POINT(38.361427, 21.712058));
+
 INSERT INTO accounts VALUES
 ('admin','admin',0, null, null);
 INSERT INTO accounts VALUES
@@ -147,10 +156,20 @@ INSERT INTO offer_status_code VALUES
 -- tasks: either offers or requests
 /*
 CREATE TABLE tasks (
-    username VARCHAR(30),
+    id INT PRIMARY KEY,
+    account_id INT,
+    offer_id INT,
+    request_id INT,
+    -- other task-related columns
+    FOREIGN KEY (account_id) REFERENCES accounts(account_id),
+    FOREIGN KEY (offer_id) REFERENCES offers(offer_id),
+    FOREIGN KEY (request_id) REFERENCES requests(request_id),
+    CHECK (
+        (offer_id IS NOT NULL AND request_id IS NULL) OR
+        (offer_id IS NULL AND request_id IS NOT NULL)
+    )
 )
 */
-
 DROP PROCEDURE IF EXISTS cargoLoaded;
 
 DELIMITER $$

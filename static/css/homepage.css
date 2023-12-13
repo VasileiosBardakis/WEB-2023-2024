@@ -139,6 +139,11 @@ color: white;
   padding: 0.3em;
 }
 
+#mapid { 
+  height: 750px;
+  width: 750px;
+}
+
 /* The first of each row */
 /* .actions-table tr > :first-child {
   border:1px solid;

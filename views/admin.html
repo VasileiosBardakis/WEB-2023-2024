@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Saviors Inc. - Citizen</title>
+    <title>Admin | Saviors Inc.</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" type="text/css" href="css/homepage.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"/>
+
     <!-- Include the Bootstrap JS dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- Include the Bootstrap JS file -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
     <script src="js/citizen.js" defer></script>
     <style>
     </style>
@@ -44,6 +49,7 @@
               <li><a onclick="shStore()">View current storage</a></li>
               <li><a onclick="mngStore()">Manage storage</a></li>
               <li><a onclick="mkAn()">Make an announcement</a></li>
+              <li><a onclick="mapTab()">Map view</a></li>
               <li>
                   <form action="/logout?_method=DELETE" method="post">
                       <button type="submit">Logout</button>
@@ -60,6 +66,7 @@
           <div id="inputFieldsDiv"><!-- Input fields will be inserted here --></div>
           <div id="inputFieldsDiv2"><!-- Input fields 2 will be inserted here --></div>
           <div id="storage"><!--Storage is displayed here --></div>
+          <div id="mapid"></div>
           <div id="buttons2"></div> <!--Extra buttons-->
       </div>
 
