@@ -387,51 +387,56 @@ function itemsInCat(selected) {
             });
             var table = document.createElement('table');
 
-            /* Header Row */
-            var headerRow = table.insertRow(0);
-            var headers = ['ID', 'Name', 'Quantity'];
-            for (var i = 0; i < headers.length; i++) {
-                var headerCell = headerRow.insertCell(i);
-                headerCell.textContent = headers[i];
+            if (items.length == 0) {
+                var empty = table.insertRow(0);
+                empty.textContent = 'This category doesnt have any items';
             }
+            else {
+                /* Header Row */
+                var headerRow = table.insertRow(0);
+                var headers = ['ID', 'Name', 'Quantity'];
+                for (var i = 0; i < headers.length; i++) {
+                    var headerCell = headerRow.insertCell(i);
+                    headerCell.textContent = headers[i];
+                }
 
-            // Populate the table with categories
-            items.forEach(function (item) {
-                var row = table.insertRow(table.rows.length);
+                // Populate the table with categories
+                items.forEach(function (item) {
+                    var row = table.insertRow(table.rows.length);
 
-                /*Cells for item name and details*/
-                var idCell = row.insertCell(0);
-                idCell.innerHTML = '<input type="text" value="' + item.id + '" readonly style="background-color: #f0f0f0;">';
+                    /*Cells for item name and details*/
+                    var idCell = row.insertCell(0);
+                    idCell.innerHTML = '<input type="text" value="' + item.id + '" readonly style="background-color: #f0f0f0;">';
 
-                var nameCell = row.insertCell(1);
-                nameCell.innerHTML = '<input type="text" value="' + item.name + '">';
+                    var nameCell = row.insertCell(1);
+                    nameCell.innerHTML = '<input type="text" value="' + item.name + '">';
 
-                var quanCell = row.insertCell(2);
-                quanCell.innerHTML = '<input type="text" value="' + item.quantity + '">';
+                    var quanCell = row.insertCell(2);
+                    quanCell.innerHTML = '<input type="text" value="' + item.quantity + '">';
 
-                var editDetailsCell = row.insertCell(3);
-                var editDetailsButton = document.createElement('button');
-                editDetailsButton.textContent = 'Edit Details';
-                editDetailsButton.onclick = function () {
-                    editDetails(item.id);
-                };
-                editDetailsCell.appendChild(editDetailsButton);
+                    var editDetailsCell = row.insertCell(3);
+                    var editDetailsButton = document.createElement('button');
+                    editDetailsButton.textContent = 'Edit Details';
+                    editDetailsButton.onclick = function () {
+                        editDetails(item.id);
+                    };
+                    editDetailsCell.appendChild(editDetailsButton);
 
-                var actionsCell = row.insertCell(4); /* For the delete category buttons */
-                var deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete Item';
-                deleteButton.onclick = function () {
-                    var confirmation = confirm('Are you sure you want to delete this item and all of it`s details?');
-                    if (confirmation) {
-                        query = 'DELETE FROM items WHERE id=' + item.id;
-                        postQuery(query);
-                        if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
-                        console.log(query);
-                    }
-                };
-                actionsCell.appendChild(deleteButton);
-            });
-
+                    var actionsCell = row.insertCell(4); /* For the delete category buttons */
+                    var deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete Item';
+                    deleteButton.onclick = function () {
+                        var confirmation = confirm('Are you sure you want to delete this item and all of it`s details?');
+                        if (confirmation) {
+                            query = 'DELETE FROM items WHERE id=' + item.id;
+                            postQuery(query);
+                            if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+                            console.log(query);
+                        }
+                    };
+                    actionsCell.appendChild(deleteButton);
+                });
+            }
             /*Append the table to div and add event listener to change items when enter is pressed*/
             var categoryTableDiv = document.getElementById('inputFieldsDiv2');
             categoryTableDiv.innerHTML = '';
@@ -458,36 +463,45 @@ function editDetails(itemId) {
         .then(data => {
             var details = data.details;
             var table = document.createElement('table');
-
-            /*Create headers*/
-            var headerRow = table.insertRow(0);
-            var headers = ['Detail ID', 'Detail Name', 'Detail Value'];
-            for (var i = 0; i < headers.length; i++) {
-                var headerCell = headerRow.insertCell(i);
-                headerCell.textContent = headers[i];
+            if (details.length == 0) {
+                var empty = table.insertRow(0);
+                empty.textContent = 'This item doesnt have any details';
             }
+            else {
 
-            /*Populate the table with the results of the method*/
-            details.forEach(function (detail) {
-                var row = table.insertRow(table.rows.length);
+                /*Create headers*/
+                var headerRow = table.insertRow(0);
+                var headers = ['Detail ID', 'Detail Name', 'Detail Value'];
+                for (var i = 0; i < headers.length; i++) {
+                    var headerCell = headerRow.insertCell(i);
+                    headerCell.textContent = headers[i];
+                }
 
-                var detailNameCell = row.insertCell(0);
-                detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_id + '" readonly style="background-color: #f0f0f0;">';
+                /*Populate the table with the results of the method*/
+                console.log('detail length is:', details.length);
 
-                var detailNameCell = row.insertCell(1);
-                detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_name + '">';
 
-                var valueCell = row.insertCell(2);
-                valueCell.innerHTML = '<input type="text" value="' + detail.detail_value + '">';
+                details.forEach(function (detail) {
+                    var row = table.insertRow(table.rows.length);
 
-                var deleteDetailCell = row.insertCell(3);
-                var deleteDetailButton = document.createElement('button');
-                deleteDetailButton.textContent = 'Delete Detail';
-                deleteDetailButton.onclick = function () {
-                    deleteDetail(detail.detail_id);
-                };
-                deleteDetailCell.appendChild(deleteDetailButton);
-            });
+                    var detailNameCell = row.insertCell(0);
+                    detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_id + '" readonly style="background-color: #f0f0f0;">';
+
+                    var detailNameCell = row.insertCell(1);
+                    detailNameCell.innerHTML = '<input type="text" value="' + detail.detail_name + '">';
+
+                    var valueCell = row.insertCell(2);
+                    valueCell.innerHTML = '<input type="text" value="' + detail.detail_value + '">';
+
+                    var deleteDetailCell = row.insertCell(3);
+                    var deleteDetailButton = document.createElement('button');
+                    deleteDetailButton.textContent = 'Delete Detail';
+                    deleteDetailButton.onclick = function () {
+                        deleteDetail(detail.detail_id);
+                    };
+                    deleteDetailCell.appendChild(deleteDetailButton);
+                });
+            }
 
             /*Append the table with innerHTML*/
             var containerDiv = document.getElementById('inputFieldsDiv2');
