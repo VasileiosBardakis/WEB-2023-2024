@@ -744,6 +744,7 @@ app.post('/citizen/deleteOffer', (req, res) => {
 		db.query('SELECT username FROM offers WHERE id = (?)', [offer_id], function (error, username_results) {
 			console.log(username_results);
 
+			// TODO: Do check username[0] with req.session.username
 			// Has permission to delete their own offer
 			if (username_results.length > 0) {
 				db.query('DELETE FROM offers WHERE id = (?)', [offer_id], function (error, results) {
@@ -805,4 +806,57 @@ app.post('/map/relocateBase', (req, res) => {
 		res.status(401).json({ error: 'Please insert a valid username and item.' });
 		res.end();		
 	}
+});
+
+//TODO: Add if admin to hide global data and limit to only one person
+app.get('/map/requests', (req, res) => {
+	let sql = `SELECT r.*, c.ST_X(coordinate), c.ST_Y(coordinate)
+	FROM requests r JOIN account_coordinates c 
+	ON r.username = c.username`
+	db.query(sql, function (error, results) {
+		if (error) {
+			console.error('Error executing query:', error);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+
+		// TODO: For empty set, sends empty
+
+		// TODO: res.end?
+		res.json({ map_requests: results });
+	});
+});
+
+app.get('/map/offers', (req, res) => {
+	let sql = `SELECT o.*, c.ST_X(coordinate) as lat, c.ST_Y(coordinate) as lng
+	FROM offers o JOIN account_coordinates c 
+	ON o.username = c.username`
+	db.query(sql, function (error, results) {
+		if (error) {
+			console.error('Error executing query:', error);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+
+		// TODO: res.end?
+		res.json({ map_offers: results });
+	});
+});
+
+app.get('/map/vehicles', (req, res) => {
+	let sql = `SELECT car.*, c.ST_X(coordinate), c.ST_Y(coordinate)
+	FROM cargo car JOIN account_coordinates c 
+	ON car.username = c.username`
+	db.query(sql, function (error, results) {
+		if (error) {
+			console.error('Error executing query:', error);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+
+		// TODO: For empty set, sends empty
+
+		// TODO: res.end?
+		res.json({ map_cargo: results });
+	});
 });

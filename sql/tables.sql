@@ -1,11 +1,3 @@
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
-flush privileges;
-
-DROP DATABASE IF EXISTS saviors;
-CREATE DATABASE saviors;
-USE saviors;
-
-
 CREATE TABLE accounts (
     username VARCHAR(30) PRIMARY KEY,
     password VARCHAR(30) NOT NULL,
@@ -60,8 +52,7 @@ CREATE TABLE items (
 /* FOR TESTING */
 UPDATE  items 
     SET quantity = 10 WHERE id>10; 
-    
--- alternative versions of items (e.g. 125ml water)
+
 CREATE TABLE details (
     detail_id INT AUTO_INCREMENT PRIMARY KEY,
     item_id INT,
@@ -85,11 +76,11 @@ CREATE TABLE announce (
 )ENGINE=InnoDB;
 
 
-SELECT * from items;
-select * from details;
-select * from categories;
-select * from accounts;
-select * from announce;
+-- SELECT * from items;
+-- select * from details;
+-- select * from categories;
+-- select * from accounts;
+-- select * from announce;
 
 CREATE TABLE requests (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -152,6 +143,24 @@ INSERT INTO offer_status_code VALUES
 (1, 'Picked up'),
 (2, 'Delivered');
 
+CREATE TABLE offer_assumed_from (
+    id INT,
+    rescuer VARCHAR(30),
+
+    PRIMARY KEY (id, rescuer),
+    FOREIGN KEY (rescuer) REFERENCES accounts(username),
+    FOREIGN KEY (id) REFERENCES offers(id)
+)ENGINE=InnoDB; 
+
+CREATE TABLE request_assumed_from (
+    id INT,
+    rescuer VARCHAR(30),
+
+    PRIMARY KEY (id, rescuer),
+    FOREIGN KEY (rescuer) REFERENCES accounts(username),
+    FOREIGN KEY (id) REFERENCES requests(id)
+)ENGINE=InnoDB; 
+
 -- vehicle: max 4 tasks
 -- tasks: either offers or requests
 /*
@@ -160,7 +169,7 @@ CREATE TABLE tasks (
     account_id INT,
     offer_id INT,
     request_id INT,
-    -- other task-related columns
+
     FOREIGN KEY (account_id) REFERENCES accounts(account_id),
     FOREIGN KEY (offer_id) REFERENCES offers(offer_id),
     FOREIGN KEY (request_id) REFERENCES requests(request_id),
@@ -295,3 +304,11 @@ VALUES
 ('user3', '2023-01-04 08:15:00', '2023-01-05 10:30:00', 2, 22),
 ('user4', '2023-01-06 11:30:00', NULL, 0, 22),
 ('user5', '2023-01-07 15:00:00', '2023-01-08 09:30:00', 2, 19);
+
+CREATE TABLE tasks (
+    req_off_id INT PRIMARY KEY AUTO_INCREMENT,
+    rescuer_username VARCHAR(30) NOT NULL,
+    task_type ENUM('offer', 'request') NOT NULL,
+    
+    FOREIGN KEY (rescuer_username) REFERENCES accounts(username)
+)ENGINE=InnoDB; 

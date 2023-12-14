@@ -5,6 +5,7 @@ Offer gia 1 item, kai de kanei reference to announcement.
 Info:
 SQL credentials se .env omws exei bug to package
 Sto static/ mpainoun arxeia pou theloume na fortwsoume (.css, .png etc)
+Cancelled offers and requests could be kept with a 'deleted' status but they are not as important
 
 Announcements are independent to offers. Offers can be generated endlessly, but announcements can be deleted without impacting them.
 
