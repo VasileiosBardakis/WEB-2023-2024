@@ -109,10 +109,7 @@ function register() {
     xhttp.send(data);
 }
 
-function shStats() {
-    clearFields()
 
-}
 
 /* Function for Show Current Storage button */
 function shStore() {
@@ -120,89 +117,108 @@ function shStore() {
         clearFields();
         shStoreClick = true;
         console.log("Fetching data...");
+        fetchMethod('/api/categories')
+            .then(data => {
+                // Display checkboxes for each category
+                var categoryDiv = document.getElementById('inputFieldsDiv');
+                categoryDiv.innerHTML = '';
+
+                data.categories.forEach(category => {
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = category.id;
+                    checkbox.value = category.category_name;
+                    checkbox.addEventListener('change', function () {
+                        filterItemsByCategory();
+                    });
+
+                    var label = document.createElement('label');
+                    label.htmlFor = category.id;
+                    label.appendChild(document.createTextNode(category.category_name));
+
+                    categoryDiv.appendChild(checkbox);
+                    categoryDiv.appendChild(label);
+                    categoryDiv.appendChild(document.createElement('br'));
+                });
+
+                // Fetch and display items for all categories initially
+                displayData(null);
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            });
         /*We make an http request to get the database item data*/
-        var xhrs = new XMLHttpRequest();
-        xhrs.onreadystatechange = function () {
-            console.log("Ready state:", xhrs.readyState);
-            if (xhrs.readyState == 4 && xhrs.status == 200) {
-                console.log("Response received:", xhr.status, xhr.responseText);
-                var jsonResponse = JSON.parse(xhrs.responseText);
-                console.log("JSON response:", jsonResponse);
-                displayData(jsonResponse);
-            }
-        };
-        xhrs.open("GET", "http://localhost:3000/api/itemswcat", true);
-        xhrs.send();
+        
+        //displayData(null);
     } else {    //clear if storage table is showing
         clearFields();
     }
 }
 
-/* Function for displaying data in Show Current Storage */
-function displayData(data) {
-    /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
-    var storageDiv = document.getElementById("storage");
-    storageDiv.innerHTML = ""; //clear existing
-     /* Create a search bar */
-     var searchInput = document.createElement("input");
-     searchInput.type = "text";
-     searchInput.placeholder = "Search by category...[;] for multiples";
-     searchInput.id = "searchInput";
-     storageDiv.appendChild(searchInput);
-    var table = document.createElement("table"); 
-     /*Headers*/
-     var headerRow = table.insertRow(0);
-     var headers = ["ID", "Name", "Category","Quantity"];
-     for (var i = 0; i < headers.length; i++) {
-         var headerCell = headerRow.insertCell(i);
-         headerCell.textContent = headers[i];
-         headerCell.classList.add("fw-bold"); //bold header 
-     }
-    /*Populate the table with data*/
-    for (var i = 0; i < data.items.length; i++) {
-        var items = data.items[i];
-        var row = table.insertRow(i + 1); // Skip the header row
 
-        // Create cells and populate them with data
-        var idCell = row.insertCell(0);
-        idCell.textContent = items.id;
+/* Function for displaying data from Show Current Storage */
+function displayData(selected) {
+    fetchMethod('/api/itemswcat')
+        .then(data => {
+            console.log(data);
+            var items = data.items.filter(function (item) {
+                if (selected !== null) {
+                    /* check if the item's category is in the selected array */
+                    return selected.includes(String(item.category_name));
+                }
+                /*case where no categories are selected, include all items*/
+                return true;
+            });
 
-        var nameCell = row.insertCell(1);
-        nameCell.textContent = items.name;
+            var table = document.createElement('table');
 
-        var categoryCell = row.insertCell(2);
-        categoryCell.textContent = items.category_name; // Use the category_name instead of category
+            if (items.length == 0) {
+                var empty = table.insertRow(0);
+                empty.textContent = 'This category doesnt have any items';
+            }
+            else {
+                /* Header Row */
+                var headerRow = table.insertRow(0);
+                var headers = ['ID', 'Name', 'Quantity', 'Category'];
+                for (var i = 0; i < headers.length; i++) {
+                    var headerCell = headerRow.insertCell(i);
+                    headerCell.textContent = headers[i];
+                }
 
-        var quantityCell = row.insertCell(3);
-        quantityCell.textContent = items.quantity;
-    }
-    storageDiv.appendChild(table);
-    //search input
-    searchInput.addEventListener("input", function () {
-        searchTable(this.value, table);
-    });
+                // Populate the table with categories
+                items.forEach(function (item) {
+                    var row = table.insertRow(table.rows.length);
+
+                    /*Cells for item name and details*/
+                    var idCell = row.insertCell(0);
+                    idCell.innerHTML = '<input type="text" value="' + item.id + '" readonly style="background-color: #f0f0f0;">';
+
+                    var nameCell = row.insertCell(1);
+                    nameCell.innerHTML = '<input type="text" value="' + item.name + '" readonly style="background-color: #f0f0f0;">';
+
+                    var quanCell = row.insertCell(2);
+                    quanCell.innerHTML = '<input type="text" value="' + item.quantity + '" readonly style="background-color: #f0f0f0;">';
+
+                    var catCell = row.insertCell(3);
+                    catCell.innerHTML = '<input type="text" value="' + item.category_name + '" readonly style="background-color: #f0f0f0;">';
+
+                });
+            }
+            /*Append the table to div and add event listener to change items when enter is pressed*/
+            var categoryTableDiv = document.getElementById('inputFieldsDiv2');
+            categoryTableDiv.innerHTML = '';
+            categoryTableDiv.appendChild(table);
+          
+        })
+        .catch(error => {
+            console.error('Error fetching items:', error);
+        });
 }
 
-/* Function for search bar in Show Current Storage button */
-function searchTable(query, table) {
-    query = query.toLowerCase().trim();
-    var rows = table.getElementsByTagName("tr");
-
-    for (var i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
-        var categoryCell = rows[i].getElementsByTagName("td")[2]; // Index 2 is the category column
-
-        /*Making the search bar case insensitive and able to search for multiple categories using ','*/
-        var cellText = categoryCell.textContent.toLowerCase();     
-        var categories = query.split(',').map(cat => cat.trim());  
-
-        var found = categories.some(category => cellText.includes(category));
-
-        if (found) {
-            rows[i].style.display = "";
-        } else {
-            rows[i].style.display = "none";
-        }
-    }
+/* Function to filter items by selected categories */
+function filterItemsByCategory() {
+    var selectedCategories = Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(checkbox => checkbox.value);
+    displayData(selectedCategories.length > 0 ? selectedCategories : null);
 }
 
 /* Function for the button Make an Announcement */
@@ -1047,4 +1063,9 @@ function loadMap() {
         // Rounded
         .setContent(roundDecimal(event.latlng.lat, 3) + ', ' + roundDecimal(event.latlng.lng, 3));
     }
+}
+
+function shStats() {
+    clearFields()
+
 }
