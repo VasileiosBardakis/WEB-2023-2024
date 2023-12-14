@@ -117,7 +117,7 @@ function shStore() {
         clearFields();
         shStoreClick = true;
         console.log("Fetching data...");
-        fetchMethod('/api/categories')
+        fetchMethod('/api/categories')              /*Fetch the categories and show a checkbox for each one*/
             .then(data => {
                 // Display checkboxes for each category
                 var categoryDiv = document.getElementById('inputFieldsDiv');
@@ -128,10 +128,14 @@ function shStore() {
                     checkbox.type = 'checkbox';
                     checkbox.id = category.id;
                     checkbox.value = category.category_name;
-                    checkbox.addEventListener('change', function () {
-                        filterItemsByCategory();
+
+                    /* Event listener for when checkbox is clicked, get the selected categories and call display data with their values */
+                    checkbox.addEventListener('change', function () {       
+                        var selectedCategories = Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(checkbox => checkbox.value);
+                        displayData(selectedCategories.length > 0 ? selectedCategories : null);
                     });
 
+                    /* Append the checkboxes to the table */
                     var label = document.createElement('label');
                     label.htmlFor = category.id;
                     label.appendChild(document.createTextNode(category.category_name));
@@ -141,24 +145,22 @@ function shStore() {
                     categoryDiv.appendChild(document.createElement('br'));
                 });
 
-                // Fetch and display items for all categories initially
+                /* Display the items from all categories (to do that we call displayData with null)*/
                 displayData(null);
             })
             .catch(error => {
                 console.error('Error fetching categories:', error);
             });
-        /*We make an http request to get the database item data*/
-        
-        //displayData(null);
+
     } else {    //clear if storage table is showing
         clearFields();
     }
 }
 
 
-/* Function for displaying data from Show Current Storage */
+/* Function for displaying data from selected categories (or all categories if input=null) in Show Current Storage  */
 function displayData(selected) {
-    fetchMethod('/api/itemswcat')
+    fetchMethod('/api/itemswcat')    /* Fetch items with their category names */
         .then(data => {
             console.log(data);
             var items = data.items.filter(function (item) {
@@ -185,7 +187,7 @@ function displayData(selected) {
                     headerCell.textContent = headers[i];
                 }
 
-                // Populate the table with categories
+                /* Populate the table with data from selected categories */
                 items.forEach(function (item) {
                     var row = table.insertRow(table.rows.length);
 
@@ -213,12 +215,6 @@ function displayData(selected) {
         .catch(error => {
             console.error('Error fetching items:', error);
         });
-}
-
-/* Function to filter items by selected categories */
-function filterItemsByCategory() {
-    var selectedCategories = Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(checkbox => checkbox.value);
-    displayData(selectedCategories.length > 0 ? selectedCategories : null);
 }
 
 /* Function for the button Make an Announcement */
