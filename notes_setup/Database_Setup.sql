@@ -278,4 +278,20 @@ BEGIN
 END;
 //
 DELIMITER ;
+SELECT * FROM OFFERS;
 
+INSERT INTO requests (username, item_id, num_people, status, date_requested, date_accepted, date_completed)
+VALUES
+('user1', 16, 3, 0, '2023-01-01 12:00:00', NULL, NULL),
+('user2', 17, 2, 1, '2023-01-02 14:30:00', '2023-01-03 09:45:00', '2023-01-04 17:30:00'),
+('user3', 18, 1, 2, '2023-01-05 08:15:00', '2023-01-06 10:30:00', '2023-01-07 12:45:00'),
+('user4', 18, 4, 0, '2023-01-08 11:30:00', NULL, NULL),
+('user5', 25, 2, 2, '2023-01-09 15:00:00', '2023-01-10 09:30:00', '2023-01-11 14:45:00');
+
+INSERT INTO offers (username, date_offered, date_completed, status, item_id)
+VALUES
+('user1', '2023-01-01 12:00:00', NULL, 0, 16),
+('user2', '2023-01-02 14:30:00', '2023-01-03 09:45:00', 1, 18),
+('user3', '2023-01-04 08:15:00', '2023-01-05 10:30:00', 2, 22),
+('user4', '2023-01-06 11:30:00', NULL, 0, 22),
+('user5', '2023-01-07 15:00:00', '2023-01-08 09:30:00', 2, 19);

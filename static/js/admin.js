@@ -2,6 +2,7 @@
 var adResClick = false; //Variable to see if 'add a rescuer' is clicked
 var mkAnClick = false; //Variable to see if 'make an announcement' is clicked
 var shStoreClick = false; //Variable to see if 'View current storage' is clicked
+var shStatsClick = false;
 var mngStoreClick = false; //Variable to see if 'Manage Storage' is clicked
 var mngCategoriesClick = false; 
 var mapClick = false;
@@ -32,6 +33,7 @@ function clearFields() {
     shStoreClick = false;
     mngStoreClick = false;
     mapClick = false;
+    shStatsClick = false;
     document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
     document.getElementById('error-message').innerHTML = '';   
     document.getElementById('storage').innerHTML = '';   
@@ -162,7 +164,6 @@ function shStore() {
 function displayData(selected) {
     fetchMethod('/api/itemswcat')    /* Fetch items with their category names */
         .then(data => {
-            console.log(data);
             var items = data.items.filter(function (item) {
                 if (selected !== null) {
                     /* check if the item's category is in the selected array */
@@ -364,7 +365,6 @@ function mngStore() {
                                 query = 'DELETE FROM categories WHERE id=' + cat.id;
                                 postQuery(query);
                                 if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
-                                console.log(query);
                             }
                         };
                         actionsCell.appendChild(deleteButton);
@@ -443,7 +443,6 @@ function itemsInCat(selected) {
                             query = 'DELETE FROM items WHERE id=' + item.id;
                             postQuery(query);
                             if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
-                            console.log(query);
                         }
                     };
                     actionsCell.appendChild(deleteButton);
@@ -490,7 +489,6 @@ function editDetails(itemId) {
                 }
 
                 /*Populate the table with the results of the method*/
-                console.log('detail length is:', details.length);
 
 
                 details.forEach(function (detail) {
@@ -525,7 +523,6 @@ function editDetails(itemId) {
                 if (event.key === 'Enter') {
                     var columnIndex = event.target.closest('td').cellIndex;
                     var id = event.target.closest('tr').cells[0].querySelector('input').value;
-                    console.log(id);
                     changeItem(id, columnIndex, event.target, true);
                 }
             });
@@ -553,7 +550,6 @@ function deleteDetail(detailId) {
 function changeItem(id,columnIndex, input,detail) {
     // Get the corresponding header value from the headers array
     // Print the result
-    console.log(id,columnIndex, input.value);
 
     if (!detail) {
         switch (columnIndex) {
@@ -939,7 +935,6 @@ function importJSONrequest(data) {
     };
 
     if (data) {
-        console.log(data);
         xhttp.send(JSON.stringify(data));
     } else {
         xhttp.send();
@@ -1061,7 +1056,98 @@ function loadMap() {
     }
 }
 
-function shStats() {
-    clearFields()
+async function shStats() {
+    if (!shStatsClick) {       //If Storage isn't clicked, show input fields
+        clearFields();
+        shStatsClick = true;
+        try {
+            /* get the requests and offers from the database and filter the completed and non completed ones */
+            const requests = await fetchMethod('/api/requests');
+            const offers = await fetchMethod('/api/offers');
+            if ((requests.requests.length + offers.offers.length) == 0) {
+                document.getElementById('inputFieldsDiv').innerHTML = 'There are no requests or offers';
+            }
+            else {
+                const newRequestsCount = requests.requests.filter(request => request.Status === 'Pending' || request.Status === 'Accepted').length;
+                const completedRequestsCount = requests.requests.filter(request => request.Status === 'Completed').length;
 
+                const newOffersCount = offers.offers.filter(offer => offer.Status === 'Pending' || offer.Status === 'Picked Up').length;
+                const completedOffersCount = offers.offers.filter(offer => offer.Status === 'Delivered').length;
+
+                const total = newRequestsCount + completedRequestsCount + newOffersCount + completedOffersCount;
+
+                /* Find the percentages to use them later */
+                const newRequestsPer = (newRequestsCount / total) * 100;
+                const completedRequestsPer = (completedRequestsCount / total) * 100;
+                const newOffersPer = (newOffersCount / total) * 100;
+                const completedOffersPer = (completedOffersCount / total) * 100;
+
+
+                /*------html code------*/
+                const containerDiv = document.getElementById('inputFieldsDiv');
+                const canvas = document.createElement('canvas');
+                canvas.id = 'myChart';
+                containerDiv.innerHTML = '';
+                containerDiv.appendChild(canvas);
+
+                /* use Chart.js to make a pie chart */
+                const ctx = canvas.getContext('2d');
+                const chartData = {
+                    labels: ['New Requests', 'Completed Requests', 'New Offers', 'Completed Offers'],
+                    datasets: [{
+                        data: [newRequestsPer, completedRequestsPer, newOffersPer, completedOffersPer],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                        ],
+                        borderWidth: 1,
+                    }],
+                };
+
+                const chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    if (label) {
+                                        return label + ': ' + context.parsed.toFixed(2) + '%';
+                                    }
+                                    return '';
+                                },
+                            },
+                        },
+                    },
+                };
+
+                const myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: chartData,
+                    options: chartOptions,
+                });
+
+                /* Store the chart into the containerDiv */
+                containerDiv.myChart = myChart;
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+    else {
+        clearFields();
+    }
+    
 }

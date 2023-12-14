@@ -241,6 +241,16 @@ app.listen(PORT, () => {
 //Clear existing data from tables
 const DO_RESET = 1;
 if (DO_RESET) {
+	db.query('DELETE FROM offers', (err, results) => {
+		if (err) throw err;
+		console.log('Deleted all records from the offers table');
+	});
+
+	db.query('DELETE FROM requests', (err, results) => {
+		if (err) throw err;
+		console.log('Deleted all records from the requests table');
+	});
+
 	db.query('DELETE FROM details', (err, results) => {
 		if (err) throw err;
 		console.log('Deleted all records from the details table');
@@ -639,14 +649,28 @@ app.get('/api/cargo', (req, res) => {
 // Protect other user data so send only those for username
 app.get('/api/requests', (req, res) => {
 	let username = req.session.username;
-	db.query(`SELECT
-			r.id as 'id', i.name as 'Requested', r.num_people as 'People', rsc.meaning as 'Status',
-			r.date_requested as 'Requested on', r.date_accepted as 'Accepted on', 
-			r.date_completed as 'Completed on'
-			FROM requests r 
-			INNER JOIN request_status_code rsc on r.status = rsc.status
-			INNER JOIN items i ON r.item_id = i.id
-			WHERE username = ? ORDER BY r.date_requested DESC`, [username], (err, results) => {
+	let query;
+	if (username!='admin') {
+		query = `SELECT
+      r.id as 'id', i.name as 'Requested', r.num_people as 'People', rsc.meaning as 'Status',
+      r.date_requested as 'Requested on', r.date_accepted as 'Accepted on', 
+      r.date_completed as 'Completed on'
+      FROM requests r 
+      INNER JOIN request_status_code rsc on r.status = rsc.status
+      INNER JOIN items i ON r.item_id = i.id
+      WHERE username = ? ORDER BY r.date_requested DESC`;
+	} else {
+		query = `SELECT
+      r.id as 'id', i.name as 'Requested', r.num_people as 'People', rsc.meaning as 'Status',
+      r.date_requested as 'Requested on', r.date_accepted as 'Accepted on', 
+      r.date_completed as 'Completed on'
+      FROM requests r 
+      INNER JOIN request_status_code rsc on r.status = rsc.status
+      INNER JOIN items i ON r.item_id = i.id
+      ORDER BY r.date_requested DESC`;
+	}
+
+	db.query(query, [username], (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
@@ -658,15 +682,27 @@ app.get('/api/requests', (req, res) => {
 
 app.get('/api/offers', (req, res) => {
 	let username = req.session.username;
-	db.query(`SELECT
-			o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
-			o.date_offered as 'Offered on', o.date_completed as 'Delivered on'
-			FROM offers o
-			INNER JOIN offer_status_code osc on o.status = osc.status
-			INNER JOIN items i on o.item_id = i.id 
-			WHERE username = ? ORDER BY o.date_offered DESC`, [username], (err, results) => {
-			//INNER JOIN items i ON r.item_id = i.id
-			// disabled for now
+	let query;
+
+	if (username!='admin') {
+		query = `SELECT
+      o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
+      o.date_offered as 'Offered on', o.date_completed as 'Delivered on'
+      FROM offers o
+      INNER JOIN offer_status_code osc on o.status = osc.status
+      INNER JOIN items i on o.item_id = i.id 
+      WHERE username = ? ORDER BY o.date_offered DESC`;
+	} else {
+		query = `SELECT
+      o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
+      o.date_offered as 'Offered on', o.date_completed as 'Delivered on'
+      FROM offers o
+      INNER JOIN offer_status_code osc on o.status = osc.status
+      INNER JOIN items i on o.item_id = i.id 
+      ORDER BY o.date_offered DESC`;
+	}
+
+	db.query(query, [username], (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
 			res.status(500).json({ error: 'Internal Server Error' });
