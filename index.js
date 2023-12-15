@@ -224,6 +224,11 @@ app.get('/auth', (req, res) => {    //Pages go through /auth to see what permiss
 	});
 });
 
+app.get('/api/username', (req, res) => {
+	console.log(req.session.username);
+	res.send(req.session.username);
+});
+
 app.delete('/logout', (req, res) => {
 	req.session.loggedin = false;
 	res.redirect('/');
@@ -787,12 +792,10 @@ app.post('/map/relocateBase', (req, res) => {
 	lat = req.body.lat;
 	lng = req.body.lng;
 
-	console.log(lat);
-	console.log(lng);
-
 	// TODO: for some reason plain text counts as 2 
 	if (username) {
-		// Ensure offer is from actual admin
+		// Ensure relocation is from actual admin
+		// TODO: req.session.type also
 		db.query('SELECT * FROM accounts WHERE username = (?) AND type=0', [username], function (error, username_results) {
 			if (username_results.length > 0) {
 				db.query('UPDATE base_coordinates SET coordinate = POINT(?,?) WHERE id=0', [lat, lng], function (error, results) {
@@ -803,16 +806,50 @@ app.post('/map/relocateBase', (req, res) => {
 			}
 		});
 	} else {
-		res.status(401).json({ error: 'Please insert a valid username and item.' });
+		res.status(401).json({ error: 'Please insert a valid username and coordinates.' });
+		res.end();		
+	}
+});
+
+app.post('/map/relocateVehicle', (req, res) => {
+	let username = req.session.username;
+	console.log(req.body);
+	lat = req.body.lat;
+	lng = req.body.lng;
+
+	if (username && lat && lng) {
+				db.query('UPDATE account_coordinates SET coordinate = POINT(?,?) WHERE username = (?)', [lat, lng, username], function (error, results) {
+					if (error) throw error;
+				});
+				res.end();
+	} else {
+		res.status(401).json({ error: 'Please insert a valid username and coordinates.' });
 		res.end();		
 	}
 });
 
 //TODO: Add if admin to hide global data and limit to only one person
-app.get('/map/requests', (req, res) => {
-	let sql = `SELECT r.*, c.ST_X(coordinate), c.ST_Y(coordinate)
-	FROM requests r JOIN account_coordinates c 
-	ON r.username = c.username`
+app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
+	const vehicleUsername = req.params.vehicleUsername;
+	const sessionUsername = req.session.username;
+	// No parameter given, so give every free task
+	let sql = `SELECT a.fullname, a.telephone, r.date_requested, r.date_accepted, r.rescuer, c.coordinate, i.name, i.quantity
+	FROM requests r
+	JOIN account_coordinates c ON r.username = c.username
+	JOIN items i ON r.item_id = i.id
+	JOIN accounts a ON r.username = a.username
+	WHERE r.status = 0`;
+
+	if (!(vehicleUsername === undefined)) {
+		if (vehicleUsername != sessionUsername) {
+			if (req.session.type != 0) {
+				res.status(401).json({ error: 'Unauthorized query' });
+				return;
+			}
+		}
+		sql += ` AND r.rescuer = '${vehicleUsername}'`;
+	}
+
 	db.query(sql, function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -820,17 +857,34 @@ app.get('/map/requests', (req, res) => {
 			return;
 		}
 
-		// TODO: For empty set, sends empty
-
 		// TODO: res.end?
-		res.json({ map_requests: results });
+		res.json({ rescuer_requests: results });
 	});
 });
 
-app.get('/map/offers', (req, res) => {
-	let sql = `SELECT o.*, c.ST_X(coordinate) as lat, c.ST_Y(coordinate) as lng
-	FROM offers o JOIN account_coordinates c 
-	ON o.username = c.username`
+app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
+	const vehicleUsername = req.params.vehicleUsername;
+	const sessionUsername = req.session.username;
+	// No parameter given, so give every free task
+	let sql = `SELECT a.fullname, a.telephone, o.date_offered, o.date_accepted, o.rescuer, c.coordinate, i.name, i.quantity
+	FROM offers o
+	JOIN account_coordinates c ON o.username = c.username
+	JOIN items i ON o.item_id = i.id
+	JOIN accounts a ON o.username = a.username
+	WHERE o.status = 0`;
+
+	//undefined means no optional parameter
+	// TODO: !== vs !=
+	if (!(vehicleUsername === undefined)) {
+		if (vehicleUsername != sessionUsername) {
+			if (req.session.type != 0) {
+				res.status(401).json({ error: 'Unauthorized query' });
+				return;
+			}
+		}
+		sql += ` AND o.rescuer = '${vehicleUsername}'`;
+	}
+
 	db.query(sql, function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -839,14 +893,35 @@ app.get('/map/offers', (req, res) => {
 		}
 
 		// TODO: res.end?
-		res.json({ map_offers: results });
+		res.json({ rescuer_offers: results });
 	});
 });
 
-app.get('/map/vehicles', (req, res) => {
-	let sql = `SELECT car.*, c.ST_X(coordinate), c.ST_Y(coordinate)
-	FROM cargo car JOIN account_coordinates c 
-	ON car.username = c.username`
+app.get('/map/vehicles/:vehicleUsername?', (req, res) => {
+	const vehicleUsername = req.params.vehicleUsername;
+	const sessionUsername = req.session.username;
+	// No parameter given, so give every vehicle (admin only)
+	let sql = `SELECT a.username, a.fullname, c.coordinate
+	FROM accounts a JOIN account_coordinates c ON a.username = c.username
+	WHERE type=2
+	`
+	
+	// query specific vehicle position
+	if (!(vehicleUsername === undefined)) {
+		if (vehicleUsername != sessionUsername) {
+			if (req.session.type != 0) {
+				res.status(401).json({ error: 'Unauthorized query' });
+				return;
+			}
+		}
+		sql += ` AND a.username = '${vehicleUsername}'`;
+	} else {
+		if (req.session.type != 0) {
+			res.status(401).json({ error: 'Unauthorized query' });
+			return;
+		}
+	}
+
 	db.query(sql, function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -858,5 +933,27 @@ app.get('/map/vehicles', (req, res) => {
 
 		// TODO: res.end?
 		res.json({ map_cargo: results });
+	});
+});
+
+app.get('/rescuer/cargo/:vehicleUsername', (req,res) => {
+	const vehicleUsername = req.params.vehicleUsername;
+	const sessionUsername = req.session.username;
+	if (vehicleUsername != sessionUsername) {
+		if (req.session.type != 0) {
+			res.status(401).json({ error: 'Unauthorized query' });
+			return;
+		}
+	}
+
+	db.query(`SELECT c.item_name, c.item_category, c.res_quantity
+	FROM cargo c JOIN items i ON c.item_id = i.id
+	WHERE c.username = '${vehicleUsername}'`, function (error, results) {
+		if (error) {
+			console.error('Error executing query:', error);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+		res.json({ cargo: results });
 	});
 });
