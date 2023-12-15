@@ -92,10 +92,11 @@ BEGIN
    DECLARE request_num INT UNSIGNED;
    
    SELECT COUNT(*) INTO offer_num
-   FROM offer_assumed_from WHERE rescuer = res_username; 
+   FROM offers WHERE rescuer = res_username AND status != 2;
+   -- status=2 means completed 
 
    SELECT COUNT(*) INTO request_num
-   FROM request_assumed_from WHERE rescuer = res_username;
+   FROM requests WHERE rescuer = res_username AND status != 2;
    
    SET total_rows = offer_num + request_num;
 END $$

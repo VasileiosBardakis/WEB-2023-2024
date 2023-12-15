@@ -88,6 +88,7 @@ CREATE TABLE requests (
     item_id INT NOT NULL,
     num_people INT UNSIGNED NOT NULL,
     status INT UNSIGNED NOT NULL default 0,
+    rescuer VARCHAR(30),
     date_requested DATETIME default now(),
     date_accepted DATETIME,
     date_completed DATETIME,
@@ -123,8 +124,10 @@ CREATE TABLE offers (
     username VARCHAR(30) NOT NULL,
     -- announcement INT,
     date_offered DATETIME default now(),
+    date_accepted DATETIME,
     date_completed DATETIME,
     status INT UNSIGNED NOT NULL default 0,
+    rescuer VARCHAR(30),
     item_id INT NOT NULL, /* 1 item per offer */
     -- 0 for not picked up, 1 for picked up, 2 for completed
     -- TODO: if 1, cant delete 
@@ -134,6 +137,7 @@ CREATE TABLE offers (
     -- FOREIGN KEY (announcement) REFERENCES announce(id) 
 );
 
+-- TODO: Maybe add to table directly.
 CREATE TABLE offer_status_code (
     status INT UNSIGNED PRIMARY KEY,
     meaning VARCHAR(30) NOT NULL
@@ -143,6 +147,7 @@ INSERT INTO offer_status_code VALUES
 (1, 'Picked up'),
 (2, 'Delivered');
 
+/*
 CREATE TABLE offer_assumed_from (
     id INT,
     rescuer VARCHAR(30),
@@ -159,11 +164,11 @@ CREATE TABLE request_assumed_from (
     PRIMARY KEY (id, rescuer),
     FOREIGN KEY (rescuer) REFERENCES accounts(username),
     FOREIGN KEY (id) REFERENCES requests(id)
-)ENGINE=InnoDB; 
+)ENGINE=InnoDB;
 
 -- vehicle: max 4 tasks
 -- tasks: either offers or requests
-/*
+
 CREATE TABLE tasks (
     id INT PRIMARY KEY,
     account_id INT,
@@ -180,27 +185,3 @@ CREATE TABLE tasks (
 )
 */
 
-
-INSERT INTO requests (username, item_id, num_people, status, date_requested, date_accepted, date_completed)
-VALUES
-('user1', 16, 3, 0, '2023-01-01 12:00:00', NULL, NULL),
-('user2', 17, 2, 1, '2023-01-02 14:30:00', '2023-01-03 09:45:00', '2023-01-04 17:30:00'),
-('user3', 18, 1, 2, '2023-01-05 08:15:00', '2023-01-06 10:30:00', '2023-01-07 12:45:00'),
-('user4', 18, 4, 0, '2023-01-08 11:30:00', NULL, NULL),
-('user5', 25, 2, 2, '2023-01-09 15:00:00', '2023-01-10 09:30:00', '2023-01-11 14:45:00');
-
-INSERT INTO offers (username, date_offered, date_completed, status, item_id)
-VALUES
-('user1', '2023-01-01 12:00:00', NULL, 0, 16),
-('user2', '2023-01-02 14:30:00', '2023-01-03 09:45:00', 1, 18),
-('user3', '2023-01-04 08:15:00', '2023-01-05 10:30:00', 2, 22),
-('user4', '2023-01-06 11:30:00', NULL, 0, 22),
-('user5', '2023-01-07 15:00:00', '2023-01-08 09:30:00', 2, 19);
-
-CREATE TABLE tasks (
-    req_off_id INT PRIMARY KEY AUTO_INCREMENT,
-    rescuer_username VARCHAR(30) NOT NULL,
-    task_type ENUM('offer', 'request') NOT NULL,
-    
-    FOREIGN KEY (rescuer_username) REFERENCES accounts(username)
-)ENGINE=InnoDB; 
