@@ -45,6 +45,9 @@ div label {
 
 
 TODO:
+xmlhttp -> fetch
+Remove item_name from cargo
+let instead of var
 When something changes:
     base relocation
     new offer
@@ -69,6 +72,8 @@ For mapping (status codes, item id's) do DISTINCT query val -> map
 
 
 Finishing touches:
+Database normalization (one-to-many etc)
+
 Register: To column scalearei me to megalutero item, kanta aneksartita
 
 Use # instead of . for unique elements
