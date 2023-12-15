@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Saviors Inc. - Citizen</title>
+    <title>Rescuer | Saviors Inc.</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" type="text/css" href="css/homepage.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Include the Bootstrap JS dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
@@ -43,7 +46,7 @@
               <li><a onclick="load()">Pick up Supplies</a></li>
               <li><a onclick="drop()">Deliver Supplies</a></li>
               <li><a onclick="mngTasks()">Manage Tasks</a></li>
-              <li><a onclick="shMap()">Show Map</a></li>
+              <li><a onclick="mapTab()">Show Map</a></li>
               <li>
                   <form action="/logout?_method=DELETE" method="post">
                       <button type="submit">Logout</button>
@@ -63,6 +66,7 @@
               <div id="cargo">
                   <!--My cargo is displayed here -->
               </div>
+              <div id="mapid"></div>
       </div>
 
 
