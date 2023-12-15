@@ -45,7 +45,7 @@
               <li><a onclick="myCargo()">My Cargo</a></li>
               <li><a onclick="load()">Pick up Supplies</a></li>
               <li><a onclick="drop()">Deliver Supplies</a></li>
-              <li><a onclick="mngTasks()">Manage Tasks</a></li>
+              <li><a onclick="manageTasks()">Manage Tasks</a></li>
               <li><a onclick="mapTab()">Show Map</a></li>
               <li>
                   <form action="/logout?_method=DELETE" method="post">
@@ -57,16 +57,23 @@
 
 
       <div class="fields" id="fields">
-              <br>
-              <div id="error-message"></div>  <!--Error message is displayed here -->
+        <br>
+        <div id="error-message"></div>  <!--Error message is displayed here -->
 
-              <div id="procedures">
-                  <!-- Load / Deliver prompts will be displayed here -->
-              </div>
-              <div id="cargo">
-                  <!--My cargo is displayed here -->
-              </div>
-              <div id="mapid"></div>
+        <div id="procedures">
+            <!-- Load / Deliver prompts will be displayed here -->
+        </div>
+        <div id="cargo">
+            <!--My cargo is displayed here -->
+        </div>
+        <div id="mapContainer">
+            <div id="mapid"></div>
+            <div id="mapside_tasks">
+                <h3 id="task_header"></h3>
+                <p id="task-info"></p>
+                <table class="user_table" id="user_tasks">
+            </div>
+        </div>
       </div>
 
 

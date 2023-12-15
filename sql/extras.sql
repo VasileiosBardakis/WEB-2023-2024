@@ -1,12 +1,15 @@
+USE saviors;
 -- TODO: prevent status 1 without res
-INSERT INTO requests (username, item_id, num_people, status, date_requested, date_accepted, date_completed)
+DELETE FROM requests;
+INSERT INTO requests (username, item_id, num_people, status, rescuer, date_requested, date_accepted, date_completed)
 VALUES
-('npc', 16, 3, 0, '2023-01-01 12:00:00', NULL, NULL),
-('npc', 17, 2, 0, '2023-01-02 14:30:00', '2023-01-03 09:45:00', '2023-01-04 17:30:00'),
-('npc', 18, 1, 0, '2023-01-05 08:15:00', '2023-01-06 10:30:00', '2023-01-07 12:45:00'),
-('npc', 18, 4, 0, '2023-01-08 11:30:00', NULL, NULL),
-('npc', 25, 2, 0, '2023-01-09 15:00:00', '2023-01-10 09:30:00', '2023-01-11 14:45:00');
+('npc', 16, 3, 0, 'res', '2023-01-01 12:00:00', NULL, NULL),
+('npc', 17, 2, 0, 'res', '2023-01-02 14:30:00', '2023-01-03 09:45:00', '2023-01-04 17:30:00'),
+('npc', 18, 1, 0, 'res', '2023-01-05 08:15:00', '2023-01-06 10:30:00', '2023-01-07 12:45:00'),
+('npc', 18, 4, 0, 'res', '2023-01-08 11:30:00', NULL, NULL),
+('npc', 25, 2, 0, 'res', '2023-01-09 15:00:00', '2023-01-10 09:30:00', '2023-01-11 14:45:00');
 
+DELETE FROM offers;
 INSERT INTO offers (username, date_offered, date_completed, status, rescuer, item_id)
 VALUES
 ('npc', '2023-01-01 12:00:00', NULL, 0, 'res', 16),

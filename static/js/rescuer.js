@@ -291,10 +291,132 @@ function drop() {
     }
 }
 
-function shMap() {
+// code taken from citizen.js
+function manageTasks() {
+    let header = document.getElementById('task_header');
+    header.innerText = 'Your tasks';
+
+    let table = document.getElementById('user_tasks');
+    let errorMessageElement = document.getElementById('task-info');
+    table.innerText='';
+    errorMessageElement.innerText = '';
+
+    // Load offers
+    let xhr_offers = new XMLHttpRequest();
+    xhr_offers.open('GET', '/rescuer/offers/' + username)
+    xhr_offers.onreadystatechange = function () {
+        if (xhr_offers.readyState === 4 && xhr_offers.status === 200) {
+            let offers = JSON.parse(xhr_offers.response).rescuer_offers;
+
+            // Load requests
+            let xhr_requests = new XMLHttpRequest();
+            xhr_requests.open('GET', '/rescuer/requests/' + username, true);
+            xhr_requests.onreadystatechange = function() {
+                if (xhr_requests.readyState === 4 && xhr_requests.status === 200) {
+                    let requests = JSON.parse(xhr_requests.response).rescuer_requests;
+
+                    console.log(offers);
+                    console.log(requests);
+                    // Combine the two jsons
+                    //https://stackoverflow.com/questions/433627/concatenate-two-json-objects
+                    let tasks = offers.concat(requests);
+                    console.log(tasks);
+
+                    // TODO: Sort by date_accepted
+
+                    //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
+
+                    // Get the keys (column names) of the first object in the JSON data
+                    let cols = Object.keys(offers[0]);
+                    
+                    // Create the header element
+                    let thead = document.createElement("thead");
+                    let tr = document.createElement("tr");
+                    
+                    // Loop through the column names and create header cells
+                    cols.forEach((colname) => {
+                        let th = document.createElement("th");
+                        th.innerText = colname; // Set the column name as the text of the header cell
+                        tr.appendChild(th); // Append the header cell to the header row
+                    });
+                    // Add remove button also
+                    let th_actions = document.createElement("th");
+                    th_actions.innerText = 'Actions'; // Set the column name as the text of the header cell
+                    tr.appendChild(th_actions); // Append the header cell to the header row
+                
+                    thead.appendChild(tr); // Append the header row to the header
+                    table.append(tr) // Append the header to the table
+                    
+                    // Loop through the JSON data and create table rows
+                    offers.forEach((item) => {
+                        let offer_id = item.id;
+                        let status = item.Status;
+                        let tr = document.createElement("tr");
+                        
+                        // Get the values of the current object in the JSON data
+                        let vals = Object.values(item);
+
+                        // Loop through the values and create table cells
+                        vals.forEach((elem) => {
+                            let td = document.createElement("td");
+                            td.innerText = elem; // Set the value as the text of the table cell
+                            tr.appendChild(td); // Append the table cell to the table row
+                        });
+                        /*
+                        // Now: for each table row we need 2 actions: complete and cancel
+                        
+                        // complete
+                        // if not close to completion coordinates, grey out option
+                        let button_complete = document.createElement("td");
+                        button_complete.innerText = "Cancel";
+
+                        // By default is greyed out
+                        button_complete.style.backgroundColor="rgba(0, 0, 0, 0.2)";
+                        button_complete.style.color="white";
+                        button_complete.style.cursor="not-allowed";
+
+                        // If not picked up yet, cancellable
+                        if (status === 'Pending') {
+                            button_complete.style.backgroundColor="rgba(255, 0, 0, 0.6)";
+                            button_complete.style.color="white";
+                            button_complete.style.cursor="pointer";
+
+                            button_complete.onclick=function(offer_id) {
+                                let xhttp = new XMLHttpRequest();
+                                xhttp.open('POST', '/citizen/deleteOffer', true);
+                                xhttp.setRequestHeader('Content-Type', 'text/plain');
+                                
+                                xhttp.onreadystatechange = function () {
+                                    if (xhttp.readyState === 4) {
+                                        if (xhttp.status === 401) {
+                                            // Handle incorrect request with AJAX
+                                            let response = JSON.parse(xhttp.responseText);
+                                            // errorMessageElement.innerHTML = response.error;
+                                        } else if (xhttp.status === 200) {
+                                            loadOffersTable();
+                                        }
+                                    }
+                                };
+
+                                let data = offer_id.toString();
+                                console.log(data);
+                                xhttp.send(data);
+                            }.bind(null, offer_id);
+                        }
+
+                        tr.appendChild(button_complete);
+                        */
+                        table.appendChild(tr); // Append the table row to the table
+                    });
+
+                } //TODO: Handle endpoint error
+            };
+            xhr_requests.send();
+        }
+    };
+    xhr_offers.send();
+
     
-}
-function mngTasks() {
     
 }
 
@@ -303,6 +425,7 @@ function mapTab() {
         //Html code for input fields
         clearFields();
         loadMap();
+        manageTasks();
         mapClick = true;
         var inputFieldsHTML = ``;
         //insert the HTML content into the designated div

@@ -100,6 +100,13 @@ color: white;
     padding-left:230px;
     text-align:center;
 }
+
+#mapContainer {
+  display:flex;
+  width: 100%;
+  height: 100%;
+}
+
 .canvas {
     padding-left: 230px;
 }
@@ -141,7 +148,8 @@ color: white;
 
 #mapid { 
   height: 750px;
-  width: 750px;
+  width: 500px;
+  min-width:500px;
 }
 
 /* The first of each row */

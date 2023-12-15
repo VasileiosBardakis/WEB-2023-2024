@@ -1,5 +1,8 @@
-Paradoxes:
+Known bugs/Paradoxes:
 Offer gia 1 item, kai de kanei reference to announcement.
+Trigger gia assume task isxuei mono an ginei update se hdh uparxon
+offer/request. An kapoios admin kanei insert task apeutheias mporei
+na kseperastei to orio
 
 
 Info:
@@ -45,9 +48,18 @@ div label {
 
 
 TODO:
+Make font scale with screen size (unreadable on mobile)
+Manage tasks: Handle header names being from different api calls
+Maybe change column names (date offered/requested) or alias on api
+Also to sort those tasks maybe have composite api call that does the sql,
+unions the 2 tables and orders by date
+
+Custom markers
+Check if geolocation is enabled and place rescuer vehicle there. check every 10 seconds
 xmlhttp -> fetch
 Remove item_name from cargo
 let instead of var
+
 When something changes:
     base relocation
     new offer
@@ -62,14 +74,11 @@ Going back a page breaks user flow (e.g. admin login -> backwards -> press regis
 post/gets are checked twice: Once client-side to show proper errors or successes
 and once more server side to check for good request and sql injections
 
-HAVE TO THINK ABOUT FOREIGN KEYS (DELETING IS TORTURE)
-
 Mobile and desktop compatibility:
 If media > 700px, make everything stack vertically
 On mobile make sidebar scale with canvas size and make canvas scrollable (tables)
 
 For mapping (status codes, item id's) do DISTINCT query val -> map
-
 
 Finishing touches:
 Database normalization (one-to-many etc)
@@ -94,3 +103,4 @@ https://mdbootstrap.com/docs/standard/extended/login/
 -plat
 prettier error handling when request bigger than existing quantity 
 -
+
