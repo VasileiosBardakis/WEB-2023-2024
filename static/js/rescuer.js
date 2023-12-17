@@ -125,7 +125,7 @@ function displayItems(data) {
      /* Create a search bar */
      var searchInput = document.createElement("input");
      searchInput.type = "text";
-     searchInput.placeholder = "Search by category...[;] for multiples";
+     searchInput.placeholder = "Search by product...[,] for multiples";
      searchInput.id = "searchInput";
      proceduresDiv.appendChild(searchInput);
      // create table
@@ -244,13 +244,13 @@ function searchTable(query, table) {
     var rows = table.getElementsByTagName("tr");
 
     for (var i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
-        var categoryCell = rows[i].getElementsByTagName("td")[2]; // Index 2 is the category column
+        var nameCell = rows[i].getElementsByTagName("td")[1]; // Index 1 is the name column
 
-        /*Making the search bar case insensitive and able to search for multiple categories using ','*/
-        var cellText = categoryCell.textContent.toLowerCase();     
-        var categories = query.split(',').map(cat => cat.trim());  
+        /*Making the search bar case insensitive and able to search for multiple names using ','*/
+        var cellText = nameCell.textContent.toLowerCase();     
+        var itemnames = query.split(',').map(name => name.trim());  
 
-        var found = categories.some(category => cellText.includes(category));
+        var found = itemnames.some(itemname => cellText.includes(itemname));
 
         if (found) {
             rows[i].style.display = "";
