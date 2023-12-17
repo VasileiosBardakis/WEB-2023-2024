@@ -101,8 +101,12 @@ color: white;
     text-align:center;
 }
 
+#mapContainer.hidden {
+  display: none;
+}
+
 #mapContainer {
-  display:flex;
+  display: flex;
   width: 100%;
   height: 100%;
 }
@@ -151,6 +155,8 @@ color: white;
   width: 500px;
   min-width:500px;
 }
+
+
 
 /* The first of each row */
 /* .actions-table tr > :first-child {

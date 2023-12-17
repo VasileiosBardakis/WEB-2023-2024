@@ -3,6 +3,8 @@ var myCargoClick = false; //Variable to see if 'My cargo' is clicked
 var dropClick = false; //Variable to see if 'drop supplies' is clicked
 var mapClick = false;
 var xhr = new XMLHttpRequest();
+var parentDiv = document.getElementById('mapContainer'); 
+
 
 xhr.onreadystatechange = function () {
     if (xhr.readyState == 4 && xhr.status == 200) {
@@ -21,6 +23,7 @@ fetch('/api/username')
     console.error('Error:', error);
     });
 
+
 function clearFields() {
     loadClick = false;
     dropClick = false;
@@ -29,10 +32,13 @@ function clearFields() {
     document.getElementById('error-message').innerHTML = '';   //For error messages
     document.getElementById('procedures').innerHTML = '';  //For the Load,Drop button
     document.getElementById('cargo').innerHTML = '';        //For the My cargo button
+    //Hide mapContainer
+    parentDiv.classList.add('hidden'); // Add the 'hidden' class to hide the parent
+
 }
 
-function myCargo() {
-    if (!myCargoClick) {       //If My Cargo isn't clicked, show input fields
+
+function myCargo() {      //If My Cargo isn't clicked, show input fields
         clearFields();
         myCargoClick = true;
         console.log("Fetching data...");
@@ -51,9 +57,6 @@ function myCargo() {
         console.log("Before sending AJAX request");
         xhr.send();
         console.log("After sending AJAX request");
-    }else{
-        clearFields();
-    }
 }
 
 function displayCargo(data) {
@@ -93,7 +96,6 @@ function displayCargo(data) {
 
 
 function load() {
-    if (!loadClick) {       //If Storage isn't clicked, show input fields
         clearFields();
         loadClick = true;
         console.log("Fetching data...");
@@ -112,9 +114,6 @@ function load() {
         console.log("Before sending AJAX request");
         xhrs.send();
         console.log("After sending AJAX request");
-    } else {    //clear if storage table is showing
-        clearFields();
-    }
 }
 
 /* Function for displaying data in Show Current Storage */
@@ -261,7 +260,6 @@ function searchTable(query, table) {
 }
 
 function drop() {
-    if (!dropClick) {       //If Pick up supplies isn't clicked, show input fields
         clearFields();
         dropClick = true;
         var xhr = new XMLHttpRequest();
@@ -286,9 +284,6 @@ function drop() {
             }
         };
         xhr.send(JSON.stringify({}));
-    } else {    //clear if pick up table is showing
-        clearFields();
-    }
 }
 
 // code taken from citizen.js
@@ -421,19 +416,14 @@ function manageTasks() {
 }
 
 function mapTab() {
-    if (!mapClick) {       //If map isn't clicked, show input fields
-        //Html code for input fields
         clearFields();
+        parentDiv.classList.remove('hidden');
         loadMap();
         manageTasks();
         mapClick = true;
         var inputFieldsHTML = ``;
         //insert the HTML content into the designated div
         document.getElementById('mapid').innerHTML = inputFieldsHTML;
-    } else {
-        clearFields();
-    }
-
 }
 
 function loadMap() {
