@@ -94,9 +94,7 @@ function displayCargo(data) {
     cargoDiv.appendChild(table);
 }
 
-
 function load() {
-        clearFields();
         loadClick = true;
         console.log("Fetching data...");
         /*We make an http request to get the database item data*/
@@ -119,7 +117,7 @@ function load() {
 /* Function for displaying data in Show Current Storage */
 function displayItems(data) {
     /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
-    var proceduresDiv = document.getElementById("procedures");
+    var proceduresDiv = document.getElementById("cargo_pick_up");
     proceduresDiv.innerHTML = ""; //clear existing
      /* Create a search bar */
      var searchInput = document.createElement("input");
@@ -291,7 +289,7 @@ function manageTasks() {
     let header = document.getElementById('task_header');
     header.innerText = 'Your tasks';
 
-    let table = document.getElementById('user_tasks');
+    let table = document.getElementById('user_table');
     let errorMessageElement = document.getElementById('task-info');
     table.innerText='';
     errorMessageElement.innerText = '';
@@ -316,6 +314,11 @@ function manageTasks() {
                     //https://stackoverflow.com/questions/433627/concatenate-two-json-objects
                     let tasks = offers.concat(requests);
                     console.log(tasks);
+
+                    if (tasks.length === 0) {
+                        errorMessageElement.innerHTML = 'You currently have not assumed any tasks.';
+                        return;
+                    }
 
                     // TODO: Sort by date_accepted
 
@@ -440,6 +443,8 @@ function loadMap() {
     }
     // TODO: Map already initialized bug fix when clicking twice
     // TODO: Promises and await to flatten this
+
+    let cargo_pick_up = document.getElementById('cargo_pick_up');
     
     // Map creation, base coordinates found and base relocation function
     let xhr_init_base = new XMLHttpRequest();
@@ -493,16 +498,26 @@ function loadMap() {
                             xhttp.setRequestHeader('Content-Type', 'application/json');
                             
                             xhttp.onreadystatechange = function () {
+                                // TODO: Needed for some reason
+                                let cargo_pick_up = document.getElementById('cargo_pick_up');
                                 if (xhttp.readyState === 4) {
                                     if (xhttp.status === 401) {
                                         // Handle incorrect request with AJAX
                                         let response = JSON.parse(xhttp.responseText);
                                         console.log(response);
                                         // errorMessageElement.innerHTML = response.error;
+                                    } else {
+                                        console.log('wtfff');
+                                        let distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
+                                        if (distance <= 100) {
+                                            cargo_pick_up = load();
+                                        } else {
+                                            cargo_pick_up.innerText = "Can't pick up cargo, not close to base."
+                                        }
                                     }
-                                }
-                            };
+                                };
         
+                            };
                             let data = JSON.stringify({
                                 lat: vehicle_marker.getLatLng().lat, 
                                 lng: vehicle_marker.getLatLng().lng
@@ -511,7 +526,16 @@ function loadMap() {
                         }
                     });
 
-                
+                    // if close, show load()
+                    let distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
+                    console.log(base_marker.getLatLng());
+                    console.log(vehicle_marker.getLatLng());
+                    console.log(distance);
+                    if (distance <= 100) {
+                        cargo_pick_up = load();
+                    } else {
+                        cargo_pick_up.innerText = "Can't pick up cargo, not close to base."
+                    }
 
                     // Get current cargo
                     let xhr_cargo = new XMLHttpRequest();
@@ -528,7 +552,7 @@ function loadMap() {
                             */
                             let vehicleInfo = `<b>${vehicle.username}</b><br>`
                             vehicle_cargo.forEach(function (item) {
-                                vehicleInfo += `${item.item_name}, quantity: ${item.res_quantity}<br>`;
+                                vehicleInfo += `${item.item_name} (${item.res_quantity})<br>`;
                             });
                             vehicle_marker.bindPopup(vehicleInfo);
 
@@ -547,7 +571,13 @@ function loadMap() {
                                 distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
                                 console.log(distance);
                                 if (distance <= 100) {
-                                    base_marker.bindPopup(baseInfo + `Close to base`);
+                                    base_marker.bindPopup(baseInfo + 
+                                        `Close to base<br>
+                                        <form action="/" method="POST">
+                                        <input type="submit" value="Unload cargo?"/>
+                                        </form>`
+                                        );
+
                                 } else {
                                     base_marker.bindPopup(baseInfo + `Away from base`);
                                 }

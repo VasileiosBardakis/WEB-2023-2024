@@ -1062,7 +1062,7 @@ function loadMap() {
                                 */
                                 let vehicleText = `<b>${vehicle.username}</b><br>`
                                 vehicle_cargo.forEach(function (item) {
-                                    vehicleText += `${item.item_name}, quantity: ${item.res_quantity}<br>`;
+                                    vehicleText += `${item.item_name} (${item.res_quantity})<br>`;
                                 });
                                 vehicleText += '<b>Status:</b>';
                                 vehicle_marker.bindPopup(vehicleText);

@@ -40,7 +40,7 @@
       </nav>
 
       <div class="rescuer">
-          <ul class="sidebar"> 
+          <ul class="sidebar">
               <li class="header">Thank you for your Service!</li>
               <li><a onclick="myCargo()">My Cargo</a></li>
               <li><a onclick="load()">Pick up Supplies</a></li>
@@ -52,10 +52,7 @@
                 </form>
               </li>
           </ul>
-
-
       </div>
-
 
       <div class="fields" id="fields">
         <br>
@@ -69,11 +66,15 @@
         </div>
         <div id="mapContainer">
             <div id="mapid"></div>
-            <div id="mapside_tasks">
-                <h3 id="task_header"></h3>
-                <p id="task-info"></p>
-                <table class="user_table" id="user_tasks">
+            <div id="cargo_actions" style="height:750px;overflow-y:auto; margin-left:20px; margin-right:20px;">
+                <div id="cargo_pick_up"></div>
             </div>
+        </div>
+
+        <div id="tasks" style="text-align:left;">
+            <h3 id="task_header"></h3>
+            <p id="task-info"></p>
+            <table class="user_table" id="user_table">
         </div>
       </div>
 
