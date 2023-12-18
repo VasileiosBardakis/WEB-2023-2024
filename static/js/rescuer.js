@@ -4,6 +4,7 @@ var dropClick = false; //Variable to see if 'drop supplies' is clicked
 var mapClick = false;
 var xhr = new XMLHttpRequest();
 var parentDiv = document.getElementById('mapContainer'); 
+var tasksDiv = document.getElementById('tasks'); 
 
 
 xhr.onreadystatechange = function () {
@@ -32,8 +33,10 @@ function clearFields() {
     document.getElementById('error-message').innerHTML = '';   //For error messages
     document.getElementById('procedures').innerHTML = '';  //For the Load,Drop button
     document.getElementById('cargo').innerHTML = '';        //For the My cargo button
-    //Hide mapContainer
+
+    //Hide mapContainer & tasks
     parentDiv.classList.add('hidden'); // Add the 'hidden' class to hide the parent
+    tasksDiv.classList.add('hidden');
 
 }
 
@@ -272,6 +275,7 @@ function drop() {
 
 // code taken from citizen.js
 function manageTasks() {
+    tasksDiv.classList.remove('hidden');
     let header = document.getElementById('task_header');
     header.innerText = 'Your tasks';
 
@@ -404,6 +408,7 @@ function manageTasks() {
 
 function mapTab() {
         clearFields();
+        tasksDiv.classList.remove('hidden');
         parentDiv.classList.remove('hidden');
         loadMap();
         manageTasks();
@@ -468,6 +473,7 @@ function loadMap() {
                     vehicle_marker.on('dragstart', function (event) {
                         originalLatLng = vehicle_marker.getLatLng(); // Store the original position
                     });
+
         
                     vehicle_marker.on('dragend', function (event) {
                         // Display a confirmation dialog
