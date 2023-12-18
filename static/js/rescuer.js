@@ -258,10 +258,8 @@ function searchTable(query, table) {
 }
 
 function drop() {
-        clearFields();
-        dropClick = true;
         var xhr = new XMLHttpRequest();
-        var url = 'http://localhost:3000/api/Deliver';
+        var url = '/api/Deliver';
         console.log("Before sending AJAX request");
         xhr.open('POST', url, true);
         console.log("After sending AJAX request");
@@ -272,12 +270,10 @@ function drop() {
                     console.log("Response received:", xhr.status, xhr.responseText);
                     var jsonResponse = JSON.parse(xhr.responseText);
                     console.log("JSON response:", jsonResponse);
-                    var procedureDiv = document.getElementById("procedures");
-                    console.log("Found ProcedureDiv:", procedureDiv);
-                    procedureDiv.innerHTML = ""; //clear existing
-                    procedureDiv.innerHTML = "Cargo delivered successfully!";
+
+                    //TODO: Refresh vehicle cargo adn alert user
                 } else {
-                    procedureDiv.innerHTML = 'Your cargo is empty';
+                    // cargo empty
                 }
             }
         };
@@ -507,7 +503,6 @@ function loadMap() {
                                         console.log(response);
                                         // errorMessageElement.innerHTML = response.error;
                                     } else {
-                                        console.log('wtfff');
                                         let distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
                                         if (distance <= 100) {
                                             cargo_pick_up = load();
@@ -550,6 +545,9 @@ function loadMap() {
                             Cargo
                             TODO: Status
                             */
+
+                            //TODO: Could call xhr every time popup is clicked
+
                             let vehicleInfo = `<b>${vehicle.username}</b><br>`
                             vehicle_cargo.forEach(function (item) {
                                 vehicleInfo += `${item.item_name} (${item.res_quantity})<br>`;
@@ -559,25 +557,21 @@ function loadMap() {
                             // when click, check if vehicle is close enough
                             function updateVehicleStatus() {
                                 distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
-                                console.log(distance);
                                 if (distance <= 100) {
-                                    vehicle_marker.bindPopup(vehicleInfo + `Close to base`);
+                                    vehicle_marker.bindPopup(vehicleInfo + `Near base`);
                                 } else {
-                                    vehicle_marker.bindPopup(vehicleInfo + `Away from base`);
+                                    vehicle_marker.bindPopup(vehicleInfo + parseInt(distance) + `m away from base`);
                                 }
                             }
 
                             function updateBaseStatus() {
                                 distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
-                                console.log(distance);
                                 if (distance <= 100) {
+                                    // TODO: marker.getPopup().getContent();
                                     base_marker.bindPopup(baseInfo + 
                                         `Close to base<br>
-                                        <form action="/" method="POST">
-                                        <input type="submit" value="Unload cargo?"/>
-                                        </form>`
+                                        <button onclick="drop()">Unload cargo</button>`
                                         );
-
                                 } else {
                                     base_marker.bindPopup(baseInfo + `Away from base`);
                                 }
