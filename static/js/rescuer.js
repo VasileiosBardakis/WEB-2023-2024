@@ -41,11 +41,9 @@ function clearFields() {
 function myCargo() {      //If My Cargo isn't clicked, show input fields
         clearFields();
         myCargoClick = true;
-        console.log("Fetching data...");
         /*We make an http request to get the database item data*/
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
-            console.log("Ready state:", xhr.readyState);
             if (xhr.readyState == 4 && xhr.status == 200) {
                 console.log("Response received:", xhr.status, xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
@@ -53,10 +51,8 @@ function myCargo() {      //If My Cargo isn't clicked, show input fields
                 displayCargo(jsonResponse);
             }
         };
-        xhr.open("GET", "http://localhost:3000/api/cargo", true);
-        console.log("Before sending AJAX request");
+        xhr.open("GET", "/api/cargo", true);
         xhr.send();
-        console.log("After sending AJAX request");
 }
 
 function displayCargo(data) {
@@ -100,31 +96,28 @@ function load() {
         /*We make an http request to get the database item data*/
         var xhrs = new XMLHttpRequest();
         xhrs.onreadystatechange = function () {
-            console.log("Ready state:", xhrs.readyState);
             if (xhrs.readyState == 4 && xhrs.status == 200) {
                 console.log("Response received:", xhr.status, xhr.responseText);
                 var jsonResponse = JSON.parse(xhrs.responseText);
-                console.log("JSON response:", jsonResponse);
+                console.log("Load cargo:", jsonResponse);
                 displayItems(jsonResponse);
             }
         };
-        xhrs.open("GET", "http://localhost:3000/api/itemswcat", true);
-        console.log("Before sending AJAX request");
+        xhrs.open("GET", "/api/itemswcat", true);
         xhrs.send();
-        console.log("After sending AJAX request");
 }
 
 /* Function for displaying data in Show Current Storage */
 function displayItems(data) {
     /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
-    var proceduresDiv = document.getElementById("cargo_pick_up");
-    proceduresDiv.innerHTML = ""; //clear existing
+    var cargo_table = document.getElementById("cargo_pick_up");
+    cargo_table.innerHTML = ""; //clear existing
      /* Create a search bar */
      var searchInput = document.createElement("input");
      searchInput.type = "text";
      searchInput.placeholder = "Search by product...[,] for multiples";
      searchInput.id = "searchInput";
-     proceduresDiv.appendChild(searchInput);
+     cargo_table.appendChild(searchInput);
      // create table
     var table = document.createElement("table"); 
      // Create a header row
@@ -166,7 +159,7 @@ function displayItems(data) {
     });
     // Appends
     buttonCell.appendChild(button);
-    proceduresDiv.appendChild(table);
+    cargo_table.appendChild(table);
     }
 }
 
@@ -186,7 +179,6 @@ function forEach(item) {
             console.log("Fetching updated data...");
             var xhrs = new XMLHttpRequest();
             xhrs.onreadystatechange = function () {
-                console.log("Ready state:", xhrs.readyState);
                 if (xhrs.readyState == 4) {
                     if (xhrs.status == 200) {
                         var jsonResponse = JSON.parse(xhrs.responseText);
@@ -260,9 +252,7 @@ function searchTable(query, table) {
 function drop() {
         var xhr = new XMLHttpRequest();
         var url = '/api/Deliver';
-        console.log("Before sending AJAX request");
         xhr.open('POST', url, true);
-        console.log("After sending AJAX request");
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
@@ -304,8 +294,6 @@ function manageTasks() {
                 if (xhr_requests.readyState === 4 && xhr_requests.status === 200) {
                     let requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
-                    console.log(offers);
-                    console.log(requests);
                     // Combine the two jsons
                     //https://stackoverflow.com/questions/433627/concatenate-two-json-objects
                     let tasks = offers.concat(requests);
