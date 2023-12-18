@@ -459,135 +459,155 @@ function loadMap() {
             let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {
                 draggable: false
             }).addTo(mymap);
-            base_marker.bindPopup("<b>Organization base</b>");
+            baseInfo = `<b>Organization base</b><br>`
+            base_marker.bindPopup(baseInfo);
             
-            // Vehicles
-            let xhr_vehicles = new XMLHttpRequest();
-            xhr_vehicles.open('GET', '/map/vehicles/' + username, true);
-            xhr_vehicles.onreadystatechange = function() {
-                if (xhr_vehicles.readyState === 4 && xhr_vehicles.status === 200) {
-                    let map_cargo = JSON.parse(xhr_vehicles.response).map_cargo;
+            // Vehicle
+            let xhr_vehicle = new XMLHttpRequest();
+            xhr_vehicle.open('GET', '/map/vehicles/' + username, true);
+            xhr_vehicle.onreadystatechange = function() {
+                if (xhr_vehicle.readyState === 4 && xhr_vehicle.status === 200) {
+                    let map_cargo = JSON.parse(xhr_vehicle.response).map_cargo;
                     vehicle = map_cargo[0];
-                    /*
-                    For each vehicle:
-                        find cargo
-                        find offers and requests:
-                            draw lines
-                    */
-                        // draw vehicle
-                        let vehicle_marker = L.marker([vehicle.coordinate['x'], vehicle.coordinate['y']], {
-                            draggable: true
-                        }).addTo(mymap);
 
-                        var originalLatLng; // To store the original position
-                        vehicle_marker.on('dragstart', function (event) {
-                            originalLatLng = vehicle_marker.getLatLng(); // Store the original position
-                        });
-            
-                        vehicle_marker.on('dragend', function (event) {
-                            // Display a confirmation dialog
-                            confirmDrag = confirm(`Move base's position?`);
-                            if (!confirmDrag) {
-                                // If the user cancels, revert the dragging
-                                vehicle_marker.setLatLng(originalLatLng);
-                            } else {
-                                // TODO: Refresh markers since lines need to be redrawn
-                                let xhttp = new XMLHttpRequest();
-                                xhttp.open('POST', '/map/relocateVehicle', true);
-                                xhttp.setRequestHeader('Content-Type', 'application/json');
-                                
-                                xhttp.onreadystatechange = function () {
-                                    if (xhttp.readyState === 4) {
-                                        if (xhttp.status === 401) {
-                                            // Handle incorrect request with AJAX
-                                            let response = JSON.parse(xhttp.responseText);
-                                            console.log(response);
-                                            // errorMessageElement.innerHTML = response.error;
-                                        }
-                                    }
-                                };
-            
-                                let data = JSON.stringify({
-                                    lat: vehicle_marker.getLatLng().lat, 
-                                    lng: vehicle_marker.getLatLng().lng
-                                });
-                                xhttp.send(data);
-                            }
-                        });
+                    // draw vehicle
+                    let vehicle_marker = L.marker([vehicle.coordinate['x'], vehicle.coordinate['y']], {
+                        draggable: true
+                    }).addTo(mymap);
 
-                        
-
-                        // Get current cargo
-                        let xhr_cargo = new XMLHttpRequest();
-                        xhr_cargo.open('GET', '/rescuer/cargo/' + username, true);
-                        xhr_cargo.onreadystatechange = function() {
-                            if (xhr_cargo.readyState === 4 && xhr_cargo.status === 200) {
-                                let vehicle_cargo = JSON.parse(xhr_cargo.response).cargo;
-                                console.log(vehicle_cargo);  
-
-                                /*
-                                <b>Username</b>
-                                Cargo
-                                TODO: Status
-                                */
-                                let vehicleText = `<b>${vehicle.username}</b><br>`
-                                vehicle_cargo.forEach(function (item) {
-                                    vehicleText += `${item.item_name}, quantity: ${item.res_quantity}<br>`;
-                                });
-                                vehicleText += '<b>Status:</b>';
-                                vehicle_marker.bindPopup(vehicleText);
-                                // TODO: Markers stack
-                                // Offers of the vehicle
-                                let xhr_offers = new XMLHttpRequest();
-                                xhr_offers.open('GET', '/rescuer/offers/' + vehicle.username, true);
-                                xhr_offers.onreadystatechange = function() {
-                                    if (xhr_offers.readyState === 4 && xhr_offers.status === 200) {
-                                        let vehicle_offers = JSON.parse(xhr_offers.response).rescuer_offers;
-
-                                        vehicle_offers.forEach(function (offer) {
-                                            let offer_marker = L.marker([offer.coordinate['x'], offer.coordinate['y']]).addTo(mymap);
-                                            // if (offer.rescuer !== null) { it's this vehicle's surely
-                                            //TODO: Table
-                                            let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
-                                            ${offer.fullname}, ${offer.telephone}<br>
-                                            Offered on: ${offer.date_offered}<br>
-                                            Picked up from: ${offer.rescuer}<br>
-                                            On: ${offer.date_accepted}<br>`
-   
-                                            offer_marker.bindPopup(offerText);
-
-                                            // Connect with vehicle
-                                            connectDots(vehicle_marker, offer_marker, mymap);
-
-                                        });
+                    var originalLatLng; // To store the original position
+                    vehicle_marker.on('dragstart', function (event) {
+                        originalLatLng = vehicle_marker.getLatLng(); // Store the original position
+                    });
+        
+                    vehicle_marker.on('dragend', function (event) {
+                        // Display a confirmation dialog
+                        confirmDrag = confirm(`Move vehicle's position?`);
+                        if (!confirmDrag) {
+                            // If the user cancels, revert the dragging
+                            vehicle_marker.setLatLng(originalLatLng);
+                        } else {
+                            // TODO: Refresh markers since lines need to be redrawn
+                            let xhttp = new XMLHttpRequest();
+                            xhttp.open('POST', '/map/relocateVehicle', true);
+                            xhttp.setRequestHeader('Content-Type', 'application/json');
+                            
+                            xhttp.onreadystatechange = function () {
+                                if (xhttp.readyState === 4) {
+                                    if (xhttp.status === 401) {
+                                        // Handle incorrect request with AJAX
+                                        let response = JSON.parse(xhttp.responseText);
+                                        console.log(response);
+                                        // errorMessageElement.innerHTML = response.error;
                                     }
                                 }
-                                xhr_offers.send();
-
-                                // Requests of the vehicle
-                                let xhr_requests = new XMLHttpRequest();
-                                xhr_requests.open('GET', '/rescuer/requests/' + vehicle.username, true);
-                                xhr_requests.onreadystatechange = function() {
-                                    if (xhr_requests.readyState === 4 && xhr_requests.status === 200) {
-                                        let vehicle_requests = JSON.parse(xhr_requests.response).rescuer_requests;
-
-                                        vehicle_requests.forEach(function (request) {
-                                            let request_marker = L.marker([request.coordinate['x'], request.coordinate['y']]).addTo(mymap);
-                                            let requestText = `<b>Requests:</b> ${request.name}, ${request.quantity}<br>
-                                            ${request.fullname}, ${request.telephone}<br>
-                                            Requested on: ${request.date_requested}<br>
-                                            Picked up from: ${request.rescuer}<br>
-                                            On: ${request.date_accepted}<br>`
-   
-                                            request_marker.bindPopup(requestText);
-
-                                        });
-                                    }
-                                }
-                                xhr_requests.send();
-                            }
+                            };
+        
+                            let data = JSON.stringify({
+                                lat: vehicle_marker.getLatLng().lat, 
+                                lng: vehicle_marker.getLatLng().lng
+                            });
+                            xhttp.send(data);
                         }
-                        xhr_cargo.send(); 
+                    });
+
+                
+
+                    // Get current cargo
+                    let xhr_cargo = new XMLHttpRequest();
+                    xhr_cargo.open('GET', '/rescuer/cargo/' + username, true);
+                    xhr_cargo.onreadystatechange = function() {
+                        if (xhr_cargo.readyState === 4 && xhr_cargo.status === 200) {
+                            let vehicle_cargo = JSON.parse(xhr_cargo.response).cargo;
+                            console.log(vehicle_cargo);  
+
+                            /*
+                            <b>Username</b>
+                            Cargo
+                            TODO: Status
+                            */
+                            let vehicleInfo = `<b>${vehicle.username}</b><br>`
+                            vehicle_cargo.forEach(function (item) {
+                                vehicleInfo += `${item.item_name}, quantity: ${item.res_quantity}<br>`;
+                            });
+                            vehicle_marker.bindPopup(vehicleInfo);
+
+                            // when click, check if vehicle is close enough
+                            function updateVehicleStatus() {
+                                distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
+                                console.log(distance);
+                                if (distance <= 100) {
+                                    vehicle_marker.bindPopup(vehicleInfo + `Close to base`);
+                                } else {
+                                    vehicle_marker.bindPopup(vehicleInfo + `Away from base`);
+                                }
+                            }
+
+                            function updateBaseStatus() {
+                                distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
+                                console.log(distance);
+                                if (distance <= 100) {
+                                    base_marker.bindPopup(baseInfo + `Close to base`);
+                                } else {
+                                    base_marker.bindPopup(baseInfo + `Away from base`);
+                                }
+                            }
+
+                            // Attach the event listener to the marker
+                            vehicle_marker.on('popupopen', updateVehicleStatus);
+                            base_marker.on('popupopen', updateBaseStatus);
+                            // TODO: Markers stack
+                            // Offers of the vehicle
+                            let xhr_offers = new XMLHttpRequest();
+                            xhr_offers.open('GET', '/rescuer/offers/' + vehicle.username, true);
+                            xhr_offers.onreadystatechange = function() {
+                                if (xhr_offers.readyState === 4 && xhr_offers.status === 200) {
+                                    let vehicle_offers = JSON.parse(xhr_offers.response).rescuer_offers;
+
+                                    vehicle_offers.forEach(function (offer) {
+                                        let offer_marker = L.marker([offer.coordinate['x'], offer.coordinate['y']]).addTo(mymap);
+                                        // if (offer.rescuer !== null) { it's this vehicle's surely
+                                        //TODO: Table
+                                        let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
+                                        ${offer.fullname}, ${offer.telephone}<br>
+                                        Offered on: ${offer.date_offered}<br>
+                                        Picked up from: ${offer.rescuer}<br>
+                                        On: ${offer.date_accepted}<br>`
+
+                                        offer_marker.bindPopup(offerText);
+
+                                        // Connect with vehicle
+                                        connectDots(vehicle_marker, offer_marker, mymap);
+
+                                    });
+                                }
+                            }
+                            xhr_offers.send();
+
+                            // Requests of the vehicle
+                            let xhr_requests = new XMLHttpRequest();
+                            xhr_requests.open('GET', '/rescuer/requests/' + vehicle.username, true);
+                            xhr_requests.onreadystatechange = function() {
+                                if (xhr_requests.readyState === 4 && xhr_requests.status === 200) {
+                                    let vehicle_requests = JSON.parse(xhr_requests.response).rescuer_requests;
+
+                                    vehicle_requests.forEach(function (request) {
+                                        let request_marker = L.marker([request.coordinate['x'], request.coordinate['y']]).addTo(mymap);
+                                        let requestText = `<b>Requests:</b> ${request.name}, ${request.quantity}<br>
+                                        ${request.fullname}, ${request.telephone}<br>
+                                        Requested on: ${request.date_requested}<br>
+                                        Picked up from: ${request.rescuer}<br>
+                                        On: ${request.date_accepted}<br>`
+
+                                        request_marker.bindPopup(requestText);
+
+                                    });
+                                }
+                            }
+                            xhr_requests.send();
+                        }
+                    }
+                    xhr_cargo.send(); 
                         
                     // TODO: Offers and requests which arent assumed
                     let xhr_offers = new XMLHttpRequest();
@@ -626,13 +646,13 @@ function loadMap() {
 
                             });
                         }
-                    }
+                    };
                     xhr_requests.send();
 
                 }
-            }
-            xhr_vehicles.send();
+            };
+            xhr_vehicle.send();
         }    
-    } //TODO: Handle endpoint error
+    }; //TODO: Handle endpoint error
     xhr_init_base.send();
 }
