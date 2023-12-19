@@ -434,6 +434,16 @@ function loadMap() {
     // TODO: Promises and await to flatten this
 
     let cargo_pick_up = document.getElementById('cargo_pick_up');
+
+    //custom markers
+    var customBase = L.icon({
+        iconUrl: 'img/customBase.png',
+        iconSize: [32, 32], // size of the icon
+    });
+    var customCar = L.icon({
+        iconUrl: 'img/customCar.png',
+        iconSize: [40, 40], // size of the icon
+    });
     
     // Map creation, base coordinates found and base relocation function
     let xhr_init_base = new XMLHttpRequest();
@@ -450,7 +460,7 @@ function loadMap() {
             mymap.addLayer(osm);
             mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
             
-            let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {
+            let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {icon: customBase}, {
                 draggable: false
             }).addTo(mymap);
             baseInfo = `<b>Organization base</b><br>`
@@ -465,7 +475,7 @@ function loadMap() {
                     vehicle = map_cargo[0];
 
                     // draw vehicle
-                    let vehicle_marker = L.marker([vehicle.coordinate['x'], vehicle.coordinate['y']], {
+                    let vehicle_marker = L.marker([vehicle.coordinate['x'], vehicle.coordinate['y']], {icon: customCar}, {
                         draggable: true
                     }).addTo(mymap);
 
