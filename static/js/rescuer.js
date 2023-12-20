@@ -406,16 +406,24 @@ function manageTasks() {
     
 }
 
+let mapInitialized = false; // Add this global variable
+
 function mapTab() {
         clearFields();
         tasksDiv.classList.remove('hidden');
         parentDiv.classList.remove('hidden');
+        // Remove the existing map instance
+        if (mapInitialized) {
+            mymap.remove();
+        }
         loadMap();
+        mapInitialized = true;
         manageTasks();
         mapClick = true;
-        var inputFieldsHTML = ``;
-        //insert the HTML content into the designated div
-        document.getElementById('mapid').innerHTML = inputFieldsHTML;
+        // Instead of setting innerHTML directly, you can append a new map container
+        var newMapContainer = document.createElement('div');
+        newMapContainer.id = 'mapid';
+        document.getElementById('your-map-container').appendChild(newMapContainer);
 }
 
 function loadMap() {
@@ -439,10 +447,12 @@ function loadMap() {
     var customBase = L.icon({
         iconUrl: 'img/customBase.png',
         iconSize: [32, 32], // size of the icon
+        iconAnchor: [16, 16] // center of the icon
     });
     var customCar = L.icon({
         iconUrl: 'img/customCar.png',
         iconSize: [40, 40], // size of the icon
+        iconAnchor: [20, 20] // center of the icon
     });
     
     // Map creation, base coordinates found and base relocation function
@@ -475,7 +485,8 @@ function loadMap() {
                     vehicle = map_cargo[0];
 
                     // draw vehicle
-                    let vehicle_marker = L.marker([vehicle.coordinate['x'], vehicle.coordinate['y']], {icon: customCar}, {
+                    let vehicle_marker = L.marker([vehicle.coordinate['x'], vehicle.coordinate['y']], {
+                        icon: customCar,
                         draggable: true
                     }).addTo(mymap);
 
