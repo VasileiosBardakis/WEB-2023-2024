@@ -1,6 +1,8 @@
 USE saviors;
 -- TODO: prevent status 1 without res
 DELETE FROM requests;
+DELETE FROM offers;
+
 INSERT INTO requests (username, item_id, num_people, status, rescuer, date_requested, date_accepted, date_completed)
 VALUES
 ('npc', 16, 3, 0, 'res', '2023-01-01 12:00:00', NULL, NULL),
@@ -9,7 +11,7 @@ VALUES
 ('npc', 18, 4, 0, 'res', '2023-01-08 11:30:00', NULL, NULL),
 ('npc', 25, 2, 0, 'res', '2023-01-09 15:00:00', '2023-01-10 09:30:00', '2023-01-11 14:45:00');
 
-DELETE FROM offers;
+
 INSERT INTO offers (username, date_offered, date_completed, status, rescuer, item_id)
 VALUES
 ('npc', '2023-01-01 12:00:00', NULL, 0, 'res', 16),

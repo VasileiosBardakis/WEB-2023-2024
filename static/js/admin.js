@@ -1181,94 +1181,135 @@ async function shStats() {
     if (!shStatsClick) {       //If Storage isn't clicked, show input fields
         clearFields();
         shStatsClick = true;
+
         try {
             /* get the requests and offers from the database and filter the completed and non completed ones */
             const requests = await fetchMethod('/api/requests');
             const offers = await fetchMethod('/api/offers');
             if ((requests.requests.length + offers.offers.length) == 0) {
                 document.getElementById('inputFieldsDiv').innerHTML = 'There are no requests or offers';
-            }
-            else {
-                const newRequestsCount = requests.requests.filter(request => request.Status === 'Pending' || request.Status === 'Accepted').length;
-                const completedRequestsCount = requests.requests.filter(request => request.Status === 'Completed').length;
+            } else {
+                /* using html's date picker for the dates */
+                const inputFieldsDiv = document.getElementById('inputFieldsDiv');
+                inputFieldsDiv.innerHTML = `
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate">
+                    <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate">`;
 
-                const newOffersCount = offers.offers.filter(offer => offer.Status === 'Pending' || offer.Status === 'Picked Up').length;
-                const completedOffersCount = offers.offers.filter(offer => offer.Status === 'Delivered').length;
+                const startDateInput = document.getElementById('startDate');
+                const endDateInput = document.getElementById('endDate');
+                
+                /* updateChart gets the inputs from the start and end date and filters the requests/offers accordingly */
+                const updateChart = async () => {
+                    const startDate = startDateInput.value;
+                    const endDate = endDateInput.value;
 
-                const total = newRequestsCount + completedRequestsCount + newOffersCount + completedOffersCount;
+                    let filteredRequests = requests.requests;
+                    let filteredOffers = offers.offers;
 
-                /* Find the percentages to use them later */
-                const newRequestsPer = (newRequestsCount / total) * 100;
-                const completedRequestsPer = (completedRequestsCount / total) * 100;
-                const newOffersPer = (newOffersCount / total) * 100;
-                const completedOffersPer = (completedOffersCount / total) * 100;
+                    /* If dates arent selected then show all of them, otherwise filter them */
+                    if (startDate && endDate) {
+                        filteredRequests = requests.requests.filter(request => {
+                            const requestDate = new Date(request['Requested on']);
+                            return requestDate >= new Date(startDate) && requestDate <= new Date(endDate);
+                        });
+                        filteredOffers = offers.offers.filter(offer => {
+                            const offerDate = new Date(offer['Offered on']);
+                            return offerDate >= new Date(startDate) && offerDate <= new Date(endDate);
+                        });
+                    }
 
+                    /* Find the ammounts of the requests/offers to make the graph */
+                    const newRequestsCount = filteredRequests.filter(request => request.Status === 'Pending' || request.Status === 'Accepted').length;
+                    const completedRequestsCount = filteredRequests.filter(request => request.Status === 'Completed').length;
 
-                /*------html code------*/
-                const containerDiv = document.getElementById('inputFieldsDiv');
-                const canvas = document.createElement('canvas');
-                canvas.id = 'myChart';
-                containerDiv.innerHTML = '';
-                containerDiv.appendChild(canvas);
+                    const newOffersCount = filteredOffers.filter(offer => offer.Status === 'Pending' || offer.Status === 'Picked Up').length;
+                    const completedOffersCount = filteredOffers.filter(offer => offer.Status === 'Delivered').length;
 
-                /* use Chart.js to make a pie chart */
-                const ctx = canvas.getContext('2d');
-                const chartData = {
-                    labels: ['New Requests', 'Completed Requests', 'New Offers', 'Completed Offers'],
-                    datasets: [{
-                        data: [newRequestsPer, completedRequestsPer, newOffersPer, completedOffersPer],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.8)',
-                            'rgba(75, 192, 192, 0.8)',
-                            'rgba(54, 162, 235, 0.8)',
-                            'rgba(255, 206, 86, 0.8)',
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                        ],
-                        borderWidth: 1,
-                    }],
-                };
+                    const total = newRequestsCount + completedRequestsCount + newOffersCount + completedOffersCount;
 
-                const chartOptions = {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    const label = context.label || '';
-                                    if (label) {
-                                        return label + ': ' + context.parsed.toFixed(2) + '%';
-                                    }
-                                    return '';
+                    /* Checking to see if there are any requests or offers in the time period */
+                    if (total > 0) {
+
+                        /*------html code for the graph------*/
+                        const containerDiv = document.getElementById('inputFieldsDiv2');
+                        const canvas = document.createElement('canvas');
+                        canvas.id = 'myChart';
+                        containerDiv.innerHTML = '';
+                        containerDiv.appendChild(canvas);
+
+                        /* use Chart.js to make a pie graph */
+                        const ctx = canvas.getContext('2d');
+                        const chartData = {
+                            labels: ['New Requests', 'Completed Requests', 'New Offers', 'Completed Offers'],
+                            datasets: [{
+                                data: [newRequestsCount, completedRequestsCount, newOffersCount, completedOffersCount],
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.8)',
+                                    'rgba(75, 192, 192, 0.8)',
+                                    'rgba(54, 162, 235, 0.8)',
+                                    'rgba(255, 206, 86, 0.8)',
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                ],
+                                borderWidth: 1,
+                            }],
+                        };
+
+                        /* This is for showing info about the requests/offers when hovering over the pie graph */
+                        const chartOptions = {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const label = context.label || '';
+                                            if (label) {
+                                                return label + ': ' + context.parsed.toFixed(2) + ' Percentage: ' + (context.parsed.toFixed(2) / total) * 100 + '%';
+                                            }
+                                            return '';
+                                        },
+                                    },
                                 },
                             },
-                        },
-                    },
+                        };
+
+                        const myChart = new Chart(ctx, {
+                            type: 'pie',
+                            data: chartData,
+                            options: chartOptions,
+                        });
+
+                        /* Store the chart into the containerDiv */
+                        containerDiv.myChart = myChart;
+                    }
+                    /* if total<0 show this */
+                    else { document.getElementById('inputFieldsDiv2').innerHTML = 'There are no requests or offers between these dates'; }
                 };
+               
+                   
+                    
 
-                const myChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: chartData,
-                    options: chartOptions,
-                });
+                // Add event listeners to update the chart when the user selects new dates
+                startDateInput.addEventListener('change', updateChart);
+                endDateInput.addEventListener('change', updateChart);
 
-                /* Store the chart into the containerDiv */
-                containerDiv.myChart = myChart;
+                // Initial chart update
+                updateChart();
             }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-    }
-    else {
+    } else {
         clearFields();
     }
-    
 }
