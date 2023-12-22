@@ -273,6 +273,22 @@ function drop() {
         xhr.send(JSON.stringify({}));
 }
 
+function assumeTask(id, type) {
+    xhr.open('POST', '/rescuer/assumeTask', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                //TODO: Refresh vehicle cargo and alert user
+            } else {
+                // TODO: alert user
+            }
+        }
+    };
+    xhr.send(JSON.stringify({ id:id, type:type }));    
+
+}
+
 // code taken from citizen.js
 function manageTasks() {
     tasksDiv.classList.remove('hidden');
@@ -420,24 +436,34 @@ function mapTab() {
         mapInitialized = true;
         manageTasks();
         mapClick = true;
-        // Instead of setting innerHTML directly, you can append a new map container
+
+        // Instead of setting innerHTML directly, append a new map container
         var newMapContainer = document.createElement('div');
         newMapContainer.id = 'mapid';
         document.getElementById('your-map-container').appendChild(newMapContainer);
 }
 
 function loadMap() {
-    function roundDecimal(float, decimal_places) {
-        return (Math.round(float * Math.pow(10,decimal_places)) / Math.pow(10,decimal_places)).toFixed(decimal_places);
-    }
-
-    function connectDots(marker1, marker2, mymap) {
+    function connectDots(marker1, marker2, layer) {
         polyLine = [];
         polyLine.push([marker1.getLatLng().lat, marker1.getLatLng().lng]);
         polyLine.push([marker2.getLatLng().lat, marker2.getLatLng().lng]);
         let polygon = L.polygon(polyLine,
-            {color:"red"}).addTo(mymap);
+            {color:"red"}).addTo(layer);
     }
+    
+    function addMarker(layer, x, y, isDraggable, icon, popupText) {
+        let marker = L.marker([x, y], {
+            icon: icon,
+            draggable: isDraggable
+        }).addTo(layer);
+
+        if (popupText)
+            marker.bindPopup(popupText);
+
+        return marker;
+    }
+
     // TODO: Map already initialized bug fix when clicking twice
     // TODO: Promises and await to flatten this
 
@@ -450,11 +476,32 @@ function loadMap() {
         iconAnchor: [16, 16] // center of the icon
     });
     var customCar = L.icon({
-        iconUrl: 'img/customCar.png',
-        iconSize: [40, 40], // size of the icon
-        iconAnchor: [20, 20] // center of the icon
+        iconUrl: 'markers/vehicle.png',
+        iconSize: [32, 32], // size of the icon
+        iconAnchor: [16, 16] // center of the icon
     });
-    
+    var icon_activeRequest = L.icon({
+        iconUrl: 'markers/exclamation_green.png',
+        iconSize: [32, 32], // size of the icon
+        iconAnchor: [16, 16] // center of the icon
+    });
+    var icon_freeRequest = L.icon({
+        iconUrl: 'markers/exclamation_red.png',
+        iconSize: [32, 32], // size of the icon
+        iconAnchor: [16, 16] // center of the icon
+    });
+
+    var icon_activeOffer = L.icon({
+        iconUrl: 'markers/handshake_green.png',
+        iconSize: [32, 32], // size of the icon
+        iconAnchor: [16, 16] // center of the icon
+    });
+    var icon_freeOffer = L.icon({
+        iconUrl: 'markers/handshake_orange.png',
+        iconSize: [32, 32], // size of the icon
+        iconAnchor: [16, 16] // center of the icon
+    });
+
     // Map creation, base coordinates found and base relocation function
     let xhr_init_base = new XMLHttpRequest();
     xhr_init_base.open('GET', '/map/base', true);
@@ -467,14 +514,39 @@ function loadMap() {
             let osmUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
             let osmAttrib ='© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a>';
             let osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
+            var baseMap = {
+                "OpenStreetMap": osm,
+            };
+
             mymap.addLayer(osm);
+
+            essentialInfo = L.layerGroup().addTo(mymap);
+            requestsAssumed = L.layerGroup().addTo(mymap);
+            requestsFree = L.layerGroup().addTo(mymap);
+            offersAssumed = L.layerGroup().addTo(mymap);
+            offersFree = L.layerGroup().addTo(mymap);
+            activeLines = L.layerGroup().addTo(mymap);
+
+            var overlayMaps = {
+                "Base & Vehicle": essentialInfo, 
+                "Current requests": requestsAssumed, 
+                "Free requests": requestsFree, 
+                "Current offers": offersAssumed, 
+                "Free offers": offersFree, 
+                "Draw lines": activeLines
+            };
+
             mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
-            
-            let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {icon: customBase}, {
-                draggable: false
-            }).addTo(mymap);
+            var layerControl = L.control.layers(overlayMaps).addTo(mymap);
+
+            // let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {icon: customBase}, {
+            //     draggable: false
+            // }).addTo(essentialInfo);
             baseInfo = `<b>Organization base</b><br>`
-            base_marker.bindPopup(baseInfo);
+            // base_marker.bindPopup(baseInfo);
+            let base_marker = addMarker(essentialInfo, 
+                baseCoordinates['x'], baseCoordinates['y'],
+                false, customBase, baseInfo);
             
             // Vehicle
             let xhr_vehicle = new XMLHttpRequest();
@@ -485,11 +557,9 @@ function loadMap() {
                     vehicle = map_cargo[0];
 
                     // draw vehicle
-                    let vehicle_marker = L.marker([vehicle.coordinate['x'], vehicle.coordinate['y']], {
-                        icon: customCar,
-                        draggable: true
-                    }).addTo(mymap);
-
+                    let vehicle_marker = addMarker(essentialInfo, 
+                        vehicle.coordinate['x'], vehicle.coordinate['y'], 
+                        true, customCar);
                     var originalLatLng; // To store the original position
                     vehicle_marker.on('dragstart', function (event) {
                         originalLatLng = vehicle_marker.getLatLng(); // Store the original position
@@ -604,7 +674,6 @@ function loadMap() {
                                     let vehicle_offers = JSON.parse(xhr_offers.response).rescuer_offers;
 
                                     vehicle_offers.forEach(function (offer) {
-                                        let offer_marker = L.marker([offer.coordinate['x'], offer.coordinate['y']]).addTo(mymap);
                                         // if (offer.rescuer !== null) { it's this vehicle's surely
                                         //TODO: Table
                                         let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
@@ -612,11 +681,13 @@ function loadMap() {
                                         Offered on: ${offer.date_offered}<br>
                                         Picked up from: ${offer.rescuer}<br>
                                         On: ${offer.date_accepted}<br>`
-
-                                        offer_marker.bindPopup(offerText);
+                                        
+                                        let offer_marker = addMarker(offersAssumed,
+                                            offer.coordinate['x'], offer.coordinate['y'],
+                                            false, icon_activeOffer, offerText);
 
                                         // Connect with vehicle
-                                        connectDots(vehicle_marker, offer_marker, mymap);
+                                        connectDots(vehicle_marker, offer_marker, activeLines);
 
                                     });
                                 }
@@ -631,15 +702,15 @@ function loadMap() {
                                     let vehicle_requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
                                     vehicle_requests.forEach(function (request) {
-                                        let request_marker = L.marker([request.coordinate['x'], request.coordinate['y']]).addTo(mymap);
                                         let requestText = `<b>Requests:</b> ${request.name}, ${request.quantity}<br>
                                         ${request.fullname}, ${request.telephone}<br>
                                         Requested on: ${request.date_requested}<br>
                                         Picked up from: ${request.rescuer}<br>
                                         On: ${request.date_accepted}<br>`
-
-                                        request_marker.bindPopup(requestText);
-
+                                        
+                                        let request_marker = addMarker(requestsAssumed,
+                                            request.coordinate['x'], request.coordinate['y'],
+                                            false, icon_activeRequest, requestText);
                                     });
                                 }
                             }
@@ -656,19 +727,19 @@ function loadMap() {
                             let offers = JSON.parse(xhr_offers.response).rescuer_offers;
 
                             offers.forEach(function (offer) {
-                                let offer_marker = L.marker([offer.coordinate['x'], offer.coordinate['y']]).addTo(mymap);
-
                                 let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
                                 ${offer.fullname}, ${offer.telephone}<br>
-                                Offered on: ${offer.date_offered}<br>`
+                                Offered on: ${offer.date_offered}<br>
+                                <button onclick="assumeOffer(offer.id, 'offers')">Assume offer</button>`
 
-                                offer_marker.bindPopup(offerText);
+                                let offer_marker = addMarker(offersFree,
+                                    offer.coordinate['x'], offer.coordinate['y'],
+                                    false, icon_freeOffer, offerText);
                             });
                         }
                     }
                     xhr_offers.send();
 
-                    // Requests of the vehicle
                     let xhr_requests = new XMLHttpRequest();
                     xhr_requests.open('GET', '/rescuer/requests/', true);
                     xhr_requests.onreadystatechange = function() {
@@ -676,13 +747,14 @@ function loadMap() {
                             let requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
                             requests.forEach(function (request) {
-                                let request_marker = L.marker([request.coordinate['x'], request.coordinate['y']]).addTo(mymap);
                                 let requestText = `<b>Requests:</b> ${request.name}, ${request.quantity}<br>
                                 ${request.fullname}, ${request.telephone}<br>
-                                Requested on: ${request.date_requested}<br>`
-
-                                request_marker.bindPopup(requestText);
-
+                                Requested on: ${request.date_requested}<br>
+                                <button onclick="assumeTask(${request.id}, 'requests')">Assume request</button>`
+                                
+                                let request_marker = addMarker(requestsFree,
+                                    request.coordinate['x'], request.coordinate['y'],
+                                    false, icon_freeRequest, requestText);
                             });
                         }
                     };

@@ -833,7 +833,7 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every free task
-	let sql = `SELECT a.fullname, a.telephone, r.date_requested, r.date_accepted, r.rescuer, c.coordinate, i.name, i.quantity
+	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.rescuer, c.coordinate, i.name, i.quantity
 	FROM requests r
 	JOIN account_coordinates c ON r.username = c.username
 	JOIN items i ON r.item_id = i.id
@@ -866,7 +866,7 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every free task
-	let sql = `SELECT a.fullname, a.telephone, o.date_offered, o.date_accepted, o.rescuer, c.coordinate, i.name, i.quantity
+	let sql = `SELECT o.id, a.fullname, a.telephone, o.date_offered, o.date_accepted, o.rescuer, c.coordinate, i.name, i.quantity
 	FROM offers o
 	JOIN account_coordinates c ON o.username = c.username
 	JOIN items i ON o.item_id = i.id
@@ -956,4 +956,31 @@ app.get('/rescuer/cargo/:vehicleUsername', (req,res) => {
 		}
 		res.json({ cargo: results });
 	});
+});
+
+app.post('/rescuer/assumeTask', (req, res) => {
+	//TODO: Delete only if offer is from username
+	let username = req.session.username;
+	id = req.body.id;
+	table = req.body.type
+
+	// TODO: for some reason plain text HERE counts as 1
+	if (id && table === ('requests' || 'offers')) {
+		// Ensure is rescuer
+		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
+			// TODO: Do check username[0] with req.session.username
+			// Has permission to assume
+			if (username_results.length > 0) {
+				db.query('UPDATE (?) SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?)', [table, username, id], function (error, results) {
+					if (error) throw error;
+				});
+				res.end();
+			}
+		});
+	} else {
+		res.status(401).json({ error: 'Invalid parameters.' });
+		res.end();		
+	}
+
+	
 });

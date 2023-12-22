@@ -3,6 +3,8 @@ Offer gia 1 item, kai de kanei reference to announcement.
 Trigger gia assume task isxuei mono an ginei update se hdh uparxon
 offer/request. An kapoios admin kanei insert task apeutheias mporei
 na kseperastei to orio
+On load cargo, everything closes
+Login error replaces whole screen instead of error-message
 
 
 Info:
@@ -48,6 +50,10 @@ div label {
 
 
 TODO:
+offer complete, cancel, update tables, in proximity popup
+on mobile: make table go under map so its readable
+On assume task, reload window
+Table in rescuer tasks user_table colors and action column
 Make font scale with screen size (unreadable on mobile)
 Manage tasks: Handle header names being from different api calls
 Maybe change column names (date offered/requested) or alias on api
