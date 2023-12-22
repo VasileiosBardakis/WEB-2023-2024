@@ -244,7 +244,7 @@ app.listen(PORT, () => {
 
 	//INSERT DATA
 //Clear existing data from tables
-const DO_RESET = 1;
+const DO_RESET = 0;
 if (DO_RESET) {
 	db.query('DELETE FROM offers', (err, results) => {
 		if (err) throw err;
@@ -828,17 +828,15 @@ app.post('/map/relocateVehicle', (req, res) => {
 	}
 });
 
-//TODO: Add if admin to hide global data and limit to only one person
 app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
-	// No parameter given, so give every free task
+
 	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.rescuer, c.coordinate, i.name, i.quantity
 	FROM requests r
 	JOIN account_coordinates c ON r.username = c.username
 	JOIN items i ON r.item_id = i.id
-	JOIN accounts a ON r.username = a.username
-	WHERE r.status = 0`;
+	JOIN accounts a ON r.username = a.username`;
 
 	if (!(vehicleUsername === undefined)) {
 		if (vehicleUsername != sessionUsername) {
@@ -847,7 +845,11 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 				return;
 			}
 		}
+		// TODO: DISCERN completed and picked up
 		sql += ` AND r.rescuer = '${vehicleUsername}'`;
+	} else {
+		// No parameter given, so give every free task
+		sql += 	' WHERE r.status = 0';
 	}
 
 	db.query(sql, function (error, results) {
@@ -870,8 +872,7 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 	FROM offers o
 	JOIN account_coordinates c ON o.username = c.username
 	JOIN items i ON o.item_id = i.id
-	JOIN accounts a ON o.username = a.username
-	WHERE o.status = 0`;
+	JOIN accounts a ON o.username = a.username`;
 
 	//undefined means no optional parameter
 	// TODO: !== vs !=
@@ -883,6 +884,9 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 			}
 		}
 		sql += ` AND o.rescuer = '${vehicleUsername}'`;
+	} else {
+		// No parameter given, so give every free task
+		sql += 	' WHERE o.status = 0';
 	}
 
 	db.query(sql, function (error, results) {
@@ -929,9 +933,6 @@ app.get('/map/vehicles/:vehicleUsername?', (req, res) => {
 			return;
 		}
 
-		// TODO: For empty set, sends empty
-
-		// TODO: res.end?
 		res.json({ map_cargo: results });
 	});
 });
@@ -959,19 +960,21 @@ app.get('/rescuer/cargo/:vehicleUsername', (req,res) => {
 });
 
 app.post('/rescuer/assumeTask', (req, res) => {
-	//TODO: Delete only if offer is from username
 	let username = req.session.username;
 	id = req.body.id;
-	table = req.body.type
+	table = req.body.type;
+
+	console.log(id, " ", table);
+	console.log(typeof id, " ",typeof table);
+	
 
 	// TODO: for some reason plain text HERE counts as 1
 	if (id && table === ('requests' || 'offers')) {
 		// Ensure is rescuer
 		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
-			// TODO: Do check username[0] with req.session.username
 			// Has permission to assume
 			if (username_results.length > 0) {
-				db.query('UPDATE (?) SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?)', [table, username, id], function (error, results) {
+				db.query(`UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?)`, [username, id], function (error, results) {
 					if (error) throw error;
 				});
 				res.end();

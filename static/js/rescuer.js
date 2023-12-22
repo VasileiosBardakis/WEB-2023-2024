@@ -95,12 +95,10 @@ function displayCargo(data) {
 
 function load() {
         loadClick = true;
-        console.log("Fetching data...");
         /*We make an http request to get the database item data*/
         var xhrs = new XMLHttpRequest();
         xhrs.onreadystatechange = function () {
             if (xhrs.readyState == 4 && xhrs.status == 200) {
-                console.log("Response received:", xhr.status, xhr.responseText);
                 var jsonResponse = JSON.parse(xhrs.responseText);
                 console.log("Load cargo:", jsonResponse);
                 displayItems(jsonResponse);
@@ -179,7 +177,6 @@ function forEach(item) {
 
             // REFRESH TABLE USING displayItems()
             clearFields();
-            console.log("Fetching updated data...");
             var xhrs = new XMLHttpRequest();
             xhrs.onreadystatechange = function () {
                 if (xhrs.readyState == 4) {
@@ -193,7 +190,6 @@ function forEach(item) {
             };
             xhrs.open("GET", "http://localhost:3000/api/itemswcat", true);
             xhrs.send();
-            console.log("Data updated!");
         } else {
             alert("Please enter a valid quantity.");
         }
@@ -203,11 +199,8 @@ function forEach(item) {
 function storeItem(item, quantity) {
     // Create a new XMLHttpRequest object
     var xhr = new XMLHttpRequest();
-    console.log("XMLHttpRequest object created.");
     xhr.open("POST", "http://localhost:3000/api/load", true);
-    console.log("POST request opened.");
     xhr.setRequestHeader("Content-Type", "application/json");
-    console.log("Request header set.");
     var requestData = {
         itemId: item,
         wantedQuantity: quantity
@@ -216,7 +209,6 @@ function storeItem(item, quantity) {
     console.log("Data converted to JSON:", jsonData);
     //handle the response from the server
     xhr.onload = function () {
-        console.log("Server response received.");
         if (xhr.readyState == 4 && xhr.status == 200) {
             var responseData = JSON.parse(xhr.responseText);
             console.log("Data successfully sent to the server:", responseData);
@@ -452,11 +444,19 @@ function loadMap() {
             {color:"red"}).addTo(layer);
     }
     
-    function addMarker(layer, x, y, isDraggable, icon, popupText) {
-        let marker = L.marker([x, y], {
+    function addMarker(map_layer, layer_name, x, y, isDraggable, icon, popupText) {
+        let = randOffset = Math.floor(Math.random() * 10) + 1;
+        randOffset = randOffset * 1/Math.pow(10,5);
+        
+        stackableLayers = ['requestsAssumed', 'requestsFree', 'offersAssumed', 'offersFree'];
+        if (!(stackableLayers.includes(layer_name))) {
+            randOffset = 0; 
+        }
+        console.log(layer_name, randOffset);
+        let marker = L.marker([x+randOffset, y+4*randOffset], {
             icon: icon,
-            draggable: isDraggable
-        }).addTo(layer);
+            draggable: isDraggable,
+        }).addTo(map_layer);
 
         if (popupText)
             marker.bindPopup(popupText);
@@ -470,6 +470,7 @@ function loadMap() {
     let cargo_pick_up = document.getElementById('cargo_pick_up');
 
     //custom markers
+    // Anchor is on height px so it's under it (tip)
     var customBase = L.icon({
         iconUrl: 'img/customBase.png',
         iconSize: [32, 32], // size of the icon
@@ -478,28 +479,28 @@ function loadMap() {
     var customCar = L.icon({
         iconUrl: 'markers/vehicle.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
     var icon_activeRequest = L.icon({
         iconUrl: 'markers/exclamation_green.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
     var icon_freeRequest = L.icon({
         iconUrl: 'markers/exclamation_red.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
 
     var icon_activeOffer = L.icon({
         iconUrl: 'markers/handshake_green.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
     var icon_freeOffer = L.icon({
         iconUrl: 'markers/handshake_orange.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
 
     // Map creation, base coordinates found and base relocation function
@@ -537,14 +538,14 @@ function loadMap() {
             };
 
             mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
-            var layerControl = L.control.layers(overlayMaps).addTo(mymap);
+            var layerControl = L.control.layers(null, overlayMaps).addTo(mymap);
 
             // let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {icon: customBase}, {
             //     draggable: false
             // }).addTo(essentialInfo);
             baseInfo = `<b>Organization base</b><br>`
             // base_marker.bindPopup(baseInfo);
-            let base_marker = addMarker(essentialInfo, 
+            let base_marker = addMarker(essentialInfo, 'essentialInfo',
                 baseCoordinates['x'], baseCoordinates['y'],
                 false, customBase, baseInfo);
             
@@ -557,7 +558,7 @@ function loadMap() {
                     vehicle = map_cargo[0];
 
                     // draw vehicle
-                    let vehicle_marker = addMarker(essentialInfo, 
+                    let vehicle_marker = addMarker(essentialInfo, 'essentialInfo',
                         vehicle.coordinate['x'], vehicle.coordinate['y'], 
                         true, customCar);
                     var originalLatLng; // To store the original position
@@ -585,7 +586,6 @@ function loadMap() {
                                     if (xhttp.status === 401) {
                                         // Handle incorrect request with AJAX
                                         let response = JSON.parse(xhttp.responseText);
-                                        console.log(response);
                                         // errorMessageElement.innerHTML = response.error;
                                     } else {
                                         let distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
@@ -608,9 +608,6 @@ function loadMap() {
 
                     // if close, show load()
                     let distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
-                    console.log(base_marker.getLatLng());
-                    console.log(vehicle_marker.getLatLng());
-                    console.log(distance);
                     if (distance <= 100) {
                         cargo_pick_up = load();
                     } else {
@@ -623,8 +620,6 @@ function loadMap() {
                     xhr_cargo.onreadystatechange = function() {
                         if (xhr_cargo.readyState === 4 && xhr_cargo.status === 200) {
                             let vehicle_cargo = JSON.parse(xhr_cargo.response).cargo;
-                            console.log(vehicle_cargo);  
-
                             /*
                             <b>Username</b>
                             Cargo
@@ -682,7 +677,7 @@ function loadMap() {
                                         Picked up from: ${offer.rescuer}<br>
                                         On: ${offer.date_accepted}<br>`
                                         
-                                        let offer_marker = addMarker(offersAssumed,
+                                        let offer_marker = addMarker(offersAssumed, 'offersAssumed',
                                             offer.coordinate['x'], offer.coordinate['y'],
                                             false, icon_activeOffer, offerText);
 
@@ -708,9 +703,12 @@ function loadMap() {
                                         Picked up from: ${request.rescuer}<br>
                                         On: ${request.date_accepted}<br>`
                                         
-                                        let request_marker = addMarker(requestsAssumed,
+                                        let request_marker = addMarker(requestsAssumed, 'requestsAssumed',
                                             request.coordinate['x'], request.coordinate['y'],
                                             false, icon_activeRequest, requestText);
+
+                                        // Connect with vehicle
+                                        connectDots(vehicle_marker, request_marker, activeLines);
                                     });
                                 }
                             }
@@ -732,7 +730,7 @@ function loadMap() {
                                 Offered on: ${offer.date_offered}<br>
                                 <button onclick="assumeOffer(offer.id, 'offers')">Assume offer</button>`
 
-                                let offer_marker = addMarker(offersFree,
+                                let offer_marker = addMarker(offersFree, 'offersFree',
                                     offer.coordinate['x'], offer.coordinate['y'],
                                     false, icon_freeOffer, offerText);
                             });
@@ -752,7 +750,7 @@ function loadMap() {
                                 Requested on: ${request.date_requested}<br>
                                 <button onclick="assumeTask(${request.id}, 'requests')">Assume request</button>`
                                 
-                                let request_marker = addMarker(requestsFree,
+                                let request_marker = addMarker(requestsFree, 'requestsFree',
                                     request.coordinate['x'], request.coordinate['y'],
                                     false, icon_freeRequest, requestText);
                             });
