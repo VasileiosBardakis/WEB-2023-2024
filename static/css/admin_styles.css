@@ -1,0 +1,180 @@
+
+  
+  nav {
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between; 
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #cfd8dc; 
+  }
+.gray-background {
+    background-color: #f2f2f2; /* Light gray background color */
+}
+
+#buttons2 button {
+    display: inline-flex;
+    flex-direction: column; /* Display the table in a column */
+    width: 25%; /* Adjust the width as needed */
+    margin-top: 10px;
+    background-color: #4CAF50; /* Green */
+    padding:5px;
+}
+
+#buttons2{
+
+    padding-bottom:70px;
+}
+
+#jsonFileInput {
+    width: 55%;
+    margin-top: 10px;
+}
+
+
+#storageCategories {
+    width: 13%;
+    display:none;
+    position: fixed;
+    top: 15%; /* Stick to the top of the viewport */
+    right: 65%; /* Stick to the right of the viewport */
+    z-index: 999; /* Set a high z-index to ensure it's on top of other elements */
+    border: 1px solid #ccc; /* Add a border to the container */
+    padding: 10px; /* Add some padding to the container */
+}
+    #storageCategories input[type="checkbox"] {
+        transform: scale(2); /* Adjust the scale factor as needed */
+       
+        margin-right:8px;
+        margin-top:10px;
+    }
+
+
+
+#storage {
+    display: flex;
+    margin-left: 30%; /* Set the distance from the left */
+}
+
+#inputFieldsDiv {
+    display: flex;
+    align-items:center;
+    flex-direction: column; /* Display checkboxes in a column */
+    width: 35%; /* Adjust the width as needed */
+    float:left;
+}
+
+#inputFieldsDiv2 {
+    display: inline-flex;
+    flex-direction:column; /* Display the table in a column */
+    width: 35%; /* Adjust the width as needed */
+    margin-top:10px;
+
+}
+/* Table styles */
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.th {
+    padding: 8px;
+    background-color: #f2f2f2;
+    font-weight: bold; /* Make the text bold */
+    border: 1px solid #ddd; /* Add a border for separation */
+}
+/* Rows styles */
+td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+.tableBtnEdit {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+
+.tableBtnDel {
+    background-color: #d95b43;
+    color: white;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+     display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Make the button fill the cell vertically */
+    margin: 0; /* Remove default margin for better alignment */
+}
+}
+
+    .tableBtn:hover {
+        background-color: #cc0000; /* Darker red on hover */
+    }
+
+
+
+
+
+
+
+
+#mapid { 
+  height: 150px;
+  width: 100%;
+}
+
+
+ /*
+    tablets, 768px and above
+  */
+  @media only screen and (min-width: 768px) {
+    .logo img {
+      padding-top: 10px;
+      width: 60%;
+    }
+    .tab-pane {
+      padding-top: 30px;
+      width: 50%;
+    }
+    nav {
+      flex-direction: row;
+    }
+    nav ul {
+      flex-direction: row;;
+      padding-top: 0rem;
+    }
+    nav li {
+      padding-left: 1rem;
+    }
+    #mapid { 
+      height: 200px;
+    }
+  
+
+   /* 
+    Desktop, 1000px and above
+  */
+  @media only screen and (min-width: 1000px) {
+
+    .tab-pane {
+      width: 40%;
+  }
+
+    .logo img {
+      padding-top: 20px;
+      width: 45%;
+  }
+   
+    #mapid { 
+      height: 300px;
+    }
+  } 
+  
+
