@@ -1,6 +1,4 @@
-var loadClick = false; //Variable to see if 'load supplies' is clicked
 var myCargoClick = false; //Variable to see if 'My cargo' is clicked
-var dropClick = false; //Variable to see if 'drop supplies' is clicked
 var mapClick = false;
 var xhr = new XMLHttpRequest();
 var parentDiv = document.getElementById('mapContainer'); 
@@ -19,6 +17,7 @@ fetch('/api/username')
     .then(response => response.text())
     .then(data => {
     username = data; // Log the text received from the server
+    document.getElementById('username_placeholder').innerText = username;
     })
     .catch(error => {
     console.error('Error:', error);
@@ -26,12 +25,9 @@ fetch('/api/username')
 
 
 function clearFields() {
-    loadClick = false;
-    dropClick = false;
     myCargoClick = false;
     mapClick = false;
     document.getElementById('error-message').innerHTML = '';   //For error messages
-    document.getElementById('procedures').innerHTML = '';  //For the Load,Drop button
     document.getElementById('cargo').innerHTML = '';        //For the My cargo button
 
     //Hide mapContainer & tasks
@@ -63,15 +59,16 @@ function displayCargo(data) {
     var cargoDiv = document.getElementById("cargo");
     cargoDiv.innerHTML = ""; //clear existing
      // create table
-    var table = document.createElement("table"); 
+    var table = document.createElement("table");
+    table.classList.add("user_table");
      // Create a header row
      var headerRow = table.insertRow(0);
      var headers = ["ID", "Name", "Category","Quantity"];
      for (var i = 0; i < headers.length; i++) {
-         var headerCell = headerRow.insertCell(i);
-         headerCell.textContent = headers[i];
-         headerCell.classList.add("fw-bold"); //bold header 
-     }
+        let th = document.createElement("th");
+        th.textContent = headers[i];
+        headerRow.append(th);
+    }
     // Populate the table with data
     for (var i = 0; i < data.items.length; i++) {
         var cargo = data.items[i];
@@ -94,7 +91,6 @@ function displayCargo(data) {
 }
 
 function load() {
-        loadClick = true;
         /*We make an http request to get the database item data*/
         var xhrs = new XMLHttpRequest();
         xhrs.onreadystatechange = function () {

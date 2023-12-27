@@ -18,106 +18,109 @@
     </style>
   </head>
 
-  <body>
+<body>
 
     <div id="grid-container">
-      <ul class="sidebar" id="sidebar">
-        <!-- Margin padding 0 for hub -->
-        <li class="header"><a onclick="showAnnouncementsPanel()">Citizen Hub</a></li>
-        <li><a onclick="showRequestPanel()">Make a request</a></li>
-        <li><a href="#about">About</a></li>
-        <li>
-          <!-- TODO: Add username -->
-            <form action="/logout?_method=DELETE" method="post">
-            <button type="submit">Logout</button>
-          </form>
-        </li>
-      </ul>
+        <ul class="sidebar">
+            <!-- Margin padding 0 for hub -->
+            <li class="header"><a onclick="showAnnouncementsPanel()">
+                <span id="username_placeholder"></span> - Citizen Hub</a>
+            </li>
+            <li><a onclick="showRequestPanel()">Make a request</a></li>
+            <li><a href="#about">About</a></li>
+            <li>
+                <!-- TODO: Add username -->
+                <form action="/logout?_method=DELETE" method="post">
+                <button type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
 
-    
-      <!-- Experiment with % vs vh -->
-      <!-- This will be the canvas for everything -->
-      <div class="canvas" id="canvas">
-        <div id="makeRequest" class="hidden">
-          <h3>Make a request</h3>
-          <form action="/citizen/makeRequest" method="post">
-            <!-- Item select -->
-            <div id="table-select" class="table-select">
-              <label class="dropdown">Choose a category:
-                <select id="categories" onchange="showItems(event)">
-                  <option value="-1">Please select a category</option></select>
-              </label>
-              <br>
-              <label class="dropdown">Choose an item:
-                <select id="items">
-                  <!-- Instead of blank dropdown -->
-                  <option value="-1">Please select a category</option>
-                </select>
-              </label>
-      
+
+        <!-- Experiment with % vs vh -->
+        <!-- This will be the canvas for everything -->
+        <div class="canvas" id="canvas">
+            <div id="makeRequest" class="hidden">
+                <h3>Make a request</h3>
+                <form action="/citizen/makeRequest" method="post">
+                <!-- Item select -->
+                <div id="table-select" class="table-select">
+                    <label class="dropdown">Choose a category:
+                    <select id="categories" onchange="showItems(event)">
+                        <option value="-1">Please select a category</option></select>
+                    </label>
+                    <br>
+                    <label class="dropdown">Choose an item:
+                    <select id="items">
+                        <!-- Instead of blank dropdown -->
+                        <option value="-1">Please select a category</option>
+                    </select>
+                    </label>
+            
+                </div>
+                <!-- Load categories right after div loads -->
+                <script src="js/citizen.js"></script>
+                <script>
+                    showCategories();
+                </script>
+            
+                <!-- People num input -->
+                <div class="form-outline mb-4">
+                    <input type="number" id="num_people" class="form-control" />
+                    <label class="form-label" for="num_people">Number of people</label>
+                </div>
+            
+                <!-- Submit button -->
+                <button type="button" onclick="sendRequest()" class="btn btn-primary btn-block mb-4">Send request</button>
+                <p id="error-message"></p>
+                </form>
+            
+                <h3>Your previous requests</h3>
+                <p id="is-empty-message"></p>
+                <table class="user_table" id="user_requests">
+                </table>
+
             </div>
-            <!-- Load categories right after div loads -->
-            <script src="js/citizen.js"></script>
-            <script>
-                showCategories();
-            </script>
-        
-            <!-- People num input -->
-            <div class="form-outline mb-4">
-              <input type="number" id="num_people" class="form-control" />
-              <label class="form-label" for="num_people">Number of people</label>
+            
+            <!-- Default view -->
+            <div id="seeAnnouncements">
+                
+                <h3>Site announcements</h3>
+                <p id="no-announcements-message"></p>
+                <div id="announcements_list">
+                <!-- <div class="announcement-box">
+                    <h5>Important Announcement</h5>
+                    <p>This is where you can write your announcement content. It can be multiple lines.</p>
+                    <p class="timestamp">5 hours ago</p>
+                </div> -->
+                </div>
+                
+                <h3>Your offers</h3>
+                <p id="no-offers-message"></p>
+                <table class="user_table" id="user_offers">
+                </table>
+                
             </div>
-      
-            <!-- Submit button -->
-            <button type="button" onclick="sendRequest()" class="btn btn-primary btn-block mb-4">Send request</button>
-            <p id="error-message"></p>
-          </form>
-        
-        <h3>Your previous requests</h3>
-        <p id="is-empty-message"></p>
-        <table class="user_table" id="user_requests">
-        </table>
+
 
         </div>
-        
-        <!-- Default view -->
-        <div id="seeAnnouncements">
-          
-          <h3>Site announcements</h3>
-          <p id="no-announcements-message"></p>
-          <div id="announcements_list">
-            <!-- <div class="announcement-box">
-              <h5>Important Announcement</h5>
-              <p>This is where you can write your announcement content. It can be multiple lines.</p>
-              <p class="timestamp">5 hours ago</p>
-            </div> -->
-          </div>
-          
-          <h3>Your offers</h3>
-          <p id="no-offers-message"></p>
-          <table class="user_table" id="user_offers">
-          </table>
-          
-        </div>
-
-
-      </div>
     <!-- </div> -->
-  </div>
-      <script>
+    </div>
+
+    <script>
         // Dynamically set size of canvas to prevent overlap with sidebar
         // TODO: Sidebar has static size, but might change to scale with screen size
         // If so, make font scale with sidebar also
         document.addEventListener("DOMContentLoaded", function () {
-          if (window.innerWidth > 300) {
+            if (window.innerWidth > 300) {
             var sidebarWidth = document.getElementById("sidebar").offsetWidth;
             document.getElementById("canvas").style.marginLeft = sidebarWidth + "px";
-          }
+            }
         });
-      
+        
         showAnnouncementsPanel();
-      </script>
+    </script>
 
-      <noscript>Sorry, your browser does not support JavaScript!</noscript>
-  </body>
+    <noscript>Sorry, your browser does not support JavaScript!</noscript>
+</body>
 </html>

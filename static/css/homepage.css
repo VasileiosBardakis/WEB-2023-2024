@@ -54,7 +54,6 @@ ul.sidebar {
   display: inline-block;
 }
 
-
 li a {
   cursor: pointer; /* Imitate button click */
   user-select: none;
@@ -81,6 +80,7 @@ li a:hover:not(.active) {
   color: white;
 }
 
+
 .user_table {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
@@ -105,12 +105,7 @@ li a:hover:not(.active) {
   color: white;
 }
 
-.fields{
-  padding-left: 31%;
-  text-align:center;
-}
-
-.fields #searchInput {
+.canvas #searchInput {
   margin-top: 20px;
   padding: 8px;
   border: 2px solid #3498db;
@@ -118,7 +113,7 @@ li a:hover:not(.active) {
   padding: 8px;
   width: 100%;
 }
-
+/*
 .fields table {
   width: 100%;
   border-collapse: collapse;
@@ -136,7 +131,7 @@ li a:hover:not(.active) {
   background-color: #f2f2f2;
 }
 
-/* Add vertical lines between the first four columns */
+// Add vertical lines between the first four columns
 .fields td:nth-child(1),
 .fields td:nth-child(2),
 .fields td:nth-child(3),
@@ -149,7 +144,7 @@ li a:hover:not(.active) {
 .fields tr:hover {
   background-color: #f5f5f5;
 }
-
+*/
 #mapContainer.hidden {
   display: none;
 }

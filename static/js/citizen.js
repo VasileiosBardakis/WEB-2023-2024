@@ -1,6 +1,17 @@
 // Event listeners
 // document.getElementById("categories").addEventListener("change", (event) => show_items(event))
 
+let username;
+fetch('/api/username')
+    .then(response => response.text())
+    .then(data => {
+    username = data; // Log the text received from the server
+    document.getElementById('username_placeholder').innerText = username;
+    })
+    .catch(error => {
+    console.error('Error:', error);
+    });
+
 // Functions
 function hideAll() {
     let nodes = document.getElementById('canvas').childNodes;

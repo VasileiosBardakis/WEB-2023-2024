@@ -1,0 +1,14 @@
+Keimeno gia thn anafora. Paradoxes kai logoi pou tis kanate.
+
+Xarhs:
+Caching:
+memory-cache vs Node-cache?
+in-memory logw mikrou scale. Htan apta prwta pou vrikame,
+lightweight, exei ttl, aplo sth xrhsh
+
+Senario xrhshs:
+Register citizen, choose location
+Login, make 2 requests, cancel 1, cant cancel the other (picked up)
+                                    ^
+on another browser, pick up the task|
+using a rescuer account

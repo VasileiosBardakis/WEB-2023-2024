@@ -1,26 +1,27 @@
-Known bugs/Paradoxes:
-Offer gia 1 item, kai de kanei reference to announcement.
-Trigger gia assume task isxuei mono an ginei update se hdh uparxon
+Paradoxes:
+- Offer gia 1 item, kai de kanei reference to announcement.
+- Trigger gia assume task isxuei mono an ginei update se hdh uparxon
 offer/request. An kapoios admin kanei insert task apeutheias mporei
 na kseperastei to orio
-On load cargo, everything closes
-Login error replaces whole screen instead of error-message
+- SQL credentials se .env omws exei bug to package
+- Cancelled offers and requests could be kept with a 'deleted' status but they are not as important
+- Announcements are independent to offers. Offers can be generated endlessly, but announcements can be deleted without impacting them.
+
+Bugs:
+- On load cargo, everything closes
+- Login error replaces whole screen instead of error-message
+- When scrolling, div goes inside sidebar
+- When you logout and then go 1 page back you log back in
 
 
-Info:
-SQL credentials se .env omws exei bug to package
-Sto static/ mpainoun arxeia pou theloume na fortwsoume (.css, .png etc)
-Cancelled offers and requests could be kept with a 'deleted' status but they are not as important
 
-Announcements are independent to offers. Offers can be generated endlessly, but announcements can be deleted without impacting them.
-
-For manage requests of civilian:
+Requests of civilian:
 PERSON requests ITEM for # PEOPLE and ITS STATUS
-List of requests (xhr), on click display details (type=completed,not completed etc)
 
 Use css display instead of innerhtml rewrites (computationally expensive)
 https://stackoverflow.com/questions/11144274/javascript-changing-innerhtml-vs-display
 
+Button inside list:
 https://stackoverflow.com/questions/4853563/how-do-i-submit-a-form-with-a-li-instead-of-a-submit-button
 
 Autocomplete:
@@ -50,41 +51,50 @@ div label {
 
 
 TODO:
-offer complete, cancel, update tables, in proximity popup
-on mobile: make table go under map so its readable
-On assume task, reload window
-Table in rescuer tasks user_table colors and action column
-Make font scale with screen size (unreadable on mobile)
-Manage tasks: Handle header names being from different api calls
-Maybe change column names (date offered/requested) or alias on api
+Server side:
+- Change column names (date offered/requested) or alias on api
 Also to sort those tasks maybe have composite api call that does the sql,
 unions the 2 tables and orders by date
-
-Custom markers
-Check if geolocation is enabled and place rescuer vehicle there. check every 10 seconds
-xmlhttp -> fetch
-Remove item_name from cargo
-let instead of var
-
-When something changes:
-    base relocation
-    new offer
-    new announcement
+- When something changes (base relocation, new offer, new announcement)
 have sql watcher and update everyone's currently logged in homepage
-+ cross validate sql entries in case they are on older data and they're not valid yet
+and cross validate sql entries in case they are on older data and they're not valid yet
+- let instead of var
+- Fix sql auth (where username = ?)
+- Proper GET/POST responses (error message, update error message on client screen etc)
+- xmlhttp -> fetch
+- Remove item_name from cargo
 
-On button press, restore default settings
-Fix sql auth (where username = ?)
-When scrolling, div goes inside sidebar
-Going back a page breaks user flow (e.g. admin login -> backwards -> press register) (Πρέπει να κάνεις logout για να μπορείς να πάς στο Login page κανονικά, doesn't seem like a problem to me)
-post/gets are checked twice: Once client-side to show proper errors or successes
-and once more server side to check for good request and sql injections
 
-Mobile and desktop compatibility:
-If media > 700px, make everything stack vertically
-On mobile make sidebar scale with canvas size and make canvas scrollable (tables)
 
-For mapping (status codes, item id's) do DISTINCT query val -> map
+Web design:
+- Make font scale with screen size (unreadable on mobile)
+- on mobile: make table go under map so its readable
+- If media < 700px, make everything stack vertically
+- On mobile make sidebar scale with canvas size and make canvas scrollable (tables)
+
+
+
+Rescuer:
+- offer complete, cancel, update tables, in proximity popup
+- On assume task, reload window
+- Table in rescuer tasks user_table colors and action column
+- Manage tasks: Handle header names being from different api calls
+- Custom map markers for every possible entity
+- For mapping (status codes, item id's) gather DISTINCT item id's query val -> map
+
+
+
+Citizen:
+- on cancel, check if cancellable (might be old data) and show message "cant cancel, picked up"
+- For mapping (status codes, item id's) gather DISTINCT item id's query val -> map
+
+
+
+Caching:
+https://zeropointdevelopment.com/speed-up-your-website-using-caching-and-htaccess/
+Check if geolocation is enabled and place rescuer vehicle there. check every 10 seconds
+
+
 
 Finishing touches:
 Database normalization (one-to-many etc)
