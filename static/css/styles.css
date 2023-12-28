@@ -3,42 +3,42 @@
     margin: 0;
   }
   
-  body {
+body {
     font-family: Arial, Tahoma, Serif;
     color: #263238;
-  }
+}
 
 
-  
-  nav {
+
+nav {
     display: flex;
     flex-direction: column;
     justify-content:space-between; 
     align-items: center;
     padding: 1rem 2rem;
     background: #cfd8dc; 
-  }
-  
-  nav ul {
+}
+
+nav ul {
     display: flex;
     flex-direction: column;
     padding-top: 0.5rem;
     list-style: none; 
-  }
-  
-  nav li {
+}
+
+nav li {
     padding: 0.5rem 0;
     padding-left: 1rem; 
-  }
-  
-  nav a {
+}
+
+nav a {
     text-decoration: none;
     color: #0d47a1
-  }
+}
   
   /* Till here consider removing */
   
-  body.entry {
+body.entry {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -62,143 +62,137 @@
 }
 
 .logo img {
-    width: 75%;
+    width: 40%;
     display: block; /* Ensure the image behaves as a block element */
     margin: 0 auto; /* Center the image horizontally */
 }
 
 .tab-pane {
-  /* Add your styles here */
-  background-color: #f2f2f2;
-  padding: 20px;
-  border-radius: 8px;
-  height: 100%;
-  width: 85%;
+    /* Add your styles here */
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 8px;
+    height: 100%;
+    width: 85%;
 }
 
 /* Style for the User input */
 #username {
-  border: 2px solid #3498db;
-  border-radius: 5px;
-  padding: 8px;
-  width: 100%;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    padding: 8px;
+    width: 100%;
 }
 #password {
-  border: 2px solid #3498db;
-  border-radius: 5px;
-  padding: 8px;
-  width: 100%;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    padding: 8px;
+    width: 100%;
 }
 #name {
-  border: 2px solid #3498db;
-  border-radius: 5px;
-  padding: 8px;
-  width: 100%;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    padding: 8px;
+    width: 100%;
 }
 #telephone {
-  border: 2px solid #3498db;
-  border-radius: 5px;
-  padding: 8px;
-  width: 100%;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    padding: 8px;
+    width: 100%;
 }
 
 /* Search Bar styles */
 #searchInput {
-  height: 35px;
-  width: 15%;
-  font-size: 14px;
-  margin-top: 20px; /*separate it from the buttons */
-  margin-bottom: 10px; /*separate it from the table */
+    height: 35px;
+    width: 15%;
+    font-size: 14px;
+    margin-top: 20px; /*separate it from the buttons */
+    margin-bottom: 10px; /*separate it from the table */
 }
 
 /* Borders */
 table, th, td {
-  border: 1px solid;
+    border: 1px solid;
 }
 
 /* Table styles */
 table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-bottom: 20px;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 /* Header row styles */
 th {
-  padding: 8px;
-  background-color: #f2f2f2;
+    padding: 8px;
+    background-color: #f2f2f2;
 }
 
 /* Rows styles */
 td {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
 }
 
 #mapid { 
-  height: 150px;
-  width: 100%;
+    height: 150px;
+    width: 100%;
 }
 
 
- /*
+/*
     tablets, 768px and above
-  */
-  @media only screen and (min-width: 768px) {
+*/
+@media only screen and (min-width: 768px) {
     .logo img {
-      padding-top: 10px;
-      width: 60%;
+        padding-top: 10px;
     }
     .tab-pane {
-      padding-top: 30px;
-      width: 50%;
+        padding-top: 30px;
+        width: 50%;
     }
     nav {
-      flex-direction: row;
+        flex-direction: row;
     }
     nav ul {
-      flex-direction: row;;
-      padding-top: 0rem;
+        flex-direction: row;
+        padding-top: 0rem;
     }
     nav li {
-      padding-left: 1rem;
+        padding-left: 1rem;
     }
     #mapid { 
-      height: 200px;
+        height: 200px;
     }
-  
-#username {
-  padding: 12px;
-}
-#password {
-  padding: 12px;
+    
+    #username {
+        padding: 12px;
+    }
+    #password {
+        padding: 12px;
 
-}
-#name {
-  padding: 12px;
-}
-#telephone {
-  padding: 12px;
-}
-  } 
+    }
+    #name {
+        padding: 12px;
+    }
+    #telephone {
+        padding: 12px;
+    }
+} 
 
-   /* 
+/* 
     Desktop, 1000px and above
-  */
-  @media only screen and (min-width: 1000px) {
+*/
+@media only screen and (min-width: 1000px) {
 
     .tab-pane {
-      width: 40%;
-  }
-
-    .logo img {
-      padding-top: 20px;
-      width: 45%;
-  }
-   
-    #mapid { 
-      height: 300px;
+        width: 30%;
     }
-  } 
+    
+    #mapid { 
+        height: 300px;
+    }
+} 
   
 
