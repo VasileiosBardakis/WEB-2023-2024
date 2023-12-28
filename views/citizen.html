@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Saviors Inc. - Citizen</title>
+    <title>Citizen | Saviors Inc.</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="favicon.ico">
@@ -21,25 +21,34 @@
 <body>
 
     <div id="grid-container">
+        <div class="sidebar">
+            <a class="header" onclick="showAnnouncementsPanel()" style="color:white;">
+                <span id="username_placeholder" style="color:white;"></span> - Citizen Hub</a>
+            <a onclick="showRequestPanel()">Make a request</a>
+            <a href="#about">About</a>
+            <form id="logoutForm" action="/logout?_method=DELETE" method="post">
+                <a onclick="logoutForm.submit()">Logout</a>
+            </form>
+
+        </div>
+        <!-- 
         <ul class="sidebar">
-            <!-- Margin padding 0 for hub -->
             <li class="header"><a onclick="showAnnouncementsPanel()">
                 <span id="username_placeholder"></span> - Citizen Hub</a>
             </li>
             <li><a onclick="showRequestPanel()">Make a request</a></li>
             <li><a href="#about">About</a></li>
-            <li>
-                <!-- TODO: Add username -->
-                <form action="/logout?_method=DELETE" method="post">
-                <button type="submit">Logout</button>
-                </form>
-            </li>
-        </ul>
+            <form id="logoutForm" action="/logout?_method=DELETE" method="post">
+                <li onclick="logoutForm.submit()"><a>Logout</a></li>
+            </form>
+        </ul> 
+        -->
 
 
-        <!-- Experiment with % vs vh -->
-        <!-- This will be the canvas for everything -->
         <div class="canvas" id="canvas">
+            <br>
+            <!-- Experiment with % vs vh -->
+            <!-- This will be the canvas for everything -->
             <div id="makeRequest" class="hidden">
                 <h3>Make a request</h3>
                 <form action="/citizen/makeRequest" method="post">
@@ -82,8 +91,8 @@
 
             </div>
             
-            <!-- Default view -->
             <div id="seeAnnouncements">
+                <!-- Default view -->
                 
                 <h3>Site announcements</h3>
                 <p id="no-announcements-message"></p>
@@ -104,7 +113,6 @@
 
 
         </div>
-    <!-- </div> -->
     </div>
 
     <script>

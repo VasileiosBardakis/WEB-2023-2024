@@ -12,6 +12,10 @@ Bugs:
 - Login error replaces whole screen instead of error-message
 - When scrolling, div goes inside sidebar
 - When you logout and then go 1 page back you log back in
+- Massive bugs on mobile
+- On the new sidebar: div text sometimes splits up and changes line
+- On mobile: table makes page unzoomable, breaks the sidebar (happened on old sidebar too)
+- Map doesnt refresh correctly
 
 
 
@@ -51,6 +55,10 @@ div label {
 
 
 TODO:
+idea/probably not good: When loading the html things, load all the xml requests too
+e.g. Load cargo and map together
+When you change something on map (like unloading) also refresh cargo
+
 Server side:
 - Change column names (date offered/requested) or alias on api
 Also to sort those tasks maybe have composite api call that does the sql,
@@ -75,12 +83,15 @@ Web design:
 
 
 Rescuer:
+- WORKING ASSUME TASK
+- WORKING TASK TABLE
 - offer complete, cancel, update tables, in proximity popup
 - On assume task, reload window
 - Table in rescuer tasks user_table colors and action column
 - Manage tasks: Handle header names being from different api calls
 - Custom map markers for every possible entity
 - For mapping (status codes, item id's) gather DISTINCT item id's query val -> map
+- If no tasks show message instead of table
 
 
 

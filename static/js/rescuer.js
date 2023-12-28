@@ -1,16 +1,4 @@
-var myCargoClick = false; //Variable to see if 'My cargo' is clicked
-var mapClick = false;
-var xhr = new XMLHttpRequest();
-var parentDiv = document.getElementById('mapContainer'); 
-var tasksDiv = document.getElementById('tasks'); 
-
-
-xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-        var jsonResponse = JSON.parse(xhr.responseText);
-        displayData(jsonResponse);
-    }
-};
+let mymap;
 
 let username;
 fetch('/api/username')
@@ -23,23 +11,21 @@ fetch('/api/username')
     console.error('Error:', error);
     });
 
-
-function clearFields() {
-    myCargoClick = false;
-    mapClick = false;
-    document.getElementById('error-message').innerHTML = '';   //For error messages
-    document.getElementById('cargo').innerHTML = '';        //For the My cargo button
-
-    //Hide mapContainer & tasks
-    parentDiv.classList.add('hidden'); // Add the 'hidden' class to hide the parent
-    tasksDiv.classList.add('hidden');
-
+function hideAll() {
+    let nodes = document.getElementById('canvas').childNodes;
+    for(let i=0; i<nodes.length; i++) {
+        if (nodes[i].nodeName.toLowerCase() == 'div') {
+            nodes[i].classList.add("hidden");
+        }
+    }
 }
 
 
 function myCargo() {      //If My Cargo isn't clicked, show input fields
-        clearFields();
-        myCargoClick = true;
+        hideAll();
+        let cargoTab = document.getElementById("cargo");
+        cargoTab.classList.toggle("hidden");
+
         /*We make an http request to get the database item data*/
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
@@ -112,19 +98,21 @@ function displayItems(data) {
      /* Create a search bar */
      var searchInput = document.createElement("input");
      searchInput.type = "text";
-     searchInput.placeholder = "Search by product...[,] for multiples";
+     searchInput.placeholder = "Search by product...[,] for multiple";
      searchInput.id = "searchInput";
      cargo_table.appendChild(searchInput);
      // create table
-    var table = document.createElement("table"); 
+    var table = document.createElement("table");
+    table.classList.add("user_table");
      // Create a header row
      var headerRow = table.insertRow(0);
-     var headers = ["ID", "Name", "Category","Quantity"];
+     var headers = ["ID", "Name", "Category","Quantity","Action"];
      for (var i = 0; i < headers.length; i++) {
-         var headerCell = headerRow.insertCell(i);
-         headerCell.textContent = headers[i];
-         headerCell.classList.add("fw-bold"); //bold header 
-     }
+        let th = document.createElement("th");
+        th.textContent = headers[i];
+        headerRow.append(th);
+    }
+
     // Populate the table with data
     for (var i = 0; i < data.items.length; i++) {
         var items = data.items[i];
@@ -171,8 +159,8 @@ function forEach(item) {
         if (!isNaN(wantedQuantity) && wantedQuantity > 0) {
             storeItem(itemId, wantedQuantity);
 
-            // REFRESH TABLE USING displayItems()
-            clearFields();
+            // TODO: REFRESH TABLE USING displayItems()
+            hideAll();
             var xhrs = new XMLHttpRequest();
             xhrs.onreadystatechange = function () {
                 if (xhrs.readyState == 4) {
@@ -252,9 +240,8 @@ function drop() {
                     var jsonResponse = JSON.parse(xhr.responseText);
                     console.log("JSON response:", jsonResponse);
 
-                    //TODO: Refresh vehicle cargo adn alert user
                 } else {
-                    // cargo empty
+                    // TODO: cargo empty
                 }
             }
         };
@@ -279,7 +266,6 @@ function assumeTask(id, type) {
 
 // code taken from citizen.js
 function manageTasks() {
-    tasksDiv.classList.remove('hidden');
     let header = document.getElementById('task_header');
     header.innerText = 'Your tasks';
 
@@ -410,28 +396,20 @@ function manageTasks() {
     
 }
 
-let mapInitialized = false; // Add this global variable
 
 function mapTab() {
-        clearFields();
-        tasksDiv.classList.remove('hidden');
-        parentDiv.classList.remove('hidden');
-        // Remove the existing map instance
-        if (mapInitialized) {
-            mymap.remove();
-        }
-        loadMap();
-        mapInitialized = true;
-        manageTasks();
-        mapClick = true;
+        hideAll();
+        let mapTab = document.getElementById("mapTab");
+        mapTab.classList.toggle("hidden");
 
-        // Instead of setting innerHTML directly, append a new map container
-        var newMapContainer = document.createElement('div');
-        newMapContainer.id = 'mapid';
-        document.getElementById('your-map-container').appendChild(newMapContainer);
+        if (mymap) mymap.remove();
+        mymap = L.map("mapid"); 
+        loadMap(mymap);
+        manageTasks();
+
 }
 
-function loadMap() {
+function loadMap(mymap) {
     function connectDots(marker1, marker2, layer) {
         polyLine = [];
         polyLine.push([marker1.getLatLng().lat, marker1.getLatLng().lng]);
@@ -507,7 +485,7 @@ function loadMap() {
             let data = JSON.parse(xhr_init_base.response)
             let baseCoordinates = data.base[0].coordinate;
 
-            let mymap = L.map("mapid");
+
             let osmUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
             let osmAttrib ='© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a>';
             let osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
