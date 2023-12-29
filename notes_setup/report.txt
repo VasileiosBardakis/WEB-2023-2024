@@ -4,6 +4,11 @@ Xarhs:
 Checks ginontai client-side (visual) kai server-side (validation and error detection)
 Modular GET/POSTs opote ola mporoun na allaksoun eukola
 
+Alternative:
+Anti na exw koubia panw sto marker tha borousa na kanw linear search
+to marker pou thelw apo array kai na ta vazw se table alla den tha htan
+toso modular etsi
+
 Caching:
 memory-cache vs Node-cache?
 in-memory logw mikrou scale. Htan apta prwta pou vrikame,

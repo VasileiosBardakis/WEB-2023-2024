@@ -68,7 +68,6 @@ function displayCargo(data) {
         let quantityCell = row.insertCell(3);
         quantityCell.textContent = cargo.res_quantity; // show quantity
     }
-    cargoDiv.appendChild(table);
 }
 
 // GET items in database
@@ -311,7 +310,7 @@ function manageTasks() {
                     // Add action buttons column
                     let th_actions = document.createElement("th");
                     th_actions.innerText = 'Actions'; // Set the column name as the text of the header cell
-                    th_actions.colSpan='2';
+                    th_actions.colSpan='1';
                     tr.appendChild(th_actions); // Append the header cell to the header row
                 
                     thead.appendChild(tr); // Append the header row to the header
@@ -338,14 +337,18 @@ function manageTasks() {
                             // Now: for each table row we need 2 actions: complete and cancel
                             
                             // complete
-                            // if not close to completion coordinates, grey out option
+                            /* MOVED TO POPUP
                             let button_complete = document.createElement("td");
                             button_complete.innerText = "Complete";
-
+                            
                             // By default is greyed out
                             button_complete.style.backgroundColor="rgba(0, 0, 0, 0.2)";
                             button_complete.style.color="white";
                             button_complete.style.cursor="not-allowed";
+
+                            // if close to completion coordinates (50m), available
+                            let distance = mymap.distance(vehicle_marker.getLatLng(),vehicle_marker.getLatLng());
+                            */
 
                             let button_cancel = document.createElement("td");
                             button_cancel.innerText = "Cancel";
@@ -376,38 +379,7 @@ function manageTasks() {
                                 xhttp.send(data);
                             }.bind(null, task_id, item.type);
 
-                            /*
-                            // If close, can complete
-                            if (status === 'Pending') {
-                                button_complete.style.backgroundColor="rgba(255, 0, 0, 0.6)";
-                                button_complete.style.color="white";
-                                button_complete.style.cursor="pointer";
-
-                                button_complete.onclick=function(offer_id) {
-                                    let xhttp = new XMLHttpRequest();
-                                    xhttp.open('POST', '/citizen/deleteOffer', true);
-                                    xhttp.setRequestHeader('Content-Type', 'text/plain');
-                                    
-                                    xhttp.onreadystatechange = function () {
-                                        if (xhttp.readyState === 4) {
-                                            if (xhttp.status === 401) {
-                                                // Handle incorrect request with AJAX
-                                                let response = JSON.parse(xhttp.responseText);
-                                                // errorMessageElement.innerHTML = response.error;
-                                            } else if (xhttp.status === 200) {
-                                                loadOffersTable();
-                                            }
-                                        }
-                                    };
-
-                                    let data = offer_id.toString();
-                                    console.log(data);
-                                    xhttp.send(data);
-                                }.bind(null, offer_id);
-                            }
-                            */
-
-                            tr.appendChild(button_complete);
+                            // tr.appendChild(button_complete);
                             tr.appendChild(button_cancel);
 
                             table.appendChild(tr); // Append the table row to the table
@@ -677,7 +649,8 @@ function loadMap(mymap) {
                                         ${offer.fullname}, ${offer.telephone}<br>
                                         Offered on: ${offer.date_offered}<br>
                                         Picked up from: ${offer.rescuer}<br>
-                                        On: ${offer.date_accepted}<br>`
+                                        On: ${offer.date_accepted}<br>
+                                        <button onclick="assumeTask(${request.id}, 'requests')">Complete request</button>`
                                         
                                         let offer_marker = addMarker(offersAssumed, 'offersAssumed',
                                             offer.coordinate['x'], offer.coordinate['y'],
@@ -685,6 +658,25 @@ function loadMap(mymap) {
 
                                         // Connect with vehicle
                                         connectDots(vehicle_marker, offer_marker, activeLines);
+
+                                        function updateOfferCompletion() {
+                                            distance = mymap.distance(offer_marker.getLatLng(),vehicle_marker.getLatLng());
+                                            if (distance <= 50) {
+                                                // TODO: marker.getPopup().getContent();
+                                                offer_marker.bindPopup(offerText + 
+                                                    `<button onclick="completeTask(${request.id}, 'requests')">Complete task</button>`
+                                                    );
+                                            }
+                                        }
+            
+                                        // Attach the event listener to the marker
+                                        offer_marker.on('popupopen', updateOfferCompletion);
+
+                                        
+                                        let distance = mymap.distance(vehicle_marker.getLatLng(),request_marker.getLatLng());
+                                        if (distance <= 50) {
+                                            
+                                        }
 
                                     });
                                 }
