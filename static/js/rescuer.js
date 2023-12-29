@@ -26,13 +26,10 @@ function myCargo() {
         let cargoTab = document.getElementById("cargo");
         cargoTab.classList.toggle("hidden");
 
-        /*We make an http request to get the database item data*/
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                console.log("Response received:", xhr.status, xhr.responseText);
                 let jsonResponse = JSON.parse(xhr.responseText);
-                console.log("JSON response:", jsonResponse);
                 displayCargo(jsonResponse);
             }
         };
@@ -483,7 +480,7 @@ function loadMap(mymap) {
     //custom markers
     // Anchor is on height px so it's under it (tip)
     let customBase = L.icon({
-        iconUrl: 'img/customBase.png',
+        iconUrl: 'markers/customBase.png',
         iconSize: [32, 32], // size of the icon
         iconAnchor: [16, 16] // center of the icon
     });

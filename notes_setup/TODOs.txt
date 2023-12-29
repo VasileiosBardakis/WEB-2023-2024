@@ -8,6 +8,7 @@ na kseperastei to orio
 - Announcements are independent to offers. Offers can be generated endlessly, but announcements can be deleted without impacting them.
 
 Bugs:
+- Sidebar images dont get css
 - On load cargo, everything closes
 - Login error replaces whole screen instead of error-message
 - When scrolling, div goes inside sidebar
@@ -19,6 +20,8 @@ Bugs:
 - Entering wrong quantity on pickup cargo makes page crash
 - Overlapping divs
 
+
+/api/cargo vs /rescuer/cargo?
 
 
 Requests of civilian:
@@ -57,7 +60,13 @@ div label {
 
 
 TODO:
-Check task num before assigning task
+Error alerts and handling on EVERYTHING (frontend backend)
+Clean up api endpoints
+
+Check task num before assigning task:
+UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0
+UPDATE requests SET rescuer = 'res', status=1, date_accepted=NOW() WHERE id = 12 AND status=0
+
 idea/probably not good: When loading the html things, load all the xml requests too
 e.g. Load cargo and map together
 When you change something on map (like unloading) also refresh cargo

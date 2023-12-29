@@ -16,25 +16,22 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- Include the Bootstrap JS file -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
-    
-    <style>
-    </style>
+    <script src="js/rescuer.js"></script>
 </head>
 
 <body>
 
     <div id="grid-container">
-    <div class="sidebar">
-        <a class="header" onclick="" style="color:white;">
-            <span id="username_placeholder" style="color:white;"></span> - Rescuer Hub</a>
-        
-        <a onclick="myCargo()">My Cargo</a>
-        <a onclick="mapTab()">Show Map</a>
-        <form id="logoutForm" action="/logout?_method=DELETE" method="post">
-            <a onclick="logoutForm.submit()">Logout</a>
-        </form>
-    </div>
+        <div class="sidebar">
+            <a class="header" onclick="myCargo()" style="color:white;">
+                <span id="username_placeholder" style="color:white;"></span> - Rescuer Hub</a>
+            <!-- TODO: For some reason homepage.css isnt applying style to icons -->
+            <a onclick="myCargo()"><img class="sidebar-icon" title="cargo" src="img/sidebar/cargo.png" alt="truck icon"/>My Cargo</a>
+            <a onclick="mapTab()"><img class="sidebar-icon" title="map" src="img/sidebar/map.png" alt="map icon"/>Show Map</a>
+            <form id="logoutForm" action="/logout?_method=DELETE" method="post">
+                <a onclick="logoutForm.submit()"><img class="sidebar-icon" title="logout" src="img/sidebar/logout.png" alt="logout icon"/>Logout</a>
+            </form>
+        </div>
 
         <div class="canvas" id="canvas">
             <div id="cargo">
@@ -58,7 +55,11 @@
         </div>
     </div>
 
-    <script>
+    <script defer>
+
+        // TODO: Default, isnt being clicked
+        myCargo();
+
         // Dynamically set size of canvas to prevent overlap with sidebar
         // TODO: Sidebar has static size, but might change to scale with screen size
         // If so, make font scale with sidebar also
@@ -68,13 +69,7 @@
             document.getElementById("canvas").style.marginLeft = sidebarWidth + "px";
             }
         });
-        
     </script>
-
-    <script src="js/rescuer.js" defer></script>
     <noscript>Sorry, your browser does not support JavaScript!</noscript>
-
-
-
 </body>
 </html>

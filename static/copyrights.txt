@@ -1,0 +1,17 @@
+
+#############################################
+MAP ICONS
+#############################################
+
+<a href="https://www.flaticon.com/free-icons/gps" title="gps icons">Gps icons created by Freepik - Flaticon</a>
+mappity.org
+
+active: #34ff00
+free: #ff9300
+
+#############################################
+SIDEBAR ICONS
+#############################################
+<a href="https://www.freepik.com/icon/cargo_1524533">Icon by Icongeek26</a>
+<a href="https://www.flaticon.com/free-icons/gps" title="gps icons">Gps icons created by netscript - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/logout" title="logout icons">Logout icons created by Afian Rochmah Afif - Flaticon</a>

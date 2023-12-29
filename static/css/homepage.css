@@ -76,6 +76,11 @@ a.header {
   text-decoration: none;
 }
 
+img.siderbar-icon {
+  width:64px;
+  display:inline;
+  margin:2px;
+}
 
 .user_table {
   font-family: Arial, Helvetica, sans-serif;
