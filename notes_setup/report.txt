@@ -1,6 +1,9 @@
 Keimeno gia thn anafora. Paradoxes kai logoi pou tis kanate.
 
 Xarhs:
+Checks ginontai client-side (visual) kai server-side (validation and error detection)
+Modular GET/POSTs opote ola mporoun na allaksoun eukola
+
 Caching:
 memory-cache vs Node-cache?
 in-memory logw mikrou scale. Htan apta prwta pou vrikame,

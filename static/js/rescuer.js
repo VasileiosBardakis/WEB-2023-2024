@@ -4,11 +4,11 @@ let username;
 fetch('/api/username')
     .then(response => response.text())
     .then(data => {
-    username = data; // Log the text received from the server
-    document.getElementById('username_placeholder').innerText = username;
+        username = data; // Log the text received from the server
+        document.getElementById('username_placeholder').innerText = username;
     })
     .catch(error => {
-    console.error('Error:', error);
+        console.error(`Error fetching username: `, error);
     });
 
 function hideAll() {
@@ -20,8 +20,8 @@ function hideAll() {
     }
 }
 
-
-function myCargo() {      //If My Cargo isn't clicked, show input fields
+// Show cargo tab and GET items in vehicle
+function myCargo() {
         hideAll();
         let cargoTab = document.getElementById("cargo");
         cargoTab.classList.toggle("hidden");
@@ -40,21 +40,22 @@ function myCargo() {      //If My Cargo isn't clicked, show input fields
         xhr.send();
 }
 
+// Create the table and populate with vehicle items
 function displayCargo(data) {
-    /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
     let cargoDiv = document.getElementById("cargo");
-    cargoDiv.innerHTML = ""; //clear existing
-     // create table
+    cargoDiv.innerHTML = "";
+
     let table = document.createElement("table");
     table.classList.add("user_table");
-     // Create a header row
-     let headerRow = table.insertRow(0);
-     let headers = ["ID", "Name", "Category","Quantity"];
-     for (let i = 0; i < headers.length; i++) {
+
+    let headerRow = table.insertRow(0);
+    let headers = ["ID", "Name", "Category","Quantity"];
+    for (let i = 0; i < headers.length; i++) {
         let th = document.createElement("th");
         th.textContent = headers[i];
         headerRow.append(th);
     }
+
     // Populate the table with data
     for (let i = 0; i < data.items.length; i++) {
         let cargo = data.items[i];
@@ -76,6 +77,7 @@ function displayCargo(data) {
     cargoDiv.appendChild(table);
 }
 
+// GET items in database
 function load() {
         /*We make an http request to get the database item data*/
         let xhrs = new XMLHttpRequest();
@@ -148,6 +150,7 @@ function displayItems(data) {
     }
 }
 
+// Handles "Load cargo" requests
 function forEach(item) {
     return function () {
         let itemId = item.id;
@@ -160,20 +163,7 @@ function forEach(item) {
             storeItem(itemId, wantedQuantity);
 
             // TODO: REFRESH TABLE USING displayItems()
-            hideAll();
-            let xhrs = new XMLHttpRequest();
-            xhrs.onreadystatechange = function () {
-                if (xhrs.readyState == 4) {
-                    if (xhrs.status == 200) {
-                        let jsonResponse = JSON.parse(xhrs.responseText);
-                        displayItems(jsonResponse);
-                    } else {
-                        console.error("Error fetching updated data:", xhrs.status);
-                    }
-                }
-            };
-            xhrs.open("GET", "http://localhost:3000/api/itemswcat", true);
-            xhrs.send();
+            load();
         } else {
             alert("Please enter a valid quantity.");
         }
@@ -183,7 +173,7 @@ function forEach(item) {
 function storeItem(item, quantity) {
     // Create a new XMLHttpRequest object
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:3000/api/load", true);
+    xhr.open("POST", "/api/load", true);
     xhr.setRequestHeader("Content-Type", "application/json");
     let requestData = {
         itemId: item,
