@@ -70,16 +70,14 @@ label.dropdown {
   color: white;
 }
 
+.sidebar a:hover:not(.active) img.sidebar-icon {
+  filter:invert(1);
+}
+
 a.header {
   background-color: rgb(218, 92, 9);
   display: block;
   text-decoration: none;
-}
-
-img.siderbar-icon {
-  width:64px;
-  display:inline;
-  margin:2px;
 }
 
 .user_table {
@@ -251,9 +249,18 @@ img.siderbar-icon {
     float: none;
   }
 }
+
+img.sidebar-icon {
+  width:36px;
+  top:-5px;
+  position:relative;
+  /* display:inline; */
+  margin-right:2px;
+}
+
 /* 
 @media only screen and (min-width: 768px) {
-
+  
   .navbar-header{
     display: block;
   }
@@ -262,20 +269,20 @@ img.siderbar-icon {
     flex-direction: row;
     padding-top: 1rem;
   }
-
+  
   ul.sidebar {
     width: 20%;
   }
-
+  
   .fields{
     padding-left: 21%;
   }
-
+  
   div.canvas {
     margin-left:15%;
     padding-right:15%;
   }
-
+  
   #mapid { 
     height: 500px;
     width: 400px;
@@ -283,12 +290,12 @@ img.siderbar-icon {
 } 
 
 @media only screen and (min-width: 1000px) {
-
+  
   div.canvas {
     margin-left:25%;
     padding-right:25%;
   }
-
+  
   ul.sidebar {
     width: 15%;
   }
@@ -296,11 +303,11 @@ img.siderbar-icon {
   .fields{
     padding-left: 16%;
   }
-
+  
   #mapid { 
     height: 750px;
     width: 600px;
   }
   
 } 
-   */
+*/

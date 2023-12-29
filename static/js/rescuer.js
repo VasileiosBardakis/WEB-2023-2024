@@ -39,11 +39,8 @@ function myCargo() {
 
 // Create the table and populate with vehicle items
 function displayCargo(data) {
-    let cargoDiv = document.getElementById("cargo");
-    cargoDiv.innerHTML = "";
-
-    let table = document.createElement("table");
-    table.classList.add("user_table");
+    let table = document.getElementById("cargo-table");
+    table.innerHTML = "";
 
     let headerRow = table.insertRow(0);
     let headers = ["ID", "Name", "Category","Quantity"];
@@ -255,9 +252,6 @@ function assumeTask(id, type) {
 
 // code taken from citizen.js
 function manageTasks() {
-    let header = document.getElementById('task_header');
-    header.innerText = 'Your tasks';
-
     let table = document.getElementById('user_table');
     let errorMessageElement = document.getElementById('task-info');
     table.innerText='';

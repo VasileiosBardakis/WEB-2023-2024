@@ -8,6 +8,7 @@ na kseperastei to orio
 - Announcements are independent to offers. Offers can be generated endlessly, but announcements can be deleted without impacting them.
 
 Bugs:
+- If you press "Show map" fast enough two tables appear (?)
 - Sidebar images dont get css
 - On load cargo, everything closes
 - Login error replaces whole screen instead of error-message
@@ -120,6 +121,9 @@ Check if geolocation is enabled and place rescuer vehicle there. check every 10 
 
 
 Finishing touches:
+https://www.w3schools.com/css/tryit.asp?filename=trycss3_gradient-linear_trans
+transition
+
 Database normalization (one-to-many etc)
 
 Register: To column scalearei me to megalutero item, kanta aneksartita
