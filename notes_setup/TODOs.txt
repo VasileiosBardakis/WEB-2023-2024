@@ -16,6 +16,8 @@ Bugs:
 - On the new sidebar: div text sometimes splits up and changes line
 - On mobile: table makes page unzoomable, breaks the sidebar (happened on old sidebar too)
 - Map doesnt refresh correctly
+- Entering wrong quantity on pickup cargo makes page crash
+- Overlapping divs
 
 
 
@@ -55,6 +57,7 @@ div label {
 
 
 TODO:
+Check task num before assigning task
 idea/probably not good: When loading the html things, load all the xml requests too
 e.g. Load cargo and map together
 When you change something on map (like unloading) also refresh cargo

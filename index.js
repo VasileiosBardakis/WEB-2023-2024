@@ -974,8 +974,9 @@ app.post('/rescuer/assumeTask', (req, res) => {
 		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
 			// Has permission to assume
 			if (username_results.length > 0) {
-				db.query(`UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?)`, [username, id], function (error, results) {
+				db.query(`UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0`, [username, id], function (error, results) {
 					if (error) throw error;
+					console.log(`${id},${table} assumed from ${username}`)
 				});
 				res.end();
 			}
@@ -984,6 +985,30 @@ app.post('/rescuer/assumeTask', (req, res) => {
 		res.status(401).json({ error: 'Invalid parameters.' });
 		res.end();		
 	}
+});
 
+// TODO: on offer arent offered items "stolen"? or just returned to base
+app.post('/rescuer/cancelTask', (req, res) => {
+	console.log(req.body);
+	let username = req.session.username;
+	id = req.body.id;
+	table = req.body.type;
 	
+
+	if (id && table === ('requests' || 'offers')) {
+		// Ensure is rescuer
+		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
+			// Has permission to cancel
+			if (username_results.length > 0) {
+				db.query(`UPDATE ${table} SET rescuer = NULL, status=0, date_accepted=NULL WHERE id = (?) AND rescuer = (?) AND status=1`, [id, username, id], function (error, results) {
+					if (error) throw error;
+					console.log(`${id},${table} canceled from ${username}`)
+				});
+				res.end();
+			}
+		});
+	} else {
+		res.status(401).json({ error: 'Invalid parameters.' });
+		res.end();		
+	}
 });

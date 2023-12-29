@@ -27,11 +27,11 @@ function myCargo() {      //If My Cargo isn't clicked, show input fields
         cargoTab.classList.toggle("hidden");
 
         /*We make an http request to get the database item data*/
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 console.log("Response received:", xhr.status, xhr.responseText);
-                var jsonResponse = JSON.parse(xhr.responseText);
+                let jsonResponse = JSON.parse(xhr.responseText);
                 console.log("JSON response:", jsonResponse);
                 displayCargo(jsonResponse);
             }
@@ -42,35 +42,35 @@ function myCargo() {      //If My Cargo isn't clicked, show input fields
 
 function displayCargo(data) {
     /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
-    var cargoDiv = document.getElementById("cargo");
+    let cargoDiv = document.getElementById("cargo");
     cargoDiv.innerHTML = ""; //clear existing
      // create table
-    var table = document.createElement("table");
+    let table = document.createElement("table");
     table.classList.add("user_table");
      // Create a header row
-     var headerRow = table.insertRow(0);
-     var headers = ["ID", "Name", "Category","Quantity"];
-     for (var i = 0; i < headers.length; i++) {
+     let headerRow = table.insertRow(0);
+     let headers = ["ID", "Name", "Category","Quantity"];
+     for (let i = 0; i < headers.length; i++) {
         let th = document.createElement("th");
         th.textContent = headers[i];
         headerRow.append(th);
     }
     // Populate the table with data
-    for (var i = 0; i < data.items.length; i++) {
-        var cargo = data.items[i];
-        var row = table.insertRow(i + 1); // Skip the header row
+    for (let i = 0; i < data.items.length; i++) {
+        let cargo = data.items[i];
+        let row = table.insertRow(i + 1); // Skip the header row
 
         // Create cells and populate them with data
-        var idCell = row.insertCell(0);
+        let idCell = row.insertCell(0);
         idCell.textContent = cargo.item_id;
 
-        var nameCell = row.insertCell(1);
+        let nameCell = row.insertCell(1);
         nameCell.textContent = cargo.item_name;
 
-        var categoryCell = row.insertCell(2);
+        let categoryCell = row.insertCell(2);
         categoryCell.textContent = cargo.item_category; 
 
-        var quantityCell = row.insertCell(3);
+        let quantityCell = row.insertCell(3);
         quantityCell.textContent = cargo.res_quantity; // show quantity
     }
     cargoDiv.appendChild(table);
@@ -78,10 +78,10 @@ function displayCargo(data) {
 
 function load() {
         /*We make an http request to get the database item data*/
-        var xhrs = new XMLHttpRequest();
+        let xhrs = new XMLHttpRequest();
         xhrs.onreadystatechange = function () {
             if (xhrs.readyState == 4 && xhrs.status == 200) {
-                var jsonResponse = JSON.parse(xhrs.responseText);
+                let jsonResponse = JSON.parse(xhrs.responseText);
                 console.log("Load cargo:", jsonResponse);
                 displayItems(jsonResponse);
             }
@@ -93,47 +93,47 @@ function load() {
 /* Function for displaying data in Show Current Storage */
 function displayItems(data) {
     /*Function that reads the data correctly and places it in the HTML file using innerHTML*/
-    var cargo_table = document.getElementById("cargo_pick_up");
+    let cargo_table = document.getElementById("cargo_pick_up");
     cargo_table.innerHTML = ""; //clear existing
      /* Create a search bar */
-     var searchInput = document.createElement("input");
+     let searchInput = document.createElement("input");
      searchInput.type = "text";
      searchInput.placeholder = "Search by product...[,] for multiple";
      searchInput.id = "searchInput";
      cargo_table.appendChild(searchInput);
      // create table
-    var table = document.createElement("table");
+    let table = document.createElement("table");
     table.classList.add("user_table");
      // Create a header row
-     var headerRow = table.insertRow(0);
-     var headers = ["ID", "Name", "Category","Quantity","Action"];
-     for (var i = 0; i < headers.length; i++) {
+     let headerRow = table.insertRow(0);
+     let headers = ["ID", "Name", "Category","Quantity","Action"];
+     for (let i = 0; i < headers.length; i++) {
         let th = document.createElement("th");
         th.textContent = headers[i];
         headerRow.append(th);
     }
 
     // Populate the table with data
-    for (var i = 0; i < data.items.length; i++) {
-        var items = data.items[i];
-        var row = table.insertRow(i + 1); // Skip the header row
+    for (let i = 0; i < data.items.length; i++) {
+        let items = data.items[i];
+        let row = table.insertRow(i + 1); // Skip the header row
 
         // Create cells and populate them with data
-        var idCell = row.insertCell(0);
+        let idCell = row.insertCell(0);
         idCell.textContent = items.id;
 
-        var nameCell = row.insertCell(1);
+        let nameCell = row.insertCell(1);
         nameCell.textContent = items.name;
 
-        var categoryCell = row.insertCell(2);
+        let categoryCell = row.insertCell(2);
         categoryCell.textContent = items.category_name; // Use the category_name instead of category
 
-        var quantityCell = row.insertCell(3);
+        let quantityCell = row.insertCell(3);
         quantityCell.textContent = items.quantity;
 
-        var buttonCell = row.insertCell(4);
+        let buttonCell = row.insertCell(4);
         // Create a button element
-        var button = document.createElement("button");
+        let button = document.createElement("button");
         button.textContent = "Load Cargo";
    
          // Add a click event listener to the button
@@ -150,10 +150,10 @@ function displayItems(data) {
 
 function forEach(item) {
     return function () {
-        var itemId = item.id;
+        let itemId = item.id;
 
         // Prompt the user for the wanted quantity
-        var wantedQuantity = parseInt(prompt("Enter quantity for " + item.name), 10); //10 for decimal
+        let wantedQuantity = parseInt(prompt("Enter quantity for " + item.name), 10); //10 for decimal
 
         // Check if the input is a valid number
         if (!isNaN(wantedQuantity) && wantedQuantity > 0) {
@@ -161,11 +161,11 @@ function forEach(item) {
 
             // TODO: REFRESH TABLE USING displayItems()
             hideAll();
-            var xhrs = new XMLHttpRequest();
+            let xhrs = new XMLHttpRequest();
             xhrs.onreadystatechange = function () {
                 if (xhrs.readyState == 4) {
                     if (xhrs.status == 200) {
-                        var jsonResponse = JSON.parse(xhrs.responseText);
+                        let jsonResponse = JSON.parse(xhrs.responseText);
                         displayItems(jsonResponse);
                     } else {
                         console.error("Error fetching updated data:", xhrs.status);
@@ -182,19 +182,19 @@ function forEach(item) {
 
 function storeItem(item, quantity) {
     // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open("POST", "http://localhost:3000/api/load", true);
     xhr.setRequestHeader("Content-Type", "application/json");
-    var requestData = {
+    let requestData = {
         itemId: item,
         wantedQuantity: quantity
     };
-    var jsonData = JSON.stringify(requestData); //convert JSON to string
+    let jsonData = JSON.stringify(requestData); //convert JSON to string
     console.log("Data converted to JSON:", jsonData);
     //handle the response from the server
     xhr.onload = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            var responseData = JSON.parse(xhr.responseText);
+            let responseData = JSON.parse(xhr.responseText);
             console.log("Data successfully sent to the server:", responseData);
         } else {
             console.error("Network response was not ok. Status:", xhr.status);
@@ -209,16 +209,16 @@ function storeItem(item, quantity) {
 /* Function for search bar in Show Current Storage button */
 function searchTable(query, table) {
     query = query.toLowerCase().trim();
-    var rows = table.getElementsByTagName("tr");
+    let rows = table.getElementsByTagName("tr");
 
-    for (var i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
-        var nameCell = rows[i].getElementsByTagName("td")[1]; // Index 1 is the name column
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
+        let nameCell = rows[i].getElementsByTagName("td")[1]; // Index 1 is the name column
 
         /*Making the search bar case insensitive and able to search for multiple names using ','*/
-        var cellText = nameCell.textContent.toLowerCase();     
-        var itemnames = query.split(',').map(name => name.trim());  
+        let cellText = nameCell.textContent.toLowerCase();     
+        let itemnames = query.split(',').map(name => name.trim());  
 
-        var found = itemnames.some(itemname => cellText.includes(itemname));
+        let found = itemnames.some(itemname => cellText.includes(itemname));
 
         if (found) {
             rows[i].style.display = "";
@@ -229,15 +229,15 @@ function searchTable(query, table) {
 }
 
 function drop() {
-        var xhr = new XMLHttpRequest();
-        var url = '/api/Deliver';
+        let xhr = new XMLHttpRequest();
+        let url = '/api/Deliver';
         xhr.open('POST', url, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     console.log("Response received:", xhr.status, xhr.responseText);
-                    var jsonResponse = JSON.parse(xhr.responseText);
+                    let jsonResponse = JSON.parse(xhr.responseText);
                     console.log("JSON response:", jsonResponse);
 
                 } else {
@@ -249,12 +249,14 @@ function drop() {
 }
 
 function assumeTask(id, type) {
+    let xhr = new XMLHttpRequest();
     xhr.open('POST', '/rescuer/assumeTask', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                //TODO: Refresh vehicle cargo and alert user
+                //TODO: Refresh vehicle cargo and map markers
+                manageTasks();
             } else {
                 // TODO: alert user
             }
@@ -280,6 +282,10 @@ function manageTasks() {
     xhr_offers.onreadystatechange = function () {
         if (xhr_offers.readyState === 4 && xhr_offers.status === 200) {
             let offers = JSON.parse(xhr_offers.response).rescuer_offers;
+            offers = offers.map((obj) => ({
+                ...obj,
+                type: "offers",
+              }));
 
             // Load requests
             let xhr_requests = new XMLHttpRequest();
@@ -287,6 +293,10 @@ function manageTasks() {
             xhr_requests.onreadystatechange = function() {
                 if (xhr_requests.readyState === 4 && xhr_requests.status === 200) {
                     let requests = JSON.parse(xhr_requests.response).rescuer_requests;
+                    requests = requests.map((obj) => ({
+                        ...obj,
+                        type: "requests",
+                      }));
 
                     // Combine the two jsons
                     //https://stackoverflow.com/questions/433627/concatenate-two-json-objects
@@ -303,7 +313,9 @@ function manageTasks() {
                     //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
 
                     // Get the keys (column names) of the first object in the JSON data
-                    let cols = Object.keys(offers[0]);
+                    let cols = Object.keys(tasks[0]);
+                    // Disregard type
+                    cols = cols.slice(0,-1);
                     
                     // Create the header element
                     let thead = document.createElement("thead");
@@ -315,52 +327,56 @@ function manageTasks() {
                         th.innerText = colname; // Set the column name as the text of the header cell
                         tr.appendChild(th); // Append the header cell to the header row
                     });
-                    // Add remove button also
+                    // Add action buttons column
                     let th_actions = document.createElement("th");
                     th_actions.innerText = 'Actions'; // Set the column name as the text of the header cell
+                    th_actions.colSpan='2';
                     tr.appendChild(th_actions); // Append the header cell to the header row
                 
                     thead.appendChild(tr); // Append the header row to the header
                     table.append(tr) // Append the header to the table
                     
                     // Loop through the JSON data and create table rows
-                    offers.forEach((item) => {
-                        let offer_id = item.id;
-                        let status = item.Status;
-                        let tr = document.createElement("tr");
-                        
-                        // Get the values of the current object in the JSON data
-                        let vals = Object.values(item);
+                        tasks.forEach((item) => {
+                            let task_id = item.id;
+                            let status = item.Status;
+                            let tr = document.createElement("tr");
+                            
+                            // Get the values of the current object in the JSON data
+                            let vals = Object.values(item);
+                            // Disregard type
+                            vals = vals.slice(0,-1);
 
-                        // Loop through the values and create table cells
-                        vals.forEach((elem) => {
-                            let td = document.createElement("td");
-                            td.innerText = elem; // Set the value as the text of the table cell
-                            tr.appendChild(td); // Append the table cell to the table row
-                        });
-                        /*
-                        // Now: for each table row we need 2 actions: complete and cancel
-                        
-                        // complete
-                        // if not close to completion coordinates, grey out option
-                        let button_complete = document.createElement("td");
-                        button_complete.innerText = "Cancel";
+                            // Loop through the values and create table cells
+                            vals.forEach((elem) => {
+                                let td = document.createElement("td");
+                                td.innerText = elem; // Set the value as the text of the table cell
+                                tr.appendChild(td); // Append the table cell to the table row
+                            });
 
-                        // By default is greyed out
-                        button_complete.style.backgroundColor="rgba(0, 0, 0, 0.2)";
-                        button_complete.style.color="white";
-                        button_complete.style.cursor="not-allowed";
+                            // Now: for each table row we need 2 actions: complete and cancel
+                            
+                            // complete
+                            // if not close to completion coordinates, grey out option
+                            let button_complete = document.createElement("td");
+                            button_complete.innerText = "Complete";
 
-                        // If not picked up yet, cancellable
-                        if (status === 'Pending') {
-                            button_complete.style.backgroundColor="rgba(255, 0, 0, 0.6)";
+                            // By default is greyed out
+                            button_complete.style.backgroundColor="rgba(0, 0, 0, 0.2)";
                             button_complete.style.color="white";
-                            button_complete.style.cursor="pointer";
+                            button_complete.style.cursor="not-allowed";
 
-                            button_complete.onclick=function(offer_id) {
+                            let button_cancel = document.createElement("td");
+                            button_cancel.innerText = "Cancel";
+
+                            button_cancel.style.backgroundColor="rgba(255, 0, 0, 0.6)";
+                            button_cancel.style.color="white";
+                            button_cancel.style.cursor="pointer";
+
+                            button_cancel.onclick=function(task_id, type) {
                                 let xhttp = new XMLHttpRequest();
-                                xhttp.open('POST', '/citizen/deleteOffer', true);
-                                xhttp.setRequestHeader('Content-Type', 'text/plain');
+                                xhttp.open('POST', '/rescuer/cancelTask', true);
+                                xhttp.setRequestHeader('Content-Type', 'application/json');
                                 
                                 xhttp.onreadystatechange = function () {
                                     if (xhttp.readyState === 4) {
@@ -369,21 +385,52 @@ function manageTasks() {
                                             let response = JSON.parse(xhttp.responseText);
                                             // errorMessageElement.innerHTML = response.error;
                                         } else if (xhttp.status === 200) {
-                                            loadOffersTable();
+                                            manageTasks();
                                         }
                                     }
                                 };
 
-                                let data = offer_id.toString();
+                                let data = JSON.stringify({ id: task_id.toString(), type: type.toString() });
                                 console.log(data);
                                 xhttp.send(data);
-                            }.bind(null, offer_id);
-                        }
+                            }.bind(null, task_id, item.type);
 
-                        tr.appendChild(button_complete);
-                        */
-                        table.appendChild(tr); // Append the table row to the table
-                    });
+                            /*
+                            // If close, can complete
+                            if (status === 'Pending') {
+                                button_complete.style.backgroundColor="rgba(255, 0, 0, 0.6)";
+                                button_complete.style.color="white";
+                                button_complete.style.cursor="pointer";
+
+                                button_complete.onclick=function(offer_id) {
+                                    let xhttp = new XMLHttpRequest();
+                                    xhttp.open('POST', '/citizen/deleteOffer', true);
+                                    xhttp.setRequestHeader('Content-Type', 'text/plain');
+                                    
+                                    xhttp.onreadystatechange = function () {
+                                        if (xhttp.readyState === 4) {
+                                            if (xhttp.status === 401) {
+                                                // Handle incorrect request with AJAX
+                                                let response = JSON.parse(xhttp.responseText);
+                                                // errorMessageElement.innerHTML = response.error;
+                                            } else if (xhttp.status === 200) {
+                                                loadOffersTable();
+                                            }
+                                        }
+                                    };
+
+                                    let data = offer_id.toString();
+                                    console.log(data);
+                                    xhttp.send(data);
+                                }.bind(null, offer_id);
+                            }
+                            */
+
+                            tr.appendChild(button_complete);
+                            tr.appendChild(button_cancel);
+
+                            table.appendChild(tr); // Append the table row to the table
+                        });
 
                 } //TODO: Handle endpoint error
             };
@@ -426,7 +473,7 @@ function loadMap(mymap) {
         if (!(stackableLayers.includes(layer_name))) {
             randOffset = 0; 
         }
-        console.log(layer_name, randOffset);
+
         let marker = L.marker([x+randOffset, y+4*randOffset], {
             icon: icon,
             draggable: isDraggable,
@@ -445,33 +492,33 @@ function loadMap(mymap) {
 
     //custom markers
     // Anchor is on height px so it's under it (tip)
-    var customBase = L.icon({
+    let customBase = L.icon({
         iconUrl: 'img/customBase.png',
         iconSize: [32, 32], // size of the icon
         iconAnchor: [16, 16] // center of the icon
     });
-    var customCar = L.icon({
+    let customCar = L.icon({
         iconUrl: 'markers/vehicle.png',
         iconSize: [32, 32], // size of the icon
         iconAnchor: [16, 32] // center of the icon
     });
-    var icon_activeRequest = L.icon({
+    let icon_activeRequest = L.icon({
         iconUrl: 'markers/exclamation_green.png',
         iconSize: [32, 32], // size of the icon
         iconAnchor: [16, 32] // center of the icon
     });
-    var icon_freeRequest = L.icon({
+    let icon_freeRequest = L.icon({
         iconUrl: 'markers/exclamation_red.png',
         iconSize: [32, 32], // size of the icon
         iconAnchor: [16, 32] // center of the icon
     });
 
-    var icon_activeOffer = L.icon({
+    let icon_activeOffer = L.icon({
         iconUrl: 'markers/handshake_green.png',
         iconSize: [32, 32], // size of the icon
         iconAnchor: [16, 32] // center of the icon
     });
-    var icon_freeOffer = L.icon({
+    let icon_freeOffer = L.icon({
         iconUrl: 'markers/handshake_orange.png',
         iconSize: [32, 32], // size of the icon
         iconAnchor: [16, 32] // center of the icon
@@ -489,7 +536,7 @@ function loadMap(mymap) {
             let osmUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
             let osmAttrib ='© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a>';
             let osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
-            var baseMap = {
+            let baseMap = {
                 "OpenStreetMap": osm,
             };
 
@@ -502,7 +549,7 @@ function loadMap(mymap) {
             offersFree = L.layerGroup().addTo(mymap);
             activeLines = L.layerGroup().addTo(mymap);
 
-            var overlayMaps = {
+            let overlayMaps = {
                 "Base & Vehicle": essentialInfo, 
                 "Current requests": requestsAssumed, 
                 "Free requests": requestsFree, 
@@ -512,7 +559,7 @@ function loadMap(mymap) {
             };
 
             mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
-            var layerControl = L.control.layers(null, overlayMaps).addTo(mymap);
+            let layerControl = L.control.layers(null, overlayMaps).addTo(mymap);
 
             // let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {icon: customBase}, {
             //     draggable: false
@@ -535,7 +582,7 @@ function loadMap(mymap) {
                     let vehicle_marker = addMarker(essentialInfo, 'essentialInfo',
                         vehicle.coordinate['x'], vehicle.coordinate['y'], 
                         true, customCar);
-                    var originalLatLng; // To store the original position
+                    let originalLatLng; // To store the original position
                     vehicle_marker.on('dragstart', function (event) {
                         originalLatLng = vehicle_marker.getLatLng(); // Store the original position
                     });
