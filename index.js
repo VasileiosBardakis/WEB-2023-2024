@@ -1012,3 +1012,31 @@ app.post('/rescuer/cancelTask', (req, res) => {
 		res.end();		
 	}
 });
+
+app.post('/rescuer/completeTask', (req, res) => {
+	console.log(req.body);
+	let username = req.session.username;
+	id = req.body.id;
+	table = req.body.type;
+	
+
+	if (id && table === ('requests' || 'offers')) {
+		// Ensure is rescuer
+		// TODO: join with task and ensure is right person
+		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
+			// Has permission to complete
+			if (username_results.length > 0) {
+				// Call complete procedure
+				
+				db.query(`UPDATE ${table} SET rescuer = NULL, status=0, date_accepted=NULL WHERE id = (?) AND rescuer = (?) AND status=1`, [id, username, id], function (error, results) {
+					if (error) throw error;
+					console.log(`${id},${table} canceled from ${username}`)
+				});
+				res.end();
+			}
+		});
+	} else {
+		res.status(401).json({ error: 'Invalid parameters.' });
+		res.end();		
+	}
+});

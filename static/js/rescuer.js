@@ -409,6 +409,9 @@ function mapTab() {
 
 }
 
+// TODO:
+// function completeTask(${request.id}, 'requests')
+
 function loadMap(mymap) {
     function connectDots(marker1, marker2, layer) {
         polyLine = [];
@@ -649,8 +652,7 @@ function loadMap(mymap) {
                                         ${offer.fullname}, ${offer.telephone}<br>
                                         Offered on: ${offer.date_offered}<br>
                                         Picked up from: ${offer.rescuer}<br>
-                                        On: ${offer.date_accepted}<br>
-                                        <button onclick="assumeTask(${request.id}, 'requests')">Complete request</button>`
+                                        On: ${offer.date_accepted}<br>`
                                         
                                         let offer_marker = addMarker(offersAssumed, 'offersAssumed',
                                             offer.coordinate['x'], offer.coordinate['y'],

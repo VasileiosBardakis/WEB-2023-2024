@@ -1,3 +1,4 @@
+-- Remove item and quantity from base and add to cargo
 DROP PROCEDURE IF EXISTS cargoLoaded;
 DELIMITER $$
 CREATE PROCEDURE cargoLoaded(IN item_tl_id INT,IN item_tl_quantity INT, IN res_username VARCHAR(30))
@@ -40,6 +41,50 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- Spawn imaginary items in cargo vehicle
+-- Happens when offer is completed
+DROP PROCEDURE IF EXISTS completeOffer;
+DELIMITER $$
+CREATE PROCEDURE completeOffer(IN item_id INT,IN item_quantity INT, IN res_username VARCHAR(30), IN offer_id INT)
+BEGIN
+    DECLARE MESSAGE_TEXT VARCHAR(255);
+
+    -- TODO: Don't think this works
+    IF EXISTS (SELECT 1 FROM cargo) THEN
+        INSERT INTO cargo (res, )
+        UPDATE items
+        INNER JOIN cargo ON items.id = cargo.item_id
+        SET items.quantity = items.quantity + cargo.res_quantity;
+
+        DELETE FROM cargo;
+    ELSE
+        SIGNAL SQLSTATE VALUE '45000';
+        SET MESSAGE_TEXT = 'Cargo is missing';
+    END IF;
+END $$
+DELIMITER ;
+
+-- Remove items from cargo vehicle
+-- Happens when request is completed
+DROP PROCEDURE IF EXISTS completeRequest;
+DELIMITER $$
+CREATE PROCEDURE completeRequest(IN item_id INT,IN item_quantity INT, IN res_username VARCHAR(30), IN request_id INT)
+BEGIN
+    DECLARE MESSAGE_TEXT VARCHAR(255);
+
+    IF EXISTS (SELECT 1 FROM cargo) THEN
+        UPDATE items
+        INNER JOIN cargo ON items.id = cargo.item_id
+        SET items.quantity = items.quantity + cargo.res_quantity;
+
+        DELETE FROM cargo;
+    ELSE
+        SIGNAL SQLSTATE VALUE '45000';
+        SET MESSAGE_TEXT = 'Cargo is missing';
+    END IF;
+END $$
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS cargoDelivered;
 DELIMITER $$
 CREATE PROCEDURE cargoDelivered(IN res_username VARCHAR(30))
@@ -58,6 +103,7 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
 
 DELIMITER $$
 CREATE PROCEDURE cancelOffer(IN delete_offer_id INT)
