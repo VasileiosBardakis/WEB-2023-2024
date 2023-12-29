@@ -27,7 +27,7 @@ div.canvas {
   margin-left:15%;
   padding-top:5%;
   padding-left:5%;
-  padding-right:5%;
+  padding-right:3%;
 }
 
 label.dropdown {
@@ -85,6 +85,7 @@ a.header {
   overflow:auto;
 }
 
+/* Header follows scroll */
 .user_table th { position: sticky; top: 0; z-index: 1; }
 
 .user_table td, .user_table th {
@@ -152,8 +153,13 @@ a.header {
   display: flex;
   width: 100%;
   height: 100%;
-  margin-right:20px;
+  /* margin-right:20px; */
   margin-bottom:20px;
+}
+
+#mapContainer > * {
+  margin-left:10px;
+  margin-right:50px;
 }
 
 .canvas {
@@ -197,7 +203,7 @@ a.header {
 
 #mapid { 
   height: 750px;
-  width: 400px;
+  width: 500px;
   min-height: 200px;
   min-width: 200px;
 }
@@ -211,16 +217,22 @@ a.header {
 
 
 @media screen and (max-width: 700px) {
+  * {
+    /* TODO: Make it not possible to go out of sidebar when scrolling */
+    overflow:none;
+  }
+
   .sidebar {
     width: 100%;
     height: auto;
     position: relative;
   }
+
   .sidebar a {float: left;}
   
-  canvas {
-    margin-left: 0;
-    margin-top: 10%;  
+  .canvas {
+    /* TODO: Make everything to to the left since no sidebar now */
+    margin: 0;
   }
   
   #mapContainer {
