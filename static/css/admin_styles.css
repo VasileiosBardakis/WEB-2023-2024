@@ -1,46 +1,34 @@
 
-  
-  nav {
-    display: flex;
-    flex-direction: column;
-    justify-content:space-between; 
-    align-items: center;
-    padding: 1rem 2rem;
-    background: #cfd8dc; 
-  }
+.sidebar {
+    position: fixed;
+    overflow: none;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 15%;
+    /* Sidebar stays the same when scrolling */
+    background-color: #f1f1f1;
+}
+
 .gray-background {
     background-color: #f2f2f2; /* Light gray background color */
 }
 
-#buttons2 button {
-    display: inline-flex;
-    flex-direction: column; /* Display the table in a column */
-    width: 25%; /* Adjust the width as needed */
-    margin-top: 10px;
-    background-color: #4CAF50; /* Green */
-    padding:5px;
-}
-
-#buttons2{
-
-    padding-bottom:70px;
-}
-
-#jsonFileInput {
-    width: 55%;
-    margin-top: 10px;
-}
 
 
 #storageCategories {
     width: 13%;
-    display:none;
+    height: 70%;
+    display: none;
     position: fixed;
-    top: 15%; /* Stick to the top of the viewport */
-    right: 65%; /* Stick to the right of the viewport */
+    margin-top: 0%;
+    margin-left: 16%; /* Set the distance from the left */
     z-index: 999; /* Set a high z-index to ensure it's on top of other elements */
     border: 1px solid #ccc; /* Add a border to the container */
     padding: 10px; /* Add some padding to the container */
+    overflow-x: hidden;
+    overflow-y: auto;
 }
     #storageCategories input[type="checkbox"] {
         transform: scale(2); /* Adjust the scale factor as needed */
@@ -56,25 +44,98 @@
     margin-left: 30%; /* Set the distance from the left */
 }
 
+
+
+#buttons2 button {
+    display: inline-flex;
+    flex-direction: column; /* Display the table in a column */
+    flex-basis: 20%; /* Adjust the width as needed, considering some space for margin/padding */
+    background-color: #4CAF50; /* Green */
+    padding: 5px;
+    margin: 10px;
+}
+
+#buttons2 {
+    display: flex;
+    flex-direction: row; /* Display the buttons in a row */
+    flex-wrap: wrap; /* Allow wrapping to the next row */
+    width: 40%; /* Adjust the width as needed */
+    margin-top: 10px;
+    margin-left: 18%; /* Set the distance from the left */
+    padding-bottom: 50px;
+}
+
+    #buttons2 label {
+        background-color: #4CAF50;
+        color: white; /* Set the text color for better visibility, adjust as needed */
+        margin-bottom: 5px;
+        padding: 5px;
+        margin-left: 3%;
+        border: 1px solid black; /* Add a thin black border */
+    }
+
+    #buttons2 input[type="file"] {
+        display: inline-flex;
+        flex-direction: row; /* Display the buttons in a row */
+        padding: 5px;
+        width: 55%;
+        margin-left: 10px;
+    }
+
+#jsonFileInput {
+    width: 55%;
+    margin-top: 5px;
+}
+
 #inputFieldsDiv {
     display: flex;
-    align-items:center;
+    align-items: center;
     flex-direction: column; /* Display checkboxes in a column */
     width: 35%; /* Adjust the width as needed */
-    float:left;
+    margin-left: 18%; /* Set the distance from the left */
 }
 
 #inputFieldsDiv2 {
-    display: inline-flex;
-    flex-direction:column; /* Display the table in a column */
-    width: 35%; /* Adjust the width as needed */
-    margin-top:10px;
-
+    display: flex;
+    align-items: center;
+    flex-direction: column; /* Display checkboxes in a column */
+    width: 45%; /* Adjust the width as needed */
+    margin-left: 22%; /* Set the distance from the left */
 }
+
+#inputFieldsDiv3 {
+    display: flex;
+    align-items: center;
+    flex-direction: column; /* Display checkboxes in a column */
+    width: 45%; /* Adjust the width as needed */
+    margin-left: 18%; /* Set the distance from the left */
+}
+
+.goBackButton {
+    background-color: #3498db; /* Set the background color */
+    color: white; /* Set the text color */
+    padding: 10px 15px; /* Adjust padding for better appearance */
+    border: none; /* Remove the border */
+    border-radius: 5px; /* Add a slight border-radius for rounded corners */
+    cursor: pointer; /* Change the cursor on hover */
+    margin-bottom: 10px; /* Add margin at the bottom for spacing */
+}
+
+    .goBackButton:hover {
+        background-color: #2980b9; /* Darker background color on hover */
+    }
+
+#error-message{
+color: red;
+    font-size: 150%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 30%;
+}
+
 /* Table styles */
 .table {
     border-collapse: collapse;
-    width: 100%;
     margin-bottom: 20px;
 }
 
@@ -86,8 +147,9 @@
 }
 /* Rows styles */
 td {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
+    align-items:center;
+    padding: 5px;
+    border: 1px solid #ddd;
 }
 .tableBtnEdit {
     background-color: #007bff;

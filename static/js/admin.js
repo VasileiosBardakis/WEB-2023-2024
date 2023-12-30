@@ -41,7 +41,9 @@ function clearFields() {
     document.getElementById('buttons').innerHTML = '';      
     document.getElementById('buttons2').innerHTML = '';
     document.getElementById('inputFieldsDiv2').innerHTML = '';
-    document.getElementById('mapid').innerHTML = '';
+    document.getElementById('inputFieldsDiv2').style.display = 'flex';
+    document.getElementById('inputFieldsDiv3').innerHTML = '';
+    document.getElementById('mapid').style.display = 'none';
     document.getElementById('storageCategories').style.display = 'none';
 
 }
@@ -49,6 +51,7 @@ function clearFields() {
 
 /* Function for add a rescuer button */
 function addRescuer() {
+    document.getElementById('inputFieldsDiv').style.display = 'flex';
 
     if (!adResClick) {       //If addRescuer isn't clicked, show input fields
         //Html code for input fields
@@ -120,13 +123,14 @@ function register() {
 function shStore() {
     if (!shStoreClick) {       //If Storage isn't clicked, show input fields
         clearFields();
+        document.getElementById('inputFieldsDiv').style.display = 'flex';
         shStoreClick = true;
         console.log("Fetching data...");
         fetchMethod('/api/categories')              /*Fetch the categories and show a checkbox for each one*/
             .then(data => {
                 // Display checkboxes for each category
                 var categoryDiv = document.getElementById('storageCategories');
-                categoryDiv.innerHTML = '';
+                categoryDiv.innerHTML = '<div>Pick categories:</div>';
                 categoryDiv.style.display = 'block';
                 data.categories.forEach(category => {
                     var checkbox = document.createElement('input');
@@ -224,6 +228,7 @@ function displayData(selected) {
 
 /* Function for the button Make an Announcement */
 function mkAn() {
+    document.getElementById('inputFieldsDiv').style.display = 'flex';
     
     dropdownCount = 1;
     if (!mkAnClick) {       //If make announcement isn't clicked, show input fields
@@ -324,6 +329,7 @@ function announceDatabase() {
 function mngStore() {
     {
         if (!mngStoreClick) {
+            document.getElementById('inputFieldsDiv').style.display = 'flex';
             clearFields();
             mngStoreClick = true;
             /* http request to populate table with categories*/
@@ -350,6 +356,7 @@ function mngStore() {
                         
                         var idCell = row.insertCell(0);
                         idCell.textContent = cat.id;
+                        idCell.classList.add('gray-background');
 
                         var nameCell = row.insertCell(1);
                         nameCell.textContent = cat.category_name;
@@ -388,10 +395,8 @@ function mngStore() {
                     document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addDetail()" class="btn btn-primary btn-block mb-4">Add a Detail</button>'
                     document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="importJSON(false)" class="btn btn-primary btn-block mb-4">Import items from repository</button>'
                     document.getElementById('buttons2').innerHTML +=
-                        '<div style="display: flex; flex-direction: column; align-items: center;">' +
                         '   <label for="jsonFileInput">Import items through JSON file: </label>' +
-                        '   <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(true)">' +
-                        '</div>';
+                        '   <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(true)">';
                 }
             };
             xhr.send();
@@ -404,6 +409,9 @@ function mngStore() {
 }
 /*Function that is called when "edit" is pressed in manage storage*/
 function itemsInCat(selected) {
+    document.getElementById('inputFieldsDiv').style.display = 'none';
+    document.getElementById('inputFieldsDiv2').style.display = 'flex';
+    document.getElementById('error-message').innerHTML = '';  
     fetchMethod('/api/items')
         .then(data => {
             var items = data.items.filter(function (item) {
@@ -411,11 +419,27 @@ function itemsInCat(selected) {
             });
             var table = document.createElement('table');
 
+
+            /*Button that hides the ItemsInCategory and shows the categories again*/
+            var backButton = document.createElement('button');  
+            backButton.textContent = 'Go back to the categories';
+            backButton.classList.add('goBackButton');
+            backButton.onclick = function () {
+                // Show inputFieldsDiv and hide inputFieldsDiv2
+                document.getElementById('inputFieldsDiv').style.display = 'flex';
+                document.getElementById('inputFieldsDiv2').style.display = 'none';
+                document.getElementById('error-message').innerHTML = '';  
+            };
+
+
+
             if (items.length == 0) {
                 var empty = table.insertRow(0);
                 empty.textContent = 'This category doesnt have any items';
+                table.appendChild(backButton);
             }
             else {
+                table.appendChild(backButton);
                 /* Header Row */
                 var headerRow = table.insertRow(0);
                 var headers = ['ID', 'Name', 'Quantity', 'Edit Details','Delete Item'];
@@ -449,7 +473,7 @@ function itemsInCat(selected) {
                     };
                     editDetailsCell.appendChild(editDetailsButton);
 
-                    var actionsCell = row.insertCell(4); /* For the delete category buttons */
+                    var actionsCell = row.insertCell(4); /* For the delete item buttons */
                     var deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Delete';
                     deleteButton.classList.add('tableBtnDel');
@@ -458,13 +482,16 @@ function itemsInCat(selected) {
                         if (confirmation) {
                             query = 'DELETE FROM items WHERE id=' + item.id;
                             postQuery(query);
-                            if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+                            if (document.getElementById('error-message').innerHTML == 'You cant delete this since there are requests and/or offers with this item') {
+                            if (mngStoreClick) { mngStoreClick = false; mngStore(); }
+                            } //reload the categories on update
                         }
                     };
                     actionsCell.appendChild(deleteButton);
                 });
             }
             /*Append the table to div and add event listener to change items when enter is pressed*/
+            
             var categoryTableDiv = document.getElementById('inputFieldsDiv2');
             categoryTableDiv.innerHTML = '';
             categoryTableDiv.appendChild(table);
@@ -473,7 +500,7 @@ function itemsInCat(selected) {
             table.addEventListener('keyup', function (event) {
                 if (event.key === 'Enter') {
                     var columnIndex = event.target.closest('td').cellIndex;
-                    var id = event.target.closest('tr').cells[0].querySelector('input').value;
+                    var id = event.target.closest('tr').cells[0].textContent;
                     changeItem(id, columnIndex, event.target, false);
                 }
             });
@@ -485,11 +512,27 @@ function itemsInCat(selected) {
 
 /*Function for editing details in Manage Storage*/
 function editDetails(itemId) {
+    document.getElementById('inputFieldsDiv2').style.display = 'none';
+    document.getElementById('error-message').innerHTML = '';  
+
     /*Fetch the detail data for all the items using fetchMethod*/
     fetchMethod('/api/details/' + itemId)
         .then(data => {
             var details = data.details;
             var table = document.createElement('table');
+
+            /*Button that hides the Details of the item and shows the items of the category again*/
+            var backButton = document.createElement('button');
+            backButton.textContent = 'Go back';
+            backButton.classList.add('goBackButton');
+            backButton.onclick = function () {
+                // Show inputFieldsDiv and hide inputFieldsDiv2
+                document.getElementById('inputFieldsDiv2').style.display = 'flex';
+                document.getElementById('inputFieldsDiv3').innerHTML = '';
+                document.getElementById('error-message').innerHTML = '';  
+            };
+            table.appendChild(backButton);
+
             if (details.length == 0) {
                 var empty = table.insertRow(0);
                 empty.textContent = 'This item doesnt have any details';
@@ -533,7 +576,7 @@ function editDetails(itemId) {
             }
 
             /*Append the table with innerHTML*/
-            var containerDiv = document.getElementById('inputFieldsDiv2');
+            var containerDiv = document.getElementById('inputFieldsDiv3');
             containerDiv.innerHTML = ''; // Clear previous content
             containerDiv.appendChild(table);
 
@@ -541,7 +584,7 @@ function editDetails(itemId) {
             table.addEventListener('keyup', function (event) {
                 if (event.key === 'Enter') {
                     var columnIndex = event.target.closest('td').cellIndex;
-                    var id = event.target.closest('tr').cells[0].querySelector('input').value;
+                    var id = event.target.closest('tr').cells[0].textContent;
                     changeItem(id, columnIndex, event.target, true);
                 }
             });
@@ -599,15 +642,12 @@ function postQuery(query) {
     var xhr = new XMLHttpRequest();
     xhr.open('post', '/api/del', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
                 document.getElementById('error-message').innerHTML = 'Database updated successfuly!'; 
-                console.log('Database updated successfuly!');
             } else {
-                document.getElementById('error-message').innerHTML = 'Request failed with status:'+ xhr.status; 
-                console.error('Request failed with status:', xhr.status);
+                document.getElementById('error-message').innerHTML = 'You cant delete this since there are requests and/or offers with this item'; 
             }
         }
     };
@@ -965,9 +1005,11 @@ function mapTab() {
         //Html code for input fields
         clearFields();
         loadMap();
+        document.getElementById('inputFieldsDiv').style.display = 'flex';
         mapClick = true;
         var inputFieldsHTML = ``;
         //insert the HTML content into the designated div
+        document.getElementById('mapid').style.display = 'block';
         document.getElementById('mapid').innerHTML = inputFieldsHTML;
     } else {
         clearFields();
@@ -1266,6 +1308,7 @@ function loadMap() {
 async function shStats() {
     if (!shStatsClick) {       //If Storage isn't clicked, show input fields
         clearFields();
+        document.getElementById('inputFieldsDiv').style.display = 'flex';
         shStatsClick = true;
 
         try {

@@ -15,3 +15,10 @@ SIDEBAR ICONS
 <a href="https://www.freepik.com/icon/cargo_1524533">Icon by Icongeek26</a>
 <a href="https://www.flaticon.com/free-icons/gps" title="gps icons">Gps icons created by netscript - Flaticon</a>
 <a href="https://www.flaticon.com/free-icons/logout" title="logout icons">Logout icons created by Afian Rochmah Afif - Flaticon</a>
+<a href="https://www.flaticon.com/free-icon/bar-chart_478544?term=statistics&page=1&position=1&origin=search&related_id=478544" </a>
+<a href="https://www.flaticon.com/free-icons/graphic" title="graphic icons">Graphic icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/data-warehouse" title="data warehouse icons">Data warehouse icons created by monkik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/management" title="management icons">Management icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/megaphone" title="megaphone icons">Megaphone icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/rescuer" title="rescuer icons">Rescuer icons created by Freepik - Flaticon</a>
+

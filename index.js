@@ -517,7 +517,9 @@ app.route('/api/del')
 		// for select queries
 		db.query(query, function (error, results, fields) {
 			if (error) {
-				throw error;
+				console.error('Error executing query:', error);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
 			}
 			res.json(results);
 		});
@@ -528,7 +530,9 @@ app.route('/api/del')
 		// For delete, update, post
 		db.query(query, function (error, results, fields) {
 			if (error) {
-				throw error;
+				console.error('Error executing query:', error);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
 			}
 			console.log('Database has been updated!');
 			res.end();

@@ -7,6 +7,17 @@ BEGIN
     WHERE item_id = OLD.id;
 END;
 //
+
+DELIMITER ;
+DELIMITER //
+CREATE TRIGGER before_delete_categories
+BEFORE DELETE ON categories
+FOR EACH ROW
+BEGIN
+    DELETE FROM items
+    WHERE category = OLD.id;
+END;
+//
 DELIMITER ;
 
 -- https://stackoverflow.com/questions/19152974/fire-a-trigger-after-the-update-of-specific-columns-in-mysql
