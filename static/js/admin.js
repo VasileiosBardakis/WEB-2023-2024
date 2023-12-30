@@ -692,31 +692,44 @@ function fetchMethod(url, method = 'GET', query = null) {
 
 /*Function that gets called when Add a Category is pressed in manage storage */
 function addCategory() {
-    document.getElementById('inputFieldsDiv').style.display = 'none';
-    document.getElementById('inputFieldsDiv2').style.display = 'flex';
+    var inputFieldsDiv = document.getElementById('inputFieldsDiv');
+    var inputFieldsDiv2 = document.getElementById('inputFieldsDiv2');
+    var categoryTableDiv = inputFieldsDiv2;
+
+    // Hide inputFieldsDiv and show inputFieldsDiv2
+    inputFieldsDiv.style.display = 'none';
+    inputFieldsDiv2.style.display = 'flex';
+
+    // Create and set up the "Go back" button
     var backButton = document.createElement('button');
     backButton.textContent = 'Go back to the categories';
     backButton.classList.add('goBackButton');
-    var categoryTableDiv = document.getElementById('inputFieldsDiv2');
-    backButton.onclick = function () {
+    backButton.addEventListener('click', function () {
         // Show inputFieldsDiv and hide inputFieldsDiv2
-        document.getElementById('inputFieldsDiv').style.display = 'flex';
-        document.getElementById('inputFieldsDiv2').style.display = 'none';
+        inputFieldsDiv.style.display = 'flex';
+        inputFieldsDiv2.style.display = 'none';
         document.getElementById('error-message').innerHTML = '';
-    };
+    });
 
-    /*Clear and insert input fields with innerhtml*/
+    // Clear and insert input fields
     categoryTableDiv.innerHTML = '';
     categoryTableDiv.appendChild(backButton);
-    categoryTableDiv.innerHTML += `<form id="myForm">
-        <label for="id">Category Id:</label>
-        <input type="number" id="id" name="Category Id" required><br>
 
-        <label for="name">Category Name:</label>
-        <input type="text" id="name" name="Category Name" required><br>
+    // Create the form
+    var formHTML = `
+        <form id="myForm">
+            <label for="id">Category Id:</label>
+            <input type="number" id="id" name="Category Id" required><br>
 
-        <input type="button" onclick="addCategorySubmit()" value="Submit">
-    </form>`;
+            <label for="name">Category Name:</label>
+            <input type="text" id="name" name="Category Name" required><br>
+
+            <input type="button" onclick="addCategorySubmit()" value="Submit">
+        </form>
+    `;
+
+    // Append the form HTML
+    categoryTableDiv.insertAdjacentHTML('beforeend', formHTML);
 }
 
 
@@ -797,7 +810,7 @@ function addItem() {
             fields.innerHTML = '';
             fields.appendChild(backButton);
             fields.appendChild(dropdown);
-            fields.innerHTML += `<form id="myForm">
+            var formHTML = `<form id="myForm">
                 <label for="name">Item Name:</label>
                 <input type="text" id="name" name="Item Name" required><br>
                 
@@ -809,6 +822,7 @@ function addItem() {
 
                 <input type="button" onclick="addItemSubmit()" value="Submit">
             </form>`;
+            fields.insertAdjacentHTML('beforeend', formHTML);
         }
     };
     xhr.send();
@@ -886,6 +900,8 @@ function addItemSubmit() {
 
 /*Function for adding a detail in Manage Storage*/
 function addDetail() {
+    document.getElementById('inputFieldsDiv').style.display = 'none';
+    document.getElementById('inputFieldsDiv2').style.display = 'flex';
     var fields = document.getElementById('inputFieldsDiv2');
     var dropdown = document.createElement('select');
     dropdown.id = 'select';
@@ -927,13 +943,15 @@ function addDetail() {
                 /*ShowItems populates the items table*/
                 showItems(event);
             });
+            fields.innerHTML = ''; /* Clearing inputFieldsDiv2 */
             fields.appendChild(backButton);   /* Add the go back to categories button */
-            fields.innerHTML = 'Choose a Category'; 
+            fields.innerHTML += '<label>Choose a Category</label>'; 
             fields.appendChild(dropdown);
+            fields.innerHTML += '<label>Choose an Item</label>'; 
             var labelDiv = document.createElement('div');
             labelDiv.className = 'dropdown';
             labelDiv.innerHTML = `
-                <label>Choose an item:
+                <label>
                     <select id="items">
                         <option value="-1">Please select a category first</option>
                     </select>
