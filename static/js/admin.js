@@ -35,6 +35,7 @@ function clearFields() {
     mapClick = false;
     shStatsClick = false;
     document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
+    document.getElementById('inputFieldsDiv').style.display = 'flex';
     document.getElementById('error-message').innerHTML = '';   
     document.getElementById('storage').innerHTML = '';   
     document.getElementById('storageCategories').innerHTML = '';   
@@ -59,7 +60,7 @@ function addRescuer() {
         adResClick = true;
         var inputFieldsHTML = `
     <div class="form-outline mb-4">
-    Add a rescuer account!
+    <h1 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Add a Rescuer Account</h1>
         <input type="text" id="username" class="form-control" />
         <label class="form-label" for="username">Username</label>
     </div>
@@ -123,8 +124,8 @@ function register() {
 function shStore() {
     if (!shStoreClick) {       //If Storage isn't clicked, show input fields
         clearFields();
-        document.getElementById('inputFieldsDiv').style.display = 'flex';
         shStoreClick = true;
+        document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Current Storage</h1>'
         console.log("Fetching data...");
         fetchMethod('/api/categories')              /*Fetch the categories and show a checkbox for each one*/
             .then(data => {
@@ -228,7 +229,6 @@ function displayData(selected) {
 
 /* Function for the button Make an Announcement */
 function mkAn() {
-    document.getElementById('inputFieldsDiv').style.display = 'flex';
     
     dropdownCount = 1;
     if (!mkAnClick) {       //If make announcement isn't clicked, show input fields
@@ -238,6 +238,7 @@ function mkAn() {
 
         //Html code for input fields
         var inputFieldsHTML = `
+        <h1 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Make an Announcement</h1>
     <div class="form-outline mb-4">
         <input type="text" id="title" class="form-control" />
         <label class="form-label" for="title">Title</label>
@@ -252,7 +253,7 @@ function mkAn() {
         
         //insert the HTML content into the designated div
         document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
-        document.getElementById('storage').innerHTML = '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
+        document.getElementById('inputFieldsDiv').innerHTML += '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
         moreItems();
     }
     else {    //clear if mkAn fields are showing
@@ -329,9 +330,9 @@ function announceDatabase() {
 function mngStore() {
     {
         if (!mngStoreClick) {
-            document.getElementById('inputFieldsDiv').style.display = 'flex';
             clearFields();
             mngStoreClick = true;
+            document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Storage Management</h1>'
             /* http request to populate table with categories*/
             var xhr = new XMLHttpRequest();
             xhr.open('GET', '/api/categories', true);
@@ -691,7 +692,23 @@ function fetchMethod(url, method = 'GET', query = null) {
 
 /*Function that gets called when Add a Category is pressed in manage storage */
 function addCategory() {
-    document.getElementById('inputFieldsDiv2').innerHTML = `<form id="myForm">
+    document.getElementById('inputFieldsDiv').style.display = 'none';
+    document.getElementById('inputFieldsDiv2').style.display = 'flex';
+    var backButton = document.createElement('button');
+    backButton.textContent = 'Go back to the categories';
+    backButton.classList.add('goBackButton');
+    var categoryTableDiv = document.getElementById('inputFieldsDiv2');
+    backButton.onclick = function () {
+        // Show inputFieldsDiv and hide inputFieldsDiv2
+        document.getElementById('inputFieldsDiv').style.display = 'flex';
+        document.getElementById('inputFieldsDiv2').style.display = 'none';
+        document.getElementById('error-message').innerHTML = '';
+    };
+
+    /*Clear and insert input fields with innerhtml*/
+    categoryTableDiv.innerHTML = '';
+    categoryTableDiv.appendChild(backButton);
+    categoryTableDiv.innerHTML += `<form id="myForm">
         <label for="id">Category Id:</label>
         <input type="number" id="id" name="Category Id" required><br>
 
@@ -740,10 +757,22 @@ function addCategorySubmit() {
 
 function addItem() {
     /*InnerHTML fields*/
+    document.getElementById('inputFieldsDiv').style.display = 'none';
+    document.getElementById('inputFieldsDiv2').style.display = 'flex';
     var fields = document.getElementById('inputFieldsDiv2');
     var dropdown = document.createElement('select');
     dropdown.id = 'select';
     var default_option = document.createElement('option');
+
+    var backButton = document.createElement('button');
+    backButton.textContent = 'Go back to the categories';
+    backButton.classList.add('goBackButton');
+    backButton.onclick = function () {
+        // Show inputFieldsDiv and hide inputFieldsDiv2
+        document.getElementById('inputFieldsDiv').style.display = 'flex';
+        document.getElementById('inputFieldsDiv2').style.display = 'none';
+        document.getElementById('error-message').innerHTML = '';
+    };
 
     /*Default Option*/
     default_option.text = 'Please select a category';
@@ -766,6 +795,7 @@ function addItem() {
 
             /*Clear and insert input fields with innerhtml*/
             fields.innerHTML = '';
+            fields.appendChild(backButton);
             fields.appendChild(dropdown);
             fields.innerHTML += `<form id="myForm">
                 <label for="name">Item Name:</label>
@@ -861,6 +891,18 @@ function addDetail() {
     dropdown.id = 'select';
     var default_option = document.createElement('option');
 
+
+    var backButton = document.createElement('button');
+    backButton.textContent = 'Go back to the categories';
+    backButton.classList.add('goBackButton');
+    backButton.onclick = function () {
+        // Show inputFieldsDiv and hide inputFieldsDiv2
+        document.getElementById('inputFieldsDiv').style.display = 'flex';
+        document.getElementById('inputFieldsDiv2').style.display = 'none';
+        document.getElementById('error-message').innerHTML = '';
+    };
+    
+
     /*Default option*/
     default_option.text = 'Please select a category';
     dropdown.add(default_option);
@@ -885,6 +927,7 @@ function addDetail() {
                 /*ShowItems populates the items table*/
                 showItems(event);
             });
+            fields.appendChild(backButton);   /* Add the go back to categories button */
             fields.innerHTML = 'Choose a Category'; 
             fields.appendChild(dropdown);
             var labelDiv = document.createElement('div');
@@ -1005,7 +1048,7 @@ function mapTab() {
         //Html code for input fields
         clearFields();
         loadMap();
-        document.getElementById('inputFieldsDiv').style.display = 'flex';
+        document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Map View</h1>'
         mapClick = true;
         var inputFieldsHTML = ``;
         //insert the HTML content into the designated div
@@ -1308,23 +1351,26 @@ function loadMap() {
 async function shStats() {
     if (!shStatsClick) {       //If Storage isn't clicked, show input fields
         clearFields();
-        document.getElementById('inputFieldsDiv').style.display = 'flex';
         shStatsClick = true;
+        document.getElementById('buttons').innerHTML = `<div><h1 style="text-align: center; font-size: 2em;">Service Statistics</h1></div>
+        <div><h1 style="text-align: left; font-size: 1em;">Enter Date Range</h1></div>`;
 
         try {
             /* get the requests and offers from the database and filter the completed and non completed ones */
             const requests = await fetchMethod('/api/requests');
             const offers = await fetchMethod('/api/offers');
             if ((requests.requests.length + offers.offers.length) == 0) {
-                document.getElementById('inputFieldsDiv').innerHTML = 'There are no requests or offers';
+                document.getElementById('error-message').innerHTML = 'There are no requests or offers';
             } else {
+               
                 /* using html's date picker for the dates */
-                const inputFieldsDiv = document.getElementById('inputFieldsDiv');
+                const inputFieldsDiv = document.getElementById('buttons2');
                 inputFieldsDiv.innerHTML = `
-                    <label for="startDate">Start Date:</label>
-                    <input type="date" id="startDate">
-                    <label for="endDate">End Date:</label>
-                    <input type="date" id="endDate">`;
+                
+                    <div><label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate"></div>
+                   <div> <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate"></div>`;
 
                 const startDateInput = document.getElementById('startDate');
                 const endDateInput = document.getElementById('endDate');
