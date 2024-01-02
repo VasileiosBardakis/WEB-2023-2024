@@ -1,11 +1,5 @@
 
-var adResClick = false; //Variable to see if 'add a rescuer' is clicked
-var mkAnClick = false; //Variable to see if 'make an announcement' is clicked
-var shStoreClick = false; //Variable to see if 'View current storage' is clicked
-var shStatsClick = false;
-var mngStoreClick = false; //Variable to see if 'Manage Storage' is clicked
-var mngCategoriesClick = false; 
-var mapClick = false;
+
 var dropdownCount;  // Variable to keep track of the number of dropdowns in make announcement button
 var xhr = new XMLHttpRequest();
 
@@ -16,30 +10,16 @@ xhr.onreadystatechange = function () {
     }
 };
 
-function clearFieldsMngDatabase() {
-    mngCategoriesClick = false;
-    document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
-    document.getElementById('inputFieldsDiv2').innerHTML = '';
-    document.getElementById('storage').innerHTML = '';
-    document.getElementById('error-message').innerHTML = ''; 
-    document.getElementById('buttons2').innerHTML = '';
-}
+
 
 /* Function for clearing fields from other buttons */
 function clearFields() {
-    clearFieldsMngDatabase();
-    adResClick = false;
-    mkAnClick = false;
-    shStoreClick = false;
-    mngStoreClick = false;
-    mapClick = false;
-    shStatsClick = false;
     document.getElementById('inputFieldsDiv').innerHTML = '';  //Clearing all divs used in all buttons
     document.getElementById('inputFieldsDiv').style.display = 'flex';
-    document.getElementById('error-message').innerHTML = '';   
-    document.getElementById('storage').innerHTML = '';   
-    document.getElementById('storageCategories').innerHTML = '';   
-    document.getElementById('buttons').innerHTML = '';      
+    document.getElementById('error-message').innerHTML = '';
+    document.getElementById('storage').innerHTML = '';
+    document.getElementById('storageCategories').innerHTML = '';
+    document.getElementById('buttons').innerHTML = '';
     document.getElementById('buttons2').innerHTML = '';
     document.getElementById('inputFieldsDiv2').innerHTML = '';
     document.getElementById('inputFieldsDiv2').style.display = 'flex';
@@ -53,12 +33,9 @@ function clearFields() {
 /* Function for add a rescuer button */
 function addRescuer() {
     document.getElementById('inputFieldsDiv').style.display = 'flex';
+    clearFields();
 
-    if (!adResClick) {       //If addRescuer isn't clicked, show input fields
-        //Html code for input fields
-        clearFields();
-        adResClick = true;
-        var inputFieldsHTML = `
+    var inputFieldsHTML = `
     <div class="form-outline mb-4">
     <h1 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Add a Rescuer Account</h1>
         <input type="text" id="username" class="form-control" />
@@ -78,12 +55,9 @@ function addRescuer() {
     </div>
     <button type="button" onclick="register()" class="btn btn-primary btn-block mb-4">Submit</button>
     `;
-        //insert the HTML content into the designated div
-        document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
-    }
-    else {
-        clearFields();
-    }
+    //insert the HTML content into the designated div
+    document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
+
 
 }
 
@@ -91,7 +65,7 @@ function addRescuer() {
 /* Function for when submit is pressed in Add a Rescuer*/
 function register() {
     /*We get the input fields and make an http request to connect to the database and register the rescuer account*/
-    var username = document.getElementById('username').value;     
+    var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
     var type = 2;
     var name = document.getElementById('name').value;
@@ -122,49 +96,46 @@ function register() {
 
 /* Function for Show Current Storage button */
 function shStore() {
-    if (!shStoreClick) {       //If Storage isn't clicked, show input fields
-        clearFields();
-        shStoreClick = true;
-        document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Current Storage</h1>'
-        console.log("Fetching data...");
-        fetchMethod('/api/categories')              /*Fetch the categories and show a checkbox for each one*/
-            .then(data => {
-                // Display checkboxes for each category
-                var categoryDiv = document.getElementById('storageCategories');
-                categoryDiv.innerHTML = '<div>Pick categories:</div>';
-                categoryDiv.style.display = 'block';
-                data.categories.forEach(category => {
-                    var checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.id = category.id;
-                    checkbox.value = category.category_name;
 
-                    /* Event listener for when checkbox is clicked, get the selected categories and call display data with their values */
-                    checkbox.addEventListener('change', function () {       
-                        var selectedCategories = Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(checkbox => checkbox.value);
-                        displayData(selectedCategories.length > 0 ? selectedCategories : null);
-                    });
+    clearFields();
+    document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Current Storage</h1>'
+    console.log("Fetching data...");
+    fetchMethod('/api/categories')              /*Fetch the categories and show a checkbox for each one*/
+        .then(data => {
+            // Display checkboxes for each category
+            var categoryDiv = document.getElementById('storageCategories');
+            categoryDiv.innerHTML = '<div>Pick categories:</div>';
+            categoryDiv.style.display = 'block';
+            data.categories.forEach(category => {
+                var checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = category.id;
+                checkbox.value = category.category_name;
 
-                    /* Append the checkboxes to the table */
-                    var label = document.createElement('label');
-                    label.htmlFor = category.id;
-                    label.appendChild(document.createTextNode(category.category_name));
-
-                    categoryDiv.appendChild(checkbox);
-                    categoryDiv.appendChild(label);
-                    categoryDiv.appendChild(document.createElement('br'));
+                /* Event listener for when checkbox is clicked, get the selected categories and call display data with their values */
+                checkbox.addEventListener('change', function () {
+                    var selectedCategories = Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(checkbox => checkbox.value);
+                    displayData(selectedCategories.length > 0 ? selectedCategories : null);
                 });
 
-                /* Display the items from all categories (to do that we call displayData with null)*/
-                displayData(null);
-            })
-            .catch(error => {
-                console.error('Error fetching categories:', error);
+                /* Append the checkboxes to the table */
+                var label = document.createElement('label');
+                label.htmlFor = category.id;
+                label.appendChild(document.createTextNode(category.category_name));
+
+                categoryDiv.appendChild(checkbox);
+                categoryDiv.appendChild(label);
+                categoryDiv.appendChild(document.createElement('br'));
             });
 
-    } else {    //clear if storage table is showing
-        clearFields();
-    }
+            /* Display the items from all categories (to do that we call displayData with null)*/
+            displayData(null);
+        })
+        .catch(error => {
+            console.error('Error fetching categories:', error);
+        });
+
+
 }
 
 
@@ -203,13 +174,13 @@ function displayData(selected) {
 
                     /*Cells for item name and details*/
                     var idCell = row.insertCell(0);
-                    idCell.textContent =  item.id ;
+                    idCell.textContent = item.id;
 
                     var nameCell = row.insertCell(1);
                     nameCell.textContent = item.name;
 
                     var quanCell = row.insertCell(2);
-                    quanCell.textContent = item.quantity ;
+                    quanCell.textContent = item.quantity;
 
                     var catCell = row.insertCell(3);
                     catCell.textContent = item.category_name;
@@ -220,7 +191,7 @@ function displayData(selected) {
             var categoryTableDiv = document.getElementById('storage');
             categoryTableDiv.innerHTML = '';
             categoryTableDiv.appendChild(table);
-          
+
         })
         .catch(error => {
             console.error('Error fetching items:', error);
@@ -229,15 +200,15 @@ function displayData(selected) {
 
 /* Function for the button Make an Announcement */
 function mkAn() {
-    
-    dropdownCount = 1;
-    if (!mkAnClick) {       //If make announcement isn't clicked, show input fields
-        clearFields();
-        mkAnClick = true;
-        
 
-        //Html code for input fields
-        var inputFieldsHTML = `
+    dropdownCount = 1;
+
+    clearFields();
+
+
+
+    //Html code for input fields
+    var inputFieldsHTML = `
         <h1 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Make an Announcement</h1>
     <div class="form-outline mb-4">
         <input type="text" id="title" class="form-control" />
@@ -250,15 +221,12 @@ function mkAn() {
     <button type="button" onclick="moreItems()" class="btn btn-primary btn-block mb-4">Add an item</button>
      <label for="dropdown">Select your items::</label>
     `;
-        
-        //insert the HTML content into the designated div
-        document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
-        document.getElementById('inputFieldsDiv').innerHTML += '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
-        moreItems();
-    }
-    else {    //clear if mkAn fields are showing
-        clearFields();
-    }
+
+    //insert the HTML content into the designated div
+    document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
+    document.getElementById('inputFieldsDiv').innerHTML += '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
+    moreItems();
+
 
 }
 
@@ -298,13 +266,13 @@ function announceDatabase() {
     var title = document.getElementById('title').value;
     var anText = document.getElementById('anText').value;
     var dropdownValues = [];
-    var dropdowns = document.querySelectorAll('select'); 
+    var dropdowns = document.querySelectorAll('select');
     var errorMessageElement = document.getElementById('error-message');
 
     dropdowns.forEach(function (dropdown) {
         dropdownValues.push(dropdown.value);
     });
-   
+
     var xhttp = new XMLHttpRequest();
     xhttp.open('POST', '/announce', true);
     xhttp.setRequestHeader('Content-Type', 'application/json');
@@ -321,7 +289,7 @@ function announceDatabase() {
         }
     };
 
-    var data = JSON.stringify({ title: title, anText: anText, dropdownValues: dropdownValues});
+    var data = JSON.stringify({ title: title, anText: anText, dropdownValues: dropdownValues });
     xhttp.send(data);
 }
 
@@ -329,90 +297,89 @@ function announceDatabase() {
 /* Function for Manage Storage button */
 function mngStore() {
     {
-        if (!mngStoreClick) {
-            clearFields();
-            mngStoreClick = true;
-            document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Storage Management</h1>'
-            /* http request to populate table with categories*/
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/api/categories', true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    var data = JSON.parse(xhr.responseText);
-                    var table = document.createElement('table');
-                    table.classList.add('table'); // Add a class to the table for styling
 
-                    /*Headers*/
-                    var headerRow = table.insertRow(0);
-                    var headers = ['ID', 'Name', 'Edit items in Category', 'Delete Category'];
-                    for (var i = 0; i < headers.length; i++) {
-                        var headerCell = headerRow.insertCell(i);
-                        headerCell.textContent = headers[i];
-                        headerCell.classList.add('th'); // Add a class to the header cells for styling
-                    }
+        clearFields();
 
-                    /* Populate the table with categories*/
-                    data.categories.forEach(function (cat) {
-                        var row = table.insertRow(table.rows.length);
-                        
-                        var idCell = row.insertCell(0);
-                        idCell.textContent = cat.id;
-                        idCell.classList.add('gray-background');
+        document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Storage Management</h1>'
+        /* http request to populate table with categories*/
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/categories', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var table = document.createElement('table');
+                table.classList.add('table'); // Add a class to the table for styling
 
-                        var nameCell = row.insertCell(1);
-                        nameCell.textContent = cat.category_name;
-
-                        var editCell = row.insertCell(2); /* For the edit category items buttons */
-                        var editButton = document.createElement('button');
-                        editButton.textContent = 'Edit';
-                        editButton.onclick = function () {
-                            itemsInCat(cat.id);
-                        };
-                        editButton.classList.add('tableBtnEdit');
-                        editCell.appendChild(editButton);
-
-                        var actionsCell = row.insertCell(3); /* For the delete category buttons */
-                        var deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Delete';
-                        deleteButton.onclick = function () {
-                            var confirmation = confirm('Are you sure you want to delete this category and all of it`s items?');
-                            if (confirmation) {
-                                query = 'DELETE FROM categories WHERE id=' + cat.id;
-                                postQuery(query);
-                                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
-                            }
-                        };
-                        deleteButton.classList.add('tableBtnDel');
-                        actionsCell.appendChild(deleteButton);
-                    });
-
-
-                    // Append the table to div
-                    var categoryTableDiv = document.getElementById('inputFieldsDiv');
-                    categoryTableDiv.innerHTML = '';
-                    categoryTableDiv.appendChild(table);
-                    document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addItem()" class="btn btn-primary btn-block mb-4">Add an Item</button>'
-                    document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
-                    document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addDetail()" class="btn btn-primary btn-block mb-4">Add a Detail</button>'
-                    document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="importJSON(false)" class="btn btn-primary btn-block mb-4">Import items from repository</button>'
-                    document.getElementById('buttons2').innerHTML +=
-                        '   <label for="jsonFileInput">Import items through JSON file: </label>' +
-                        '   <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(true)">';
+                /*Headers*/
+                var headerRow = table.insertRow(0);
+                var headers = ['ID', 'Name', 'Edit items in Category', 'Delete Category'];
+                for (var i = 0; i < headers.length; i++) {
+                    var headerCell = headerRow.insertCell(i);
+                    headerCell.textContent = headers[i];
+                    headerCell.classList.add('th'); // Add a class to the header cells for styling
                 }
-            };
-            xhr.send();
-        }
-        else { clearFields(); }
+
+                /* Populate the table with categories*/
+                data.categories.forEach(function (cat) {
+                    var row = table.insertRow(table.rows.length);
+
+                    var idCell = row.insertCell(0);
+                    idCell.textContent = cat.id;
+                    idCell.classList.add('gray-background');
+
+                    var nameCell = row.insertCell(1);
+                    nameCell.textContent = cat.category_name;
+
+                    var editCell = row.insertCell(2); /* For the edit category items buttons */
+                    var editButton = document.createElement('button');
+                    editButton.textContent = 'Edit';
+                    editButton.onclick = function () {
+                        itemsInCat(cat.id);
+                    };
+                    editButton.classList.add('tableBtnEdit');
+                    editCell.appendChild(editButton);
+
+                    var actionsCell = row.insertCell(3); /* For the delete category buttons */
+                    var deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = function () {
+                        var confirmation = confirm('Are you sure you want to delete this category and all of it`s items?');
+                        if (confirmation) {
+                            query = 'DELETE FROM categories WHERE id=' + cat.id;
+                            postQuery(query);
+                            mngStore();  //reload the categories on update
+                        }
+                    };
+                    deleteButton.classList.add('tableBtnDel');
+                    actionsCell.appendChild(deleteButton);
+                });
+
+
+                // Append the table to div
+                var categoryTableDiv = document.getElementById('inputFieldsDiv');
+                categoryTableDiv.innerHTML = '';
+                categoryTableDiv.appendChild(table);
+                document.getElementById('buttons2').innerHTML = ' <button type="button" onclick="addItem()" class="btn btn-primary btn-block mb-4">Add an Item</button>'
+                document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addCategory()" class="btn btn-primary btn-block mb-4">Add a Category</button>'
+                document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addDetail()" class="btn btn-primary btn-block mb-4">Add a Detail</button>'
+                document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="importJSON(false)" class="btn btn-primary btn-block mb-4">Import items from repository</button>'
+                document.getElementById('buttons2').innerHTML +=
+                    '   <label for="jsonFileInput">Import items through JSON file: </label>' +
+                    '   <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(true)">';
+            }
+        };
+        xhr.send();
     }
-
-
-
 }
+
+
+
+
 /*Function that is called when "edit" is pressed in manage storage*/
 function itemsInCat(selected) {
     document.getElementById('inputFieldsDiv').style.display = 'none';
     document.getElementById('inputFieldsDiv2').style.display = 'flex';
-    document.getElementById('error-message').innerHTML = '';  
+    document.getElementById('error-message').innerHTML = '';
     fetchMethod('/api/items')
         .then(data => {
             var items = data.items.filter(function (item) {
@@ -422,14 +389,14 @@ function itemsInCat(selected) {
 
 
             /*Button that hides the ItemsInCategory and shows the categories again*/
-            var backButton = document.createElement('button');  
+            var backButton = document.createElement('button');
             backButton.textContent = 'Go back to the categories';
             backButton.classList.add('goBackButton');
             backButton.onclick = function () {
                 // Show inputFieldsDiv and hide inputFieldsDiv2
                 document.getElementById('inputFieldsDiv').style.display = 'flex';
                 document.getElementById('inputFieldsDiv2').style.display = 'none';
-                document.getElementById('error-message').innerHTML = '';  
+                document.getElementById('error-message').innerHTML = '';
             };
 
 
@@ -443,7 +410,7 @@ function itemsInCat(selected) {
                 table.appendChild(backButton);
                 /* Header Row */
                 var headerRow = table.insertRow(0);
-                var headers = ['ID', 'Name', 'Quantity', 'Edit Details','Delete Item'];
+                var headers = ['ID', 'Name', 'Quantity', 'Edit Details', 'Delete Item'];
                 for (var i = 0; i < headers.length; i++) {
                     var headerCell = headerRow.insertCell(i);
                     headerCell.textContent = headers[i];
@@ -484,7 +451,7 @@ function itemsInCat(selected) {
                             query = 'DELETE FROM items WHERE id=' + item.id;
                             postQuery(query);
                             if (document.getElementById('error-message').innerHTML == 'You cant delete this since there are requests and/or offers with this item') {
-                            if (mngStoreClick) { mngStoreClick = false; mngStore(); }
+                                mngStore();
                             } //reload the categories on update
                         }
                     };
@@ -492,7 +459,7 @@ function itemsInCat(selected) {
                 });
             }
             /*Append the table to div and add event listener to change items when enter is pressed*/
-            
+
             var categoryTableDiv = document.getElementById('inputFieldsDiv2');
             categoryTableDiv.innerHTML = '';
             categoryTableDiv.appendChild(table);
@@ -514,7 +481,7 @@ function itemsInCat(selected) {
 /*Function for editing details in Manage Storage*/
 function editDetails(itemId) {
     document.getElementById('inputFieldsDiv2').style.display = 'none';
-    document.getElementById('error-message').innerHTML = '';  
+    document.getElementById('error-message').innerHTML = '';
 
     /*Fetch the detail data for all the items using fetchMethod*/
     fetchMethod('/api/details/' + itemId)
@@ -530,7 +497,7 @@ function editDetails(itemId) {
                 // Show inputFieldsDiv and hide inputFieldsDiv2
                 document.getElementById('inputFieldsDiv2').style.display = 'flex';
                 document.getElementById('inputFieldsDiv3').innerHTML = '';
-                document.getElementById('error-message').innerHTML = '';  
+                document.getElementById('error-message').innerHTML = '';
             };
             table.appendChild(backButton);
 
@@ -602,15 +569,14 @@ function deleteDetail(detailId) {
     if (confirmation) {
         var query = 'DELETE FROM details WHERE detail_id=' + detailId;
         postQuery(query);
-        if (mngStoreClick) {
-            mngStoreClick = false;
-            mngStore(); // reload the details on update
-        }
+
+        mngStore(); // reload the details on update
+
     }
 }
 
 /*Function that is called when enter is pressed in manage storage->manage items->Changed input field*/
-function changeItem(id,columnIndex, input,detail) {
+function changeItem(id, columnIndex, input, detail) {
     // Get the corresponding header value from the headers array
     // Print the result
 
@@ -646,16 +612,16 @@ function postQuery(query) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
-                document.getElementById('error-message').innerHTML = 'Database updated successfuly!'; 
+                document.getElementById('error-message').innerHTML = 'Database updated successfuly!';
             } else {
-                document.getElementById('error-message').innerHTML = 'You cant delete this since there are requests and/or offers with this item'; 
+                document.getElementById('error-message').innerHTML = 'You cant delete this since there are requests and/or offers with this item';
             }
         }
     };
 
     var jsonData = JSON.stringify({ query: query });
     xhr.send(jsonData);
-    console.log('Data sent:',jsonData);
+    console.log('Data sent:', jsonData);
 }
 
 
@@ -757,13 +723,13 @@ function addCategorySubmit() {
                 errorMessageElement.innerHTML = response.error;
             }
             else if (xhttp.status === 200) {
-                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload the categories on update
+                mngStore();  //reload the categories on update
                 errorMessageElement.innerHTML = 'Category added successfully';
             }
-            }
+        }
     }
 
-    var data = JSON.stringify({ id:id,name:name});
+    var data = JSON.stringify({ id: id, name: name });
     xhttp.send(data);
 }
 
@@ -887,13 +853,13 @@ function addItemSubmit() {
                 errorMessageElement.innerHTML = response.error;
             }
             else if (xhttp.status === 200) {
-                if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload on update
+                mngStore();  //reload on update
                 errorMessageElement.innerHTML = 'Item added successfully';
             }
         }
     }
 
-    var data = JSON.stringify({name: name, detail_name: detailname, detail_value: detailvalue,category: category });
+    var data = JSON.stringify({ name: name, detail_name: detailname, detail_value: detailvalue, category: category });
     xhttp.send(data);
 
 }
@@ -917,7 +883,7 @@ function addDetail() {
         document.getElementById('inputFieldsDiv2').style.display = 'none';
         document.getElementById('error-message').innerHTML = '';
     };
-    
+
 
     /*Default option*/
     default_option.text = 'Please select a category';
@@ -945,9 +911,9 @@ function addDetail() {
             });
             fields.innerHTML = ''; /* Clearing inputFieldsDiv2 */
             fields.appendChild(backButton);   /* Add the go back to categories button */
-            fields.innerHTML += '<label>Choose a Category</label>'; 
+            fields.innerHTML += '<label>Choose a Category</label>';
             fields.appendChild(dropdown);
-            fields.innerHTML += '<label>Choose an Item</label>'; 
+            fields.innerHTML += '<label>Choose an Item</label>';
             var labelDiv = document.createElement('div');
             labelDiv.className = 'dropdown';
             labelDiv.innerHTML = `
@@ -995,7 +961,7 @@ function addDetailSubmit() {
         return;
     }
     postQuery('INSERT INTO details (item_id, detail_name, detail_value) VALUES("' + selectedItemID + '","' + detail_name + '","' + detail_value + '"); ');
-    if (mngStoreClick) { mngStoreClick = false; mngStore(); } //reload on update
+    mngStore();  //reload on update
 }
 
 
@@ -1005,7 +971,7 @@ function importJSON(file) {
 
     if (file) {  /*Case where a file is provided */
         var fileInput = document.getElementById('jsonFileInput');
-       
+
 
         if (fileInput.files.length > 0) {
             var file = fileInput.files[0];
@@ -1024,10 +990,10 @@ function importJSON(file) {
             console.error('No file selected.');
         }
     } else {
-            /*Case where file is not provided*/
-            importJSONrequest();
-     }
-    
+        /*Case where file is not provided*/
+        importJSONrequest();
+    }
+
 }
 
 /*Function that sends the request to the server side for importing a JSON*/
@@ -1045,10 +1011,7 @@ function importJSONrequest(data) {
                 response = JSON.parse(xhttp.responseText);
                 console.log(response.error);
             } else if (xhttp.status === 200) {
-                if (mngStoreClick) {
-                    mngStoreClick = false;
-                    mngStore();
-                }
+                mngStore();
                 errorMessageElement.innerHTML = 'JSON imported successfully';
             }
         }
@@ -1062,25 +1025,22 @@ function importJSONrequest(data) {
 }
 
 function mapTab() {
-    if (!mapClick) {       //If map isn't clicked, show input fields
-        //Html code for input fields
-        clearFields();
-        loadMap();
-        document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Map View</h1>'
-        mapClick = true;
-        var inputFieldsHTML = ``;
-        //insert the HTML content into the designated div
-        document.getElementById('mapid').style.display = 'block';
-        document.getElementById('mapid').innerHTML = inputFieldsHTML;
-    } else {
-        clearFields();
-    }
+
+    //Html code for input fields
+    clearFields();
+    loadMap();
+    document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Map View</h1>'
+    var inputFieldsHTML = ``;
+    //insert the HTML content into the designated div
+    document.getElementById('mapid').style.display = 'block';
+    document.getElementById('mapid').innerHTML = inputFieldsHTML;
+
 
 }
 
 function loadMap() {
     function roundDecimal(float, decimal_places) {
-        return (Math.round(float * Math.pow(10,decimal_places)) / Math.pow(10,decimal_places)).toFixed(decimal_places);
+        return (Math.round(float * Math.pow(10, decimal_places)) / Math.pow(10, decimal_places)).toFixed(decimal_places);
     }
 
     function connectDots(marker1, marker2, mymap) {
@@ -1088,7 +1048,7 @@ function loadMap() {
         polyLine.push([marker1.getLatLng().lat, marker1.getLatLng().lng]);
         polyLine.push([marker2.getLatLng().lat, marker2.getLatLng().lng]);
         let polygon = L.polygon(polyLine,
-            {color:"red"}).addTo(mymap);
+            { color: "red" }).addTo(mymap);
     }
 
     function addMarker(layer, x, y, isDraggable, icon, popupText) {
@@ -1142,14 +1102,14 @@ function loadMap() {
     // Map creation, base coordinates found and base relocation function
     let xhr_init_base = new XMLHttpRequest();
     xhr_init_base.open('GET', '/map/base', true);
-    xhr_init_base.onreadystatechange = function() {
+    xhr_init_base.onreadystatechange = function () {
         if (xhr_init_base.readyState === 4 && xhr_init_base.status === 200) {
             let data = JSON.parse(xhr_init_base.response)
             let baseCoordinates = data.base[0].coordinate;
 
             let mymap = L.map("mapid");
             let osmUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-            let osmAttrib ='© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a>';
+            let osmAttrib = '© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a>';
             let osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
             mymap.addLayer(osm);
 
@@ -1161,20 +1121,20 @@ function loadMap() {
             activeLines = L.layerGroup().addTo(mymap);
 
             var overlayMaps = {
-                "Base & Vehicle": essentialInfo, 
-                "Current requests": requestsAssumed, 
-                "Free requests": requestsFree, 
-                "Current offers": offersAssumed, 
-                "Free offers": offersFree, 
+                "Base & Vehicle": essentialInfo,
+                "Current requests": requestsAssumed,
+                "Free requests": requestsFree,
+                "Current offers": offersAssumed,
+                "Free offers": offersFree,
                 "Draw lines": activeLines
             };
 
             mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
             var layerControl = L.control.layers(overlayMaps).addTo(mymap);
-            
+
             baseInfo = `<b>Organization base</b><br>`
             // TODO: zlayer 9999
-            let base_marker = addMarker(essentialInfo, 
+            let base_marker = addMarker(essentialInfo,
                 baseCoordinates['x'], baseCoordinates['y'],
                 true, customBase, baseInfo);
 
@@ -1193,7 +1153,7 @@ function loadMap() {
                     let xhttp = new XMLHttpRequest();
                     xhttp.open('POST', '/map/relocateBase', true);
                     xhttp.setRequestHeader('Content-Type', 'application/json');
-                    
+
                     xhttp.onreadystatechange = function () {
                         if (xhttp.readyState === 4) {
                             if (xhttp.status === 401) {
@@ -1206,17 +1166,17 @@ function loadMap() {
                     };
 
                     let data = JSON.stringify({
-                        lat: base_marker.getLatLng().lat, 
+                        lat: base_marker.getLatLng().lat,
                         lng: base_marker.getLatLng().lng
                     });
                     xhttp.send(data);
                 }
             });
-            
+
             // Vehicles
             let xhr_vehicles = new XMLHttpRequest();
             xhr_vehicles.open('GET', '/map/vehicles', true);
-            xhr_vehicles.onreadystatechange = function() {
+            xhr_vehicles.onreadystatechange = function () {
                 if (xhr_vehicles.readyState === 4 && xhr_vehicles.status === 200) {
                     let map_cargo = JSON.parse(xhr_vehicles.response).map_cargo;
 
@@ -1230,16 +1190,16 @@ function loadMap() {
                     */
                     map_cargo.forEach(function (vehicle) {
                         // draw vehicle
-                        let vehicle_marker = addMarker(essentialInfo, 
-                            vehicle.coordinate['x'], vehicle.coordinate['y'], 
+                        let vehicle_marker = addMarker(essentialInfo,
+                            vehicle.coordinate['x'], vehicle.coordinate['y'],
                             false, customCar);
                         // Get current cargo
                         let xhr_cargo = new XMLHttpRequest();
                         xhr_cargo.open('GET', '/rescuer/cargo/' + vehicle.username, true);
-                        xhr_cargo.onreadystatechange = function() {
+                        xhr_cargo.onreadystatechange = function () {
                             if (xhr_cargo.readyState === 4 && xhr_cargo.status === 200) {
                                 let vehicle_cargo = JSON.parse(xhr_cargo.response).cargo;
-                                console.log(vehicle_cargo);  
+                                console.log(vehicle_cargo);
 
                                 /*
                                 <b>Username</b>
@@ -1256,7 +1216,7 @@ function loadMap() {
                                 // Offers of the vehicle
                                 let xhr_offers = new XMLHttpRequest();
                                 xhr_offers.open('GET', '/rescuer/offers/' + vehicle.username, true);
-                                xhr_offers.onreadystatechange = function() {
+                                xhr_offers.onreadystatechange = function () {
                                     if (xhr_offers.readyState === 4 && xhr_offers.status === 200) {
                                         let vehicle_offers = JSON.parse(xhr_offers.response).rescuer_offers;
 
@@ -1268,11 +1228,11 @@ function loadMap() {
                                             Offered on: ${offer.date_offered}<br>
                                             Picked up from: ${offer.rescuer}<br>
                                             On: ${offer.date_accepted}<br>`
-   
+
                                             let offer_marker = addMarker(offersAssumed,
                                                 offer.coordinate['x'], offer.coordinate['y'],
                                                 false, icon_activeOffer, offerText);
-    
+
                                             // Connect with vehicle
                                             connectDots(vehicle_marker, offer_marker, activeLines);
 
@@ -1284,7 +1244,7 @@ function loadMap() {
                                 // Requests of the vehicle
                                 let xhr_requests = new XMLHttpRequest();
                                 xhr_requests.open('GET', '/rescuer/requests/' + vehicle.username, true);
-                                xhr_requests.onreadystatechange = function() {
+                                xhr_requests.onreadystatechange = function () {
                                     if (xhr_requests.readyState === 4 && xhr_requests.status === 200) {
                                         let vehicle_requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
@@ -1294,7 +1254,7 @@ function loadMap() {
                                             Requested on: ${request.date_requested}<br>
                                             Picked up from: ${request.rescuer}<br>
                                             On: ${request.date_accepted}<br>`
-   
+
                                             let request_marker = addMarker(requestsAssumed,
                                                 request.coordinate['x'], request.coordinate['y'],
                                                 false, icon_activeRequest, requestText);
@@ -1306,12 +1266,12 @@ function loadMap() {
                             }
                         }
                         xhr_cargo.send();
-                    });    
-                        
+                    });
+
                     // TODO: Offers and requests which arent assumed
                     let xhr_offers = new XMLHttpRequest();
                     xhr_offers.open('GET', '/rescuer/offers/', true);
-                    xhr_offers.onreadystatechange = function() {
+                    xhr_offers.onreadystatechange = function () {
                         if (xhr_offers.readyState === 4 && xhr_offers.status === 200) {
                             let offers = JSON.parse(xhr_offers.response).rescuer_offers;
 
@@ -1331,7 +1291,7 @@ function loadMap() {
                     // Requests of the vehicle
                     let xhr_requests = new XMLHttpRequest();
                     xhr_requests.open('GET', '/rescuer/requests/', true);
-                    xhr_requests.onreadystatechange = function() {
+                    xhr_requests.onreadystatechange = function () {
                         if (xhr_requests.readyState === 4 && xhr_requests.status === 200) {
                             let requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
@@ -1352,157 +1312,151 @@ function loadMap() {
                 }
             }
             xhr_vehicles.send();
-        }    
+        }
     } //TODO: Handle endpoint error
     xhr_init_base.send();
 
     function markerClick(event) {
-      this.getPopup()
-        .setLatLng(event.latlng)
-    
-        // .setContent(event.latlng.lat + ", " + event.latlng.lng);
-        // Rounded
-        .setContent(roundDecimal(event.latlng.lat, 3) + ', ' + roundDecimal(event.latlng.lng, 3));
+        this.getPopup()
+            .setLatLng(event.latlng)
+
+            // .setContent(event.latlng.lat + ", " + event.latlng.lng);
+            // Rounded
+            .setContent(roundDecimal(event.latlng.lat, 3) + ', ' + roundDecimal(event.latlng.lng, 3));
     }
 }
 
 async function shStats() {
-    if (!shStatsClick) {       //If Storage isn't clicked, show input fields
-        clearFields();
-        shStatsClick = true;
-        document.getElementById('buttons').innerHTML = `<div><h1 style="text-align: center; font-size: 2em;">Service Statistics</h1></div>
-        <div><h1 style="text-align: left; font-size: 1em;">Enter Date Range</h1></div>`;
+    clearFields();
+    document.getElementById('buttons').innerHTML = `<div><h1 style="text-align: center; font-size: 2em;">Service Statistics</h1></div>`;
 
-        try {
-            /* get the requests and offers from the database and filter the completed and non completed ones */
-            const requests = await fetchMethod('/api/requests');
-            const offers = await fetchMethod('/api/offers');
-            if ((requests.requests.length + offers.offers.length) == 0) {
-                document.getElementById('error-message').innerHTML = 'There are no requests or offers';
-            } else {
-               
-                /* using html's date picker for the dates */
-                const inputFieldsDiv = document.getElementById('buttons2');
-                inputFieldsDiv.innerHTML = `
-                
+    try {
+        /* get the requests and offers from the database and filter the completed and non completed ones */
+        const requests = await fetchMethod('/api/requests');
+        const offers = await fetchMethod('/api/offers');
+        if ((requests.requests.length + offers.offers.length) == 0) {
+            document.getElementById('error-message').innerHTML = 'There are no requests or offers';
+        } else {
+
+            /* using html's date picker for the dates */
+            const inputFieldsDiv = document.getElementById('buttons2');
+            inputFieldsDiv.innerHTML = `
                     <div><label for="startDate">Start Date:</label>
                     <input type="date" id="startDate"></div>
                    <div> <label for="endDate">End Date:</label>
                     <input type="date" id="endDate"></div>`;
 
-                const startDateInput = document.getElementById('startDate');
-                const endDateInput = document.getElementById('endDate');
-                
-                /* updateChart gets the inputs from the start and end date and filters the requests/offers accordingly */
-                const updateChart = async () => {
-                    const startDate = startDateInput.value;
-                    const endDate = endDateInput.value;
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
 
-                    let filteredRequests = requests.requests;
-                    let filteredOffers = offers.offers;
+            /* updateChart gets the inputs from the start and end date and filters the requests/offers accordingly */
+            const updateChart = async () => {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
 
-                    /* If dates arent selected then show all of them, otherwise filter them */
-                    if (startDate && endDate) {
-                        filteredRequests = requests.requests.filter(request => {
-                            const requestDate = new Date(request['Requested on']);
-                            return requestDate >= new Date(startDate) && requestDate <= new Date(endDate);
-                        });
-                        filteredOffers = offers.offers.filter(offer => {
-                            const offerDate = new Date(offer['Offered on']);
-                            return offerDate >= new Date(startDate) && offerDate <= new Date(endDate);
-                        });
-                    }
+                let filteredRequests = requests.requests;
+                let filteredOffers = offers.offers;
 
-                    /* Find the ammounts of the requests/offers to make the graph */
-                    const newRequestsCount = filteredRequests.filter(request => request.Status === 'Pending' || request.Status === 'Accepted').length;
-                    const completedRequestsCount = filteredRequests.filter(request => request.Status === 'Completed').length;
+                /* If dates arent selected then show all of them, otherwise filter them */
+                if (startDate && endDate) {
+                    filteredRequests = requests.requests.filter(request => {
+                        const requestDate = new Date(request['Requested on']);
+                        return requestDate >= new Date(startDate) && requestDate <= new Date(endDate);
+                    });
+                    filteredOffers = offers.offers.filter(offer => {
+                        const offerDate = new Date(offer['Offered on']);
+                        return offerDate >= new Date(startDate) && offerDate <= new Date(endDate);
+                    });
+                }
 
-                    const newOffersCount = filteredOffers.filter(offer => offer.Status === 'Pending' || offer.Status === 'Picked Up').length;
-                    const completedOffersCount = filteredOffers.filter(offer => offer.Status === 'Delivered').length;
+                /* Find the ammounts of the requests/offers to make the graph */
+                const newRequestsCount = filteredRequests.filter(request => request.Status === 'Pending' || request.Status === 'Accepted').length;
+                const completedRequestsCount = filteredRequests.filter(request => request.Status === 'Completed').length;
 
-                    const total = newRequestsCount + completedRequestsCount + newOffersCount + completedOffersCount;
+                const newOffersCount = filteredOffers.filter(offer => offer.Status === 'Pending' || offer.Status === 'Picked Up').length;
+                const completedOffersCount = filteredOffers.filter(offer => offer.Status === 'Delivered').length;
 
-                    /* Checking to see if there are any requests or offers in the time period */
-                    if (total > 0) {
+                const total = newRequestsCount + completedRequestsCount + newOffersCount + completedOffersCount;
 
-                        /*------html code for the graph------*/
-                        const containerDiv = document.getElementById('inputFieldsDiv2');
-                        const canvas = document.createElement('canvas');
-                        canvas.id = 'myChart';
-                        containerDiv.innerHTML = '';
-                        containerDiv.appendChild(canvas);
+                /* Checking to see if there are any requests or offers in the time period */
+                if (total > 0) {
 
-                        /* use Chart.js to make a pie graph */
-                        const ctx = canvas.getContext('2d');
-                        const chartData = {
-                            labels: ['New Requests', 'Completed Requests', 'New Offers', 'Completed Offers'],
-                            datasets: [{
-                                data: [newRequestsCount, completedRequestsCount, newOffersCount, completedOffersCount],
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.8)',
-                                    'rgba(75, 192, 192, 0.8)',
-                                    'rgba(54, 162, 235, 0.8)',
-                                    'rgba(255, 206, 86, 0.8)',
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                ],
-                                borderWidth: 1,
-                            }],
-                        };
+                    /*------html code for the graph------*/
+                    const containerDiv = document.getElementById('inputFieldsDiv2');
+                    const canvas = document.createElement('canvas');
+                    canvas.id = 'myChart';
+                    containerDiv.innerHTML = '';
+                    containerDiv.appendChild(canvas);
 
-                        /* This is for showing info about the requests/offers when hovering over the pie graph */
-                        const chartOptions = {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'top',
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            const label = context.label || '';
-                                            if (label) {
-                                                return label + ': ' + context.parsed.toFixed(2) + ' Percentage: ' + (context.parsed.toFixed(2) / total) * 100 + '%';
-                                            }
-                                            return '';
-                                        },
+                    /* use Chart.js to make a pie graph */
+                    const ctx = canvas.getContext('2d');
+                    const chartData = {
+                        labels: ['New Requests', 'Completed Requests', 'New Offers', 'Completed Offers'],
+                        datasets: [{
+                            data: [newRequestsCount, completedRequestsCount, newOffersCount, completedOffersCount],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                            ],
+                            borderWidth: 1,
+                        }],
+                    };
+
+                    /* This is for showing info about the requests/offers when hovering over the pie graph */
+                    const chartOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const label = context.label || '';
+                                        if (label) {
+                                            return label + ': ' + context.parsed.toFixed(2) + ' Percentage: ' + (context.parsed.toFixed(2) / total) * 100 + '%';
+                                        }
+                                        return '';
                                     },
                                 },
                             },
-                        };
+                        },
+                    };
 
-                        const myChart = new Chart(ctx, {
-                            type: 'pie',
-                            data: chartData,
-                            options: chartOptions,
-                        });
+                    const myChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: chartData,
+                        options: chartOptions,
+                    });
 
-                        /* Store the chart into the containerDiv */
-                        containerDiv.myChart = myChart;
-                    }
-                    /* if total<0 show this */
-                    else { document.getElementById('inputFieldsDiv2').innerHTML = 'There are no requests or offers between these dates'; }
-                };
-               
-                   
-                    
+                    /* Store the chart into the containerDiv */
+                    containerDiv.myChart = myChart;
+                }
+                /* if total<0 show this */
+                else { document.getElementById('inputFieldsDiv2').innerHTML = 'There are no requests or offers between these dates'; }
+            };
 
-                // Add event listeners to update the chart when the user selects new dates
-                startDateInput.addEventListener('change', updateChart);
-                endDateInput.addEventListener('change', updateChart);
 
-                // Initial chart update
-                updateChart();
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
+
+
+            // Add event listeners to update the chart when the user selects new dates
+            startDateInput.addEventListener('change', updateChart);
+            endDateInput.addEventListener('change', updateChart);
+
+            // Initial chart update
+            updateChart();
         }
-    } else {
-        clearFields();
+    } catch (error) {
+        console.error('Error fetching data:', error);
     }
+
 }

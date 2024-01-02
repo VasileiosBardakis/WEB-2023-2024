@@ -218,20 +218,38 @@ a.header {
   border:1px solid;
 } */
 
+@media only screen and (min-width: 701px) {
+    .sidebar_button {
+        display: none;
+    }
 
+    .sidebarOptions {
+        display: block;
+    }
+    
+}
 @media screen and (max-width: 700px) {
-  * {
-    /* TODO: Make it not possible to go out of sidebar when scrolling */
-    overflow:none;
-  }
+    .sidebar_button {
+        display: block;
+    }
 
+    .sidebarOptions {
+        display: none;
+    }
+
+        .sidebarOptions.hidden {
+            display: block;
+        }
   .sidebar {
     width: 100%;
     height: auto;
     position: relative;
   }
 
-  .sidebar a {float: left;}
+  .sidebar a {
+        text-align: center;
+        float: none;
+  }
   
   .canvas {
     /* TODO: Make everything to to the left since no sidebar now */
@@ -240,23 +258,27 @@ a.header {
   
   #mapContainer {
     display:block;
-  } 
+  }
+    img.sidebar-icon {
+        width: 36px;
+        top: -5px;
+        position: relative;
+        /* display:inline; */
+        margin-right: 2px;
+    }
 }
 
-@media screen and (max-width: 460px) {
-  .sidebar a {
-    text-align: center;
-    float: none;
-  }
-}
 
 img.sidebar-icon {
-  width:36px;
-  top:-5px;
-  position:relative;
-  /* display:inline; */
-  margin-right:2px;
+    width: 36px;
+    top: -5px;
+    position: relative;
+    /* display:inline; */
+    margin-right: 2px;
 }
+
+
+
 
 /* 
 @media only screen and (min-width: 768px) {

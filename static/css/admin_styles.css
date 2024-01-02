@@ -1,15 +1,5 @@
 
-.sidebar {
-    position: fixed;
-    overflow: none;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 15%;
-    /* Sidebar stays the same when scrolling */
-    background-color: #f1f1f1;
-}
+
 
 .gray-background {
     background-color: #f2f2f2; /* Light gray background color */
@@ -187,7 +177,7 @@ td {
 #buttons {
     display: block;
     width: 100%;
-    margin-left:18%;
+    margin-left:3%;
 }
 
 
@@ -200,47 +190,27 @@ td {
  /*
     tablets, 768px and above
   */
-  @media only screen and (min-width: 768px) {
-    .logo img {
-      padding-top: 10px;
-      width: 60%;
-    }
-    .tab-pane {
-      padding-top: 30px;
-      width: 50%;
-    }
-    nav {
-      flex-direction: row;
-    }
-    nav ul {
-      flex-direction: row;;
-      padding-top: 0rem;
-    }
-    nav li {
-      padding-left: 1rem;
-    }
-    #mapid { 
-      height: 200px;
-    }
-  
 
-   /* 
-    Desktop, 1000px and above
-  */
-  @media only screen and (min-width: 1000px) {
 
-    .tab-pane {
-      width: 40%;
-  }
 
-    .logo img {
-      padding-top: 20px;
-      width: 45%;
-  }
-   
-    #mapid { 
-      height: 300px;
+
+@media only screen and (max-width: 700px) {
+    
+    #inputFieldsDiv{
+            width: 100%;
+            margin-left: 0%;
     }
-  } 
+    #inputFieldsDiv2 {
+        width: 100%;
+        margin-left: 0%;
+    }
+    #buttons2 {
+        width: 100%;
+        margin-left: 0%;
+    }
+
+}
+
+
   
 
