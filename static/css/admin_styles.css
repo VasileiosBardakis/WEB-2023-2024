@@ -194,20 +194,29 @@ td {
 
 
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 768px) {
 
     #inputFieldsDiv {
-        width: 100%;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,0);
+        width: 80%;
         margin-left: 0%;
     }
 
     #inputFieldsDiv2 {
-        width: 100%;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,0);
+        width: 80%;
         margin-left: 0%;
     }
 
     #inputFieldsDiv3 {
-        width: 100%;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,0);
+        width: 80%;
         margin-left: 0%;
     }
 

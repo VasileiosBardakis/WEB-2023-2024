@@ -878,6 +878,7 @@ function addDetail() {
     backButton.textContent = 'Go back to the categories';
     backButton.classList.add('goBackButton');
     backButton.onclick = function () {
+        console.log("hi there");
         // Show inputFieldsDiv and hide inputFieldsDiv2
         document.getElementById('inputFieldsDiv').style.display = 'flex';
         document.getElementById('inputFieldsDiv2').style.display = 'none';
@@ -911,15 +912,18 @@ function addDetail() {
             });
             fields.innerHTML = ''; /* Clearing inputFieldsDiv2 */
             fields.appendChild(backButton);   /* Add the go back to categories button */
-            fields.innerHTML += '<label>Choose a Category</label>';
+
+            default_option.text = 'Please select a category';
+            dropdown.add(default_option);
+
             fields.appendChild(dropdown);
-            fields.innerHTML += '<label>Choose an Item</label>';
             var labelDiv = document.createElement('div');
             labelDiv.className = 'dropdown';
             labelDiv.innerHTML = `
                 <label>
+                <br>
                     <select id="items">
-                        <option value="-1">Please select a category first</option>
+                        <option value="-1">Please select an item</option>
                     </select>
                 </label>
             `;

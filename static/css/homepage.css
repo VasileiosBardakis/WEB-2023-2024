@@ -4,6 +4,16 @@
     padding: 0;
   }
 
+/* In case we wanna add a background, comment this out and put the image in static/css
+body {
+    width: 100vw;
+    height: 100vh;
+    background-image: url(background.jpg);
+    background-repeat: no-repeat;
+    background-size: cover; 
+}
+*/
+
 .hidden {
   display: none; /* Keep elements hidden until sidebar press */
 }
@@ -218,7 +228,7 @@ a.header {
   border:1px solid;
 } */
 
-@media only screen and (min-width: 701px) {
+@media only screen and (min-width: 769px) {
     .sidebar_button {
         display: none;
     }
@@ -228,7 +238,7 @@ a.header {
     }
     
 }
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 768px) {
     .sidebar_button {
         display: block;
     }
