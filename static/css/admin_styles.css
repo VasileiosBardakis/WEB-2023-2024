@@ -195,19 +195,47 @@ td {
 
 
 @media only screen and (max-width: 700px) {
-    
-    #inputFieldsDiv{
-            width: 100%;
-            margin-left: 0%;
+
+    #inputFieldsDiv {
+        width: 100%;
+        margin-left: 0%;
     }
+
     #inputFieldsDiv2 {
         width: 100%;
         margin-left: 0%;
     }
+
+    #inputFieldsDiv3 {
+        width: 100%;
+        margin-left: 0%;
+    }
+
     #buttons2 {
         width: 100%;
         margin-left: 0%;
     }
+
+    #storageCategories {
+        margin-left: 0%;
+    }
+
+    #storage {
+        margin-left: 15%;
+    }
+
+    #buttons {
+        margin-left: 0%;
+    }
+
+    #jsonFileInput {
+        margin-left: 0%;
+    }
+
+    #mapid {
+        margin-left: 0%;
+    }
+
 
 }
 

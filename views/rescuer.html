@@ -23,39 +23,47 @@
 
     <div id="grid-container">
         <div class="sidebar">
-            <a class="header" onclick="myCargo()" style="color:white;">
-                <span id="username_placeholder" style="color:white;"></span> - Rescuer Hub</a>
+            <a class="header" onclick="myCargo(); toggleSidebar();" style="color:white;">
+                <span id="username_placeholder" style="color:white;"></span> - Rescuer Hub
+            </a>
             <!-- TODO: For some reason homepage.css isnt applying style to icons -->
-            <a onclick="myCargo()"><img class="sidebar-icon" title="cargo" src="img/sidebar/cargo.png" alt="truck icon"/>My Cargo</a>
-            <a onclick="mapTab()"><img class="sidebar-icon" title="map" src="img/sidebar/map.png" alt="map icon"/>Show Map</a>
-            <form id="logoutForm" action="/logout?_method=DELETE" method="post">
-                <a onclick="logoutForm.submit()"><img class="sidebar-icon" title="logout" src="img/sidebar/logout.png" alt="logout icon"/>Logout</a>
-            </form>
-        </div>
-
-        <div class="canvas" id="canvas">
-            <div id="cargo">
-                <h3>Cargo on vehicle</h3>
-                <table class="user_table" id="cargo-table"></table>
+            <div class="sidebar_button">
+                <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="toggleSidebar()">&#9776;</a>
             </div>
-            
-            <div id="mapTab">
-                <h3></h3>
-                <div id="mapContainer">
-                    <div id="mapid"></div>
-                    <div id="cargo_actions" style="height:750px;overflow-y:auto;">
-                        <div id="cargo_pick_up"></div>
+
+
+            <div class="sidebarOptions" id="mySidebar">
+                <a onclick="myCargo(); toggleSidebar();"><img class="sidebar-icon" title="cargo" src="img/sidebar/cargo.png" alt="truck icon" />My Cargo</a>
+                <a onclick="mapTab(); toggleSidebar();"><img class="sidebar-icon" title="map" src="img/sidebar/map.png" alt="map icon" />Show Map</a>
+                <form id="logoutForm" action="/logout?_method=DELETE" method="post">
+                    <a onclick="logoutForm.submit()"><img class="sidebar-icon" title="logout" src="img/sidebar/logout.png" alt="logout icon" />Logout</a>
+                </form>
+                </div>
+            </div>
+
+            <div class="canvas" id="canvas">
+                <div id="cargo">
+                    <h3>Cargo on vehicle</h3>
+                    <table class="user_table" id="cargo-table"></table>
+                </div>
+
+                <div id="mapTab">
+                    <h3></h3>
+                    <div id="mapContainer">
+                        <div id="mapid"></div>
+                        <div id="cargo_actions" style="height:750px;overflow-y:auto;">
+                            <div id="cargo_pick_up"></div>
+                        </div>
+                    </div>
+
+                    <div id="tasks" style="text-align:left;">
+                        <h3 id="task_header">Your tasks</h3>
+                        <p id="task-info"></p>
+                        <table class="user_table" id="user_table">
                     </div>
                 </div>
-
-                <div id="tasks" style="text-align:left;">
-                    <h3 id="task_header">Your tasks</h3>
-                    <p id="task-info"></p>
-                    <table class="user_table" id="user_table">
-                </div>
             </div>
         </div>
-    </div>
 
     <script defer>
 
@@ -65,12 +73,11 @@
         // Dynamically set size of canvas to prevent overlap with sidebar
         // TODO: Sidebar has static size, but might change to scale with screen size
         // If so, make font scale with sidebar also
-        document.addEventListener("DOMContentLoaded", function () {
-            if (window.innerWidth > 300) {
-            var sidebarWidth = document.getElementById("sidebar").offsetWidth;
-            document.getElementById("canvas").style.marginLeft = sidebarWidth + "px";
-            }
-        });
+        function toggleSidebar() {
+            var x = document.getElementById("mySidebar");
+            x.classList.toggle("hidden");
+        }
+       
     </script>
     <noscript>Sorry, your browser does not support JavaScript!</noscript>
 </body>
