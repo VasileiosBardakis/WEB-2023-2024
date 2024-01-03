@@ -28,7 +28,7 @@ db.connect((err) => {
 // associate the modules we'll be using
 app.use(session({
     secret: 'secret',
-	resave: true,
+	resave: false,
 	saveUninitialized: true
 }));
 app.use(express.text()); // parse plain/text
@@ -36,6 +36,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'static')));
 app.use(methodOverride('_method'));
+
+/*const that Disables Caching for select methods, we use it so no logged out admin can access the admin */
+const disableCaching = (req, res, next) => {
+	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+	res.setHeader('Pragma', 'no-cache');
+	res.setHeader('Expires', '0');
+	next();
+};
 
 // http://localhost:3000/ redirects to login
 app.get('/', function(req, res) {
@@ -49,29 +57,29 @@ app.get('/', function(req, res) {
 });
 
 // authentication
-app.post('/', (req, res) => {
+app.post('/', disableCaching,(req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
 
 	if (username && password) {
 		// Execute SQL query that'll select the account from the database based on the specified username and password
-		db.query('SELECT type FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
+		db.query('SELECT type FROM accounts WHERE username = ? AND password = ?', [username, password], function (error, results, fields) {
 			// Get specific account type
 			// If there is an issue with the query, output the error
 			if (error) throw error;
+
 			// If the account exists
 			if (results.length > 0) {
 				// Authenticate the user
 				req.session.loggedin = true;
 				req.session.username = username;
-				req.session.type = results[0].type;		//Give the account type to the session variable
+				req.session.type = results[0].type;   // Give the account type to the session variable
 				// Direct to auth page
 				res.redirect('/auth');
-
 			} else {
 				res.status(401).json({ error: 'Incorrect Username and/or Password, please try again!' });
-			}			
-			res.end();
+				res.end();
+			}
 		});
 	} else {
 		res.end();
@@ -145,7 +153,7 @@ app.post('/announce', (req, res) => {
 	}
 });
 
-app.get('/admin', (req, res) => {
+app.get('/admin', disableCaching, (req, res) => {
 	let username = req.session.username;
 	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
 		if (err) throw err;
@@ -158,7 +166,7 @@ app.get('/admin', (req, res) => {
 	});
 });
 
-app.get('/citizen', (req, res) => {
+app.get('/citizen', disableCaching, (req, res) => {
 	let username = req.session.username;
 	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
 		if (err) throw err;
@@ -171,7 +179,7 @@ app.get('/citizen', (req, res) => {
 	});
 });
 
-app.get('/rescuer', (req, res) => {
+app.get('/rescuer', disableCaching, (req, res) => {
 	let username = req.session.username;
 	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
 		if (err) throw err;
@@ -183,6 +191,40 @@ app.get('/rescuer', (req, res) => {
 
 	});
 });
+app.get('/auth', disableCaching, (req, res) => {    //Pages go through /auth to see what permissions the user has and point them to the right page
+	let username = req.session.username;
+	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
+		if (err) throw err;
+		if (req.session.loggedin) {
+			if (req.session.type == 0) { res.redirect('/admin'); }
+			if (req.session.type == 1) { res.redirect('/citizen'); }
+			if (req.session.type == 2) { res.redirect('/rescuer'); }
+
+			//res.send('Welcome back, ' + req.session.username);
+		}
+		else { res.redirect('/'); }
+
+	});
+});
+
+app.get('/api/username', (req, res) => {
+	console.log(req.session.username);
+	res.send(req.session.username);
+});
+
+app.delete('/logout', (req, res) => {
+	req.session.destroy((err) => {
+		if (err) {
+			console.error('Error destroying session:', err);
+		} else {
+			res.redirect('/');
+		}
+	});
+});
+
+
+
+
 
 app.post('/citizen/sendRequest', (req, res) => {
 	console.log(req.body)
@@ -208,32 +250,6 @@ app.post('/citizen/sendRequest', (req, res) => {
 	}
 });
 
-app.get('/auth', (req, res) => {    //Pages go through /auth to see what permissions the user has and point them to the right page
-	let username = req.session.username;
-	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
-		if (err) throw err;
-		if (req.session.loggedin) {
-			if (req.session.type == 0) { res.redirect('/admin'); }
-			if (req.session.type == 1) { res.redirect('/citizen'); }
-			if (req.session.type == 2) { res.redirect('/rescuer'); }
-
-			//res.send('Welcome back, ' + req.session.username);
-		}
-		else { res.redirect('/'); }
-
-	});
-});
-
-app.get('/api/username', (req, res) => {
-	console.log(req.session.username);
-	res.send(req.session.username);
-});
-
-app.delete('/logout', (req, res) => {
-	req.session.loggedin = false;
-	res.redirect('/');
-
-});
 
 const PORT = 3000;
 app.listen(PORT, () => {

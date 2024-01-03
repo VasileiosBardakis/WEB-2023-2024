@@ -481,6 +481,7 @@ function itemsInCat(selected) {
 /*Function for editing details in Manage Storage*/
 function editDetails(itemId) {
     document.getElementById('inputFieldsDiv2').style.display = 'none';
+    document.getElementById('inputFieldsDiv3').style.display = 'flex';
     document.getElementById('error-message').innerHTML = '';
 
     /*Fetch the detail data for all the items using fetchMethod*/
@@ -664,6 +665,7 @@ function addCategory() {
 
     // Hide inputFieldsDiv and show inputFieldsDiv2
     inputFieldsDiv.style.display = 'none';
+    inputFieldsDiv3.style.display = 'none';
     inputFieldsDiv2.style.display = 'flex';
 
     // Create and set up the "Go back" button
@@ -737,6 +739,7 @@ function addCategorySubmit() {
 function addItem() {
     /*InnerHTML fields*/
     document.getElementById('inputFieldsDiv').style.display = 'none';
+    document.getElementById('inputFieldsDiv3').style.display = 'none';
     document.getElementById('inputFieldsDiv2').style.display = 'flex';
     var fields = document.getElementById('inputFieldsDiv2');
     var dropdown = document.createElement('select');
@@ -867,6 +870,7 @@ function addItemSubmit() {
 /*Function for adding a detail in Manage Storage*/
 function addDetail() {
     document.getElementById('inputFieldsDiv').style.display = 'none';
+    document.getElementById('inputFieldsDiv3').style.display = 'none';
     document.getElementById('inputFieldsDiv2').style.display = 'flex';
     var fields = document.getElementById('inputFieldsDiv2');
     var dropdown = document.createElement('select');

@@ -11,11 +11,8 @@ Bugs:
 - If you press "Show map" fast enough two tables appear (?)
 - Sidebar images dont get css
 - On load cargo, everything closes
-- Login error replaces whole screen instead of error-message
 - When scrolling, div goes inside sidebar
-- When you logout and then go 1 page back you log back in
-- Massive bugs on mobile
-- On the new sidebar: div text sometimes splits up and changes line
+- Small bugs on mobile
 - On mobile: table makes page unzoomable, breaks the sidebar (happened on old sidebar too)
 - Map doesnt refresh correctly
 - Entering wrong quantity on pickup cargo makes page crash
@@ -61,8 +58,8 @@ div label {
 
 
 TODO:
-Error alerts and handling on EVERYTHING (frontend backend)
-Clean up api endpoints
+Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
+Clean up api endpoints (done on admin)
 
 Check task num before assigning task:
 UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0
@@ -90,7 +87,7 @@ and cross validate sql entries in case they are on older data and they're not va
 Web design:
 - Make font scale with screen size (unreadable on mobile)
 - on mobile: make table go under map so its readable
-- If media < 700px, make everything stack vertically
+- If media < 768px, make everything stack vertically
 - On mobile make sidebar scale with canvas size and make canvas scrollable (tables)
 
 

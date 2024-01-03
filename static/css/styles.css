@@ -111,6 +111,12 @@ body.entry {
     margin-bottom: 10px; /*separate it from the table */
 }
 
+#error-message {
+    color: red;
+    margin-top:-15px;
+    margin-bottom: 15px;
+}
+
 /* Borders */
 table, th, td {
     border: 1px solid;
