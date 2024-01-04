@@ -6,6 +6,13 @@ CREATE TABLE accounts (
     telephone VARCHAR(12)
 )ENGINE=InnoDB;
 
+INSERT INTO accounts VALUES
+('admin','admin',0, 'all powerful', '2106962800'),
+('test_admin', 'zoowee', 0, 'zowee admin', '2106962800'),
+('npc', 'npc', 1, 'npc npc', '2106962800'),
+('res', 'res', 2, 'res res', '2106962800'),
+('mister_helper', 'forfree', 2, 'helper forfree', '2106962800');
+
 /* e.g.
 INSERT INTO account_coordinates
 VALUES
@@ -29,17 +36,6 @@ CREATE TABLE base_coordinates (
 )ENGINE=InnoDB;
 INSERT INTO base_coordinates VALUES (0, POINT(38.361427, 21.712058));
 
-INSERT INTO accounts VALUES
-('admin','admin',0, null, null);
-INSERT INTO accounts VALUES
-('test_admin', 'zoowee', 0, null, null);
-INSERT INTO accounts VALUES
-('npc', 'npc', 1, null, null);
-INSERT INTO accounts VALUES
-('res', 'res', 2, null, null);
-INSERT INTO accounts VALUES
-('mister_helper', 'forfree', 2, null, null);
-
 -- all possible items in the database
 CREATE TABLE items (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,6 +56,7 @@ CREATE TABLE details (
     detail_value VARCHAR(255),
 
     FOREIGN KEY (item_id) REFERENCES items(id)
+    -- TODO: Composite
 )ENGINE=InnoDB;
 
 CREATE TABLE categories (
@@ -74,13 +71,6 @@ CREATE TABLE announce (
     descr VARCHAR(255),
     items JSON
 )ENGINE=InnoDB;
-
-
--- SELECT * from items;
--- select * from details;
--- select * from categories;
--- select * from accounts;
--- select * from announce;
 
 CREATE TABLE requests (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -109,12 +99,11 @@ INSERT INTO request_status_code VALUES
 CREATE TABLE cargo (
   username VARCHAR(30) NOT NULL,
   item_id int NOT NULL,
-  item_name varchar(255) DEFAULT NULL,
-  item_category int DEFAULT NULL,
   res_quantity int,
   
   CONSTRAINT ch_res_quantity CHECK (res_quantity > -1),
 
+  PRIMARY KEY (username, item_id),
   FOREIGN KEY (username) REFERENCES accounts(username)
 )ENGINE=InnoDB; 
 
@@ -146,42 +135,3 @@ INSERT INTO offer_status_code VALUES
 (0, 'Pending'),
 (1, 'Picked up'),
 (2, 'Delivered');
-
-/*
-CREATE TABLE offer_assumed_from (
-    id INT,
-    rescuer VARCHAR(30),
-
-    PRIMARY KEY (id, rescuer),
-    FOREIGN KEY (rescuer) REFERENCES accounts(username),
-    FOREIGN KEY (id) REFERENCES offers(id)
-)ENGINE=InnoDB; 
-
-CREATE TABLE request_assumed_from (
-    id INT,
-    rescuer VARCHAR(30),
-
-    PRIMARY KEY (id, rescuer),
-    FOREIGN KEY (rescuer) REFERENCES accounts(username),
-    FOREIGN KEY (id) REFERENCES requests(id)
-)ENGINE=InnoDB;
-
--- vehicle: max 4 tasks
--- tasks: either offers or requests
-
-CREATE TABLE tasks (
-    id INT PRIMARY KEY,
-    account_id INT,
-    offer_id INT,
-    request_id INT,
-
-    FOREIGN KEY (account_id) REFERENCES accounts(account_id),
-    FOREIGN KEY (offer_id) REFERENCES offers(offer_id),
-    FOREIGN KEY (request_id) REFERENCES requests(request_id),
-    CHECK (
-        (offer_id IS NOT NULL AND request_id IS NULL) OR
-        (offer_id IS NULL AND request_id IS NOT NULL)
-    )
-)
-*/
-

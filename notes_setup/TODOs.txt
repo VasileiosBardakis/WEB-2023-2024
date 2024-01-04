@@ -6,21 +6,24 @@ na kseperastei to orio
 - SQL credentials se .env omws exei bug to package
 - Cancelled offers and requests could be kept with a 'deleted' status but they are not as important
 - Announcements are independent to offers. Offers can be generated endlessly, but announcements can be deleted without impacting them.
+- To kathe request/offer thelei 1 QUANTITY gia na oloklirwthei
+- To koubi complete task den einai sto table alla se popup
 
 Bugs:
 - If you press "Show map" fast enough two tables appear (?)
 - Sidebar images dont get css
 - On load cargo, everything closes
-- When scrolling, div goes inside sidebar
-- Small bugs on mobile
-- On mobile: table makes page unzoomable, breaks the sidebar (happened on old sidebar too)
+- If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
+- On mobile: elements make page unzoomable, breaks the sidebar (FIX: make sidebar take up the whole width)
+- Sidebar has no overflow so when not enough height is given (and text too large) some options vanish
 - Map doesnt refresh correctly
 - Entering wrong quantity on pickup cargo makes page crash
-- Overlapping divs
+- Make every "window" have same padding and margin so sidebar doesnt change size
+- Scrolling horizontally makes sidebar glitch out
+- New errors on admin map
+- Triggers for tasks dont work
 
-
-/api/cargo vs /rescuer/cargo?
-
+POPUPS VS TEXT DIVS?
 
 Requests of civilian:
 PERSON requests ITEM for # PEOPLE and ITS STATUS
@@ -58,6 +61,34 @@ div label {
 
 
 TODO:
+Maybe change tasks to 2 panels? offers and requests?
+
+Add error message fade:
+.error-message {
+    color: red;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.error-message.fade-out {
+    opacity: 0;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Set a timeout to add the 'fade-out' class after 5 seconds
+    setTimeout(function() {
+        errorMessage.classList.add('fade-out');
+    }, 5000);
+});
+Set display to none when it ends
+
+When moving vehicle around, redraw lines
+FIX: Keep array of assumed tasks
+
+Update every other element when something is clicked/updates etc.
+
 Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
 Clean up api endpoints (done on admin)
 
@@ -113,21 +144,19 @@ Citizen:
 
 Caching:
 https://zeropointdevelopment.com/speed-up-your-website-using-caching-and-htaccess/
+
+
 Check if geolocation is enabled and place rescuer vehicle there. check every 10 seconds
 
 
 
 Finishing touches:
-https://www.w3schools.com/css/tryit.asp?filename=trycss3_gradient-linear_trans
-transition
 
 Database normalization (one-to-many etc)
 
 Register: To column scalearei me to megalutero item, kanta aneksartita
 
-Use # instead of . for unique elements
-
-On table load: make each row appear with fade (end goal)
+On table load: make each row appear with fade
 
 Handle SQL errors (e.g. when admin change db a user might be trying to access item that no longer exists) with sending response
 On server error, close connection instead of closing server
@@ -141,7 +170,4 @@ https://mdbootstrap.com/docs/standard/extended/login/
 
 
 -plat
-prettier error handling when request bigger than existing quantity 
-to Tasks Header einai visible an kai to mapContainer einai hidden !?
--
-
+prettier error handling when request bigger than existing quantity

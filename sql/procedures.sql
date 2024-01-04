@@ -48,19 +48,26 @@ DELIMITER $$
 CREATE PROCEDURE completeOffer(IN item_id INT,IN item_quantity INT, IN res_username VARCHAR(30), IN offer_id INT)
 BEGIN
     DECLARE MESSAGE_TEXT VARCHAR(255);
+    DECLARE success INT;
 
-    -- TODO: Don't think this works
-    IF EXISTS (SELECT 1 FROM cargo) THEN
-        INSERT INTO cargo (res, )
-        UPDATE items
-        INNER JOIN cargo ON items.id = cargo.item_id
-        SET items.quantity = items.quantity + cargo.res_quantity;
+    INSERT INTO cargo
+    VALUES (res, item_id, item_quantity)
+    ON DUPLICATE KEY UPDATE res_quantity = res_quantity + item_quantity;
 
-        DELETE FROM cargo;
+    -- TODO:
+    -- Check if the last operation was successful
+    SELECT ROW_COUNT() INTO success;
+
+    IF success > 0 THEN
+        -- mark offer as completed
+        UPDATE offers
+        SET date_completed = NOW(), status = 2
+        WHERE id = offer_id;
     ELSE
         SIGNAL SQLSTATE VALUE '45000';
-        SET MESSAGE_TEXT = 'Cargo is missing';
+        SET MESSAGE_TEXT = 'Error during offer completion';
     END IF;
+
 END $$
 DELIMITER ;
 

@@ -48,16 +48,17 @@
                 </div>
 
                 <div id="mapTab">
-                    <h3></h3>
+                    <h3>Map</h3>
                     <div id="mapContainer">
                         <div id="mapid"></div>
                         <div id="cargo_actions" style="height:750px;overflow-y:auto;">
+                            <p id="cargo_error" style="white-space:nowrap;margin:0;padding:0;"></p>
                             <div id="cargo_pick_up"></div>
                         </div>
                     </div>
 
                     <div id="tasks" style="text-align:left;">
-                        <h3 id="task_header">Your tasks</h3>
+                        <h3 id="task_header">Your tasks [<span id="task_counter"></span>/4]</h3>
                         <p id="task-info"></p>
                         <table class="user_table" id="user_table">
                     </div>
@@ -68,7 +69,7 @@
     <script defer>
 
         // TODO: Default, isnt being clicked
-        myCargo();
+        
 
         // Dynamically set size of canvas to prevent overlap with sidebar
         // TODO: Sidebar has static size, but might change to scale with screen size
@@ -77,6 +78,8 @@
             var x = document.getElementById("mySidebar");
             x.classList.toggle("hidden");
         }
+
+        myCargo();
        
     </script>
     <noscript>Sorry, your browser does not support JavaScript!</noscript>

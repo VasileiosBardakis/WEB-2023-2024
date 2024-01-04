@@ -1,5 +1,15 @@
-let mymap;
+async function getUsername() {
+    try {
+        const response = await fetch('/api/username');
+        const data = await response.text();
+        return data;
+    } catch (error) {
+        console.error(`Error fetching username: `, error);
+        throw error; // Re-throw the error to propagate it
+    }
+}
 
+let mymap;
 let username;
 fetch('/api/username')
     .then(response => response.text())
@@ -21,7 +31,8 @@ function hideAll() {
 }
 
 // Show cargo tab and GET items in vehicle
-function myCargo() {
+async function myCargo() {
+        const username = await getUsername();
         hideAll();
         let cargoTab = document.getElementById("cargo");
         cargoTab.classList.toggle("hidden");
@@ -30,10 +41,11 @@ function myCargo() {
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 let jsonResponse = JSON.parse(xhr.responseText);
+                console.log(jsonResponse);
                 displayCargo(jsonResponse);
             }
         };
-        xhr.open("GET", "/api/cargo", true);
+        xhr.open("GET", "/rescuer/cargo/" + username, true);
         xhr.send();
 }
 
@@ -51,22 +63,22 @@ function displayCargo(data) {
     }
 
     // Populate the table with data
-    for (let i = 0; i < data.items.length; i++) {
-        let cargo = data.items[i];
+    for (let i = 0; i < data.cargo.length; i++) {
+        let item = data.cargo[i];
         let row = table.insertRow(i + 1); // Skip the header row
 
         // Create cells and populate them with data
         let idCell = row.insertCell(0);
-        idCell.textContent = cargo.item_id;
+        idCell.textContent = item.id;
 
         let nameCell = row.insertCell(1);
-        nameCell.textContent = cargo.item_name;
+        nameCell.textContent = item.Name;
 
         let categoryCell = row.insertCell(2);
-        categoryCell.textContent = cargo.item_category; 
+        categoryCell.textContent = item.Category; 
 
         let quantityCell = row.insertCell(3);
-        quantityCell.textContent = cargo.res_quantity; // show quantity
+        quantityCell.textContent = item.Quantity;
     }
 }
 
@@ -179,6 +191,9 @@ function storeItem(item, quantity) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             let responseData = JSON.parse(xhr.responseText);
             console.log("Data successfully sent to the server:", responseData);
+            document.getElementById("cargo_error").innerText = responseData.message;
+        } else if (xhr.readyState == 4 && xhr.status == 500){
+            document.getElementById("cargo_error").innerText = JSON.parse(xhr.response).error;
         } else {
             console.error("Network response was not ok. Status:", xhr.status);
         }
@@ -281,21 +296,26 @@ function manageTasks() {
                     // Combine the two jsons
                     //https://stackoverflow.com/questions/433627/concatenate-two-json-objects
                     let tasks = offers.concat(requests);
-                    console.log(tasks);
 
+                    document.getElementById("task_counter").innerText=tasks.length;
                     if (tasks.length === 0) {
                         errorMessageElement.innerHTML = 'You currently have not assumed any tasks.';
                         return;
                     }
+
+                    delete tasks.forEach((item) => { delete item.rescuer; });
+                    console.log("aa");
+                    console.log(tasks);
 
                     // TODO: Sort by date_accepted
 
                     //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
 
                     // Get the keys (column names) of the first object in the JSON data
+                    console.log(Object.keys(tasks[0]));
                     let cols = Object.keys(tasks[0]);
                     // Disregard type
-                    cols = cols.slice(0,-1);
+                    // cols = cols.slice(0,-1);
                     
                     // Create the header element
                     let thead = document.createElement("thead");
@@ -307,6 +327,7 @@ function manageTasks() {
                         th.innerText = colname; // Set the column name as the text of the header cell
                         tr.appendChild(th); // Append the header cell to the header row
                     });
+
                     // Add action buttons column
                     let th_actions = document.createElement("th");
                     th_actions.innerText = 'Actions'; // Set the column name as the text of the header cell
@@ -317,73 +338,64 @@ function manageTasks() {
                     table.append(tr) // Append the header to the table
                     
                     // Loop through the JSON data and create table rows
-                        tasks.forEach((item) => {
-                            let task_id = item.id;
-                            let status = item.Status;
-                            let tr = document.createElement("tr");
-                            
-                            // Get the values of the current object in the JSON data
-                            let vals = Object.values(item);
-                            // Disregard type
-                            vals = vals.slice(0,-1);
+                    tasks.forEach((item) => {
+                        let task_id = item.id;
+                        let tr = document.createElement("tr");
+                        
+                        // Get the values of the current object in the JSON data
+                        let vals = Object.values(item);
+                        // Disregard type
+                        // vals = vals.slice(0,-1);
 
-                            // Loop through the values and create table cells
-                            vals.forEach((elem) => {
-                                let td = document.createElement("td");
-                                td.innerText = elem; // Set the value as the text of the table cell
-                                tr.appendChild(td); // Append the table cell to the table row
-                            });
-
-                            // Now: for each table row we need 2 actions: complete and cancel
-                            
-                            // complete
-                            /* MOVED TO POPUP
-                            let button_complete = document.createElement("td");
-                            button_complete.innerText = "Complete";
-                            
-                            // By default is greyed out
-                            button_complete.style.backgroundColor="rgba(0, 0, 0, 0.2)";
-                            button_complete.style.color="white";
-                            button_complete.style.cursor="not-allowed";
-
-                            // if close to completion coordinates (50m), available
-                            let distance = mymap.distance(vehicle_marker.getLatLng(),vehicle_marker.getLatLng());
-                            */
-
-                            let button_cancel = document.createElement("td");
-                            button_cancel.innerText = "Cancel";
-
-                            button_cancel.style.backgroundColor="rgba(255, 0, 0, 0.6)";
-                            button_cancel.style.color="white";
-                            button_cancel.style.cursor="pointer";
-
-                            button_cancel.onclick=function(task_id, type) {
-                                let xhttp = new XMLHttpRequest();
-                                xhttp.open('POST', '/rescuer/cancelTask', true);
-                                xhttp.setRequestHeader('Content-Type', 'application/json');
-                                
-                                xhttp.onreadystatechange = function () {
-                                    if (xhttp.readyState === 4) {
-                                        if (xhttp.status === 401) {
-                                            // Handle incorrect request with AJAX
-                                            let response = JSON.parse(xhttp.responseText);
-                                            // errorMessageElement.innerHTML = response.error;
-                                        } else if (xhttp.status === 200) {
-                                            manageTasks();
-                                        }
-                                    }
-                                };
-
-                                let data = JSON.stringify({ id: task_id.toString(), type: type.toString() });
-                                console.log(data);
-                                xhttp.send(data);
-                            }.bind(null, task_id, item.type);
-
-                            // tr.appendChild(button_complete);
-                            tr.appendChild(button_cancel);
-
-                            table.appendChild(tr); // Append the table row to the table
+                        // Loop through the values and create table cells
+                        vals.forEach((elem) => {
+                            let td = document.createElement("td");
+                            td.innerText = elem; // Set the value as the text of the table cell
+                            tr.appendChild(td); // Append the table cell to the table row
                         });
+
+                        // Now: for each table row we need 2 actions: complete and cancel
+                        
+                        // TODO: Can also calculate using json coordinates
+                        /* MOVED TO POPUP
+                        // if close to completion coordinates (50m), available
+                        let distance = mymap.distance(vehicle_marker.getLatLng(),vehicle_marker.getLatLng());
+                        */
+
+                        let button_cancel = document.createElement("td");
+                        button_cancel.innerText = "Cancel";
+
+                        button_cancel.style.backgroundColor="rgba(255, 0, 0, 0.6)";
+                        button_cancel.style.color="white";
+                        button_cancel.style.cursor="pointer";
+
+                        button_cancel.onclick=function(task_id, type) {
+                            let xhttp = new XMLHttpRequest();
+                            xhttp.open('POST', '/rescuer/cancelTask', true);
+                            xhttp.setRequestHeader('Content-Type', 'application/json');
+                            
+                            xhttp.onreadystatechange = function () {
+                                if (xhttp.readyState === 4) {
+                                    if (xhttp.status === 401) {
+                                        // Handle incorrect request with AJAX
+                                        let response = JSON.parse(xhttp.responseText);
+                                        // errorMessageElement.innerHTML = response.error;
+                                    } else if (xhttp.status === 200) {
+                                        manageTasks();
+                                    }
+                                }
+                            };
+
+                            let data = JSON.stringify({ id: task_id.toString(), type: type.toString() });
+                            console.log(data);
+                            xhttp.send(data);
+                        }.bind(null, task_id, item.type);
+
+                        // tr.appendChild(button_complete);
+                        tr.appendChild(button_cancel);
+
+                        table.appendChild(tr); // Append the table row to the table
+                    });
 
                 } //TODO: Handle endpoint error
             };
@@ -409,8 +421,29 @@ function mapTab() {
 
 }
 
-// TODO:
-// function completeTask(${request.id}, 'requests')
+// TODO: Complete stub
+function completeTask(id, type) {
+    console.log(id, type);
+    if (!id || (type !== 'requests' && type !== 'offers')) {
+        console.error('Invalid function call');
+        return;
+    } else {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '/rescuer/completeTask', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    //TODO: Refresh vehicle cargo and map markers
+                    manageTasks();
+                } else {
+                    // TODO: alert user
+                }
+            }
+        };
+        xhr.send(JSON.stringify({ id:id, type:type }));
+    }
+}
 
 function loadMap(mymap) {
     function connectDots(marker1, marker2, layer) {
@@ -607,7 +640,7 @@ function loadMap(mymap) {
 
                             let vehicleInfo = `<b>${vehicle.username}</b><br>`
                             vehicle_cargo.forEach(function (item) {
-                                vehicleInfo += `${item.item_name} (${item.res_quantity})<br>`;
+                                vehicleInfo += `${item.Name} (${item.Quantity})<br>`;
                             });
                             vehicle_marker.bindPopup(vehicleInfo);
 
@@ -666,20 +699,13 @@ function loadMap(mymap) {
                                             if (distance <= 50) {
                                                 // TODO: marker.getPopup().getContent();
                                                 offer_marker.bindPopup(offerText + 
-                                                    `<button onclick="completeTask(${request.id}, 'requests')">Complete task</button>`
+                                                    `<button onclick="completeTask(${offer.id}, 'offers')">Complete task</button>`
                                                     );
                                             }
                                         }
             
                                         // Attach the event listener to the marker
                                         offer_marker.on('popupopen', updateOfferCompletion);
-
-                                        
-                                        let distance = mymap.distance(vehicle_marker.getLatLng(),request_marker.getLatLng());
-                                        if (distance <= 50) {
-                                            
-                                        }
-
                                     });
                                 }
                             }
@@ -705,6 +731,18 @@ function loadMap(mymap) {
 
                                         // Connect with vehicle
                                         connectDots(vehicle_marker, request_marker, activeLines);
+
+                                        function updateRequestCompletion() {
+                                            distance = mymap.distance(request_marker.getLatLng(),vehicle_marker.getLatLng());
+                                            if (distance <= 50) {
+                                                request_marker.bindPopup(requestText + 
+                                                    `<button onclick="completeTask(${request.id}, 'requests')">Complete task</button>`
+                                                    );
+                                            }
+                                        }
+            
+                                        // Attach the event listener to the marker
+                                        request_marker.on('popupopen', updateRequestCompletion);
                                     });
                                 }
                             }
@@ -724,7 +762,7 @@ function loadMap(mymap) {
                                 let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
                                 ${offer.fullname}, ${offer.telephone}<br>
                                 Offered on: ${offer.date_offered}<br>
-                                <button onclick="assumeOffer(offer.id, 'offers')">Assume offer</button>`
+                                <button onclick="assumeTask(${offer.id}, 'offers')">Assume offer</button>`
 
                                 let offer_marker = addMarker(offersFree, 'offersFree',
                                     offer.coordinate['x'], offer.coordinate['y'],

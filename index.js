@@ -625,19 +625,6 @@ app.get('/api/itemswcat', (req, res) => {
 	});
 });
 
-// VEHICLE ITEMS 
-app.get('/api/cargo', (req, res) => {
-	let username = req.session.username;
-	db.query('SELECT cargo.item_id, cargo.item_name, cargo.item_category, cargo.res_quantity FROM cargo WHERE username = ?', [username], (err, results) => {
-		if (err) {
-			console.error('Error executing query:', err);
-			res.status(500).json({ error: 'Internal Server Error' });
-			return;
-		}
-		res.json({ items: results });
-	});
- });
-
  // CARGO MANAGEMENT
 
  app.post('/api/load', (req, res) => {
@@ -647,8 +634,8 @@ app.get('/api/cargo', (req, res) => {
 
     db.query(sql, [itemId, wantedQuantity, username], (err, results) => {
         if (err) {
-            console.error('Error loading your item...:', err);
-            res.status(500).json({ error: 'Internal Server Error' });
+            console.error('Error loading your item...:', err.sqlMessage);
+            res.status(500).json({ error: err.sqlMessage });
             return;
         }
 
@@ -852,7 +839,7 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 
-	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.rescuer, c.coordinate, i.name, i.quantity
+	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.rescuer, c.coordinate, i.name
 	FROM requests r
 	JOIN account_coordinates c ON r.username = c.username
 	JOIN items i ON r.item_id = i.id
@@ -888,7 +875,7 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every free task
-	let sql = `SELECT o.id, a.fullname, a.telephone, o.date_offered, o.date_accepted, o.rescuer, c.coordinate, i.name, i.quantity
+	let sql = `SELECT o.id, a.fullname, a.telephone, o.date_offered, o.date_accepted, o.rescuer, c.coordinate, i.name
 	FROM offers o
 	JOIN account_coordinates c ON o.username = c.username
 	JOIN items i ON o.item_id = i.id
@@ -957,6 +944,8 @@ app.get('/map/vehicles/:vehicleUsername?', (req, res) => {
 	});
 });
 
+// TODO: if session.username is rescuer just send their cargo
+// without doing any other checks
 app.get('/rescuer/cargo/:vehicleUsername', (req,res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
@@ -967,8 +956,10 @@ app.get('/rescuer/cargo/:vehicleUsername', (req,res) => {
 		}
 	}
 
-	db.query(`SELECT c.item_name, c.item_category, c.res_quantity
+	db.query(`SELECT c.item_id as 'id', i.name as 'Name',
+	cat.category_name as 'Category', c.res_quantity as 'Quantity'
 	FROM cargo c JOIN items i ON c.item_id = i.id
+	JOIN categories cat ON i.category = cat.id 
 	WHERE c.username = '${vehicleUsername}'`, function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -984,17 +975,14 @@ app.post('/rescuer/assumeTask', (req, res) => {
 	id = req.body.id;
 	table = req.body.type;
 
-	console.log(id, " ", table);
-	console.log(typeof id, " ",typeof table);
-	
-
 	// TODO: for some reason plain text HERE counts as 1
-	if (id && table === ('requests' || 'offers')) {
+	if (id && (table === 'requests' || table === 'offers')) {
 		// Ensure is rescuer
 		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
 			// Has permission to assume
 			if (username_results.length > 0) {
 				db.query(`UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0`, [username, id], function (error, results) {
+					// TODO: Add completeOffer call
 					if (error) throw error;
 					console.log(`${id},${table} assumed from ${username}`)
 				});

@@ -34,7 +34,6 @@ body {
 
 
 div.canvas {
-  margin-left:15%;
   padding-top:5%;
   padding-left:5%;
   padding-right:3%;
@@ -119,45 +118,13 @@ a.header {
 }
 
 .canvas #searchInput {
-  margin-top: 20px;
   padding: 8px;
   border: 2px solid #3498db;
   border-radius: 5px;
   padding: 8px;
   width: 100%;
 }
-/*
-.fields table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  border: 1px solid #ddd;
-}
 
-.fields th, .fields td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.fields th {
-  background-color: #f2f2f2;
-}
-
-// Add vertical lines between the first four columns
-.fields td:nth-child(1),
-.fields td:nth-child(2),
-.fields td:nth-child(3),
-.fields th:nth-child(1),
-.fields th:nth-child(2),
-.fields th:nth-child(3) {
-  border-right: 1px solid #ddd;
-}
-
-.fields tr:hover {
-  background-color: #f5f5f5;
-}
-*/
 #mapContainer.hidden {
   display: none;
 }
@@ -172,7 +139,6 @@ a.header {
 
 #mapContainer > * {
   margin-left:10px;
-  margin-right:50px;
 }
 
 .canvas {
@@ -228,6 +194,7 @@ a.header {
   border:1px solid;
 } */
 
+/* Normal sidebar */
 @media only screen and (min-width: 769px) {
     .sidebar_button {
         display: none;
@@ -236,9 +203,21 @@ a.header {
     .sidebarOptions {
         display: block;
     }
-    
+
+
+
+    .canvas {
+      margin-left:15%;
+    }
+
 }
+
+/* Mobile sidebar */
 @media screen and (max-width: 768px) {
+  .canvas {
+    margin-left:0%;
+  }
+
     .sidebar_button {
         display: block;
     }
@@ -263,7 +242,7 @@ a.header {
   
   .canvas {
     /* TODO: Make everything to to the left since no sidebar now */
-    margin: 0;
+    margin-left: 0;
   }
   
   #mapContainer {
