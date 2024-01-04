@@ -34,6 +34,8 @@ body {
 
 
 div.canvas {
+  width:100%;
+  overflow:auto;
   padding-top:5%;
   padding-left:5%;
   padding-right:3%;
@@ -56,6 +58,7 @@ label.dropdown {
   padding: 0;
   height: 100%;
   width: 15%;
+  float:none;
   /* Sidebar stays the same when scrolling */
   background-color: #f1f1f1;
 }
