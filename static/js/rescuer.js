@@ -304,7 +304,6 @@ function manageTasks() {
                     }
 
                     delete tasks.forEach((item) => { delete item.rescuer; });
-                    console.log("aa");
                     console.log(tasks);
 
                     // TODO: Sort by date_accepted
@@ -598,6 +597,7 @@ function loadMap(mymap) {
                                         let response = JSON.parse(xhttp.responseText);
                                         // errorMessageElement.innerHTML = response.error;
                                     } else {
+                                        mapTab(mymap);
                                         let distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
                                         if (distance <= 100) {
                                             cargo_pick_up = load();

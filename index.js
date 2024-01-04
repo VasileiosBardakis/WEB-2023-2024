@@ -634,7 +634,7 @@ app.get('/api/itemswcat', (req, res) => {
 
     db.query(sql, [itemId, wantedQuantity, username], (err, results) => {
         if (err) {
-            console.error('Error loading your item...:', err.sqlMessage);
+            console.error('Error loading your item...:', err);
             res.status(500).json({ error: err.sqlMessage });
             return;
         }
@@ -839,7 +839,7 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 
-	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.rescuer, c.coordinate, i.name
+	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.date_completed, r.rescuer, c.coordinate, i.name
 	FROM requests r
 	JOIN account_coordinates c ON r.username = c.username
 	JOIN items i ON r.item_id = i.id
@@ -852,13 +852,13 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 				return;
 			}
 		}
-		// TODO: DISCERN completed and picked up
-		sql += ` AND r.rescuer = '${vehicleUsername}'`;
+		// DISCERN completed and picked up
+		sql += ` WHERE r.status = 1 AND r.rescuer = '${vehicleUsername}'`;
 	} else {
 		// No parameter given, so give every free task
 		sql += 	' WHERE r.status = 0';
 	}
-
+	console.log(sql);
 	db.query(sql, function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -875,14 +875,13 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every free task
-	let sql = `SELECT o.id, a.fullname, a.telephone, o.date_offered, o.date_accepted, o.rescuer, c.coordinate, i.name
+	let sql = `SELECT o.id, a.fullname, a.telephone, o.date_offered, o.date_accepted, o.date_completed, o.rescuer, c.coordinate, i.name
 	FROM offers o
 	JOIN account_coordinates c ON o.username = c.username
 	JOIN items i ON o.item_id = i.id
 	JOIN accounts a ON o.username = a.username`;
 
 	//undefined means no optional parameter
-	// TODO: !== vs !=
 	if (!(vehicleUsername === undefined)) {
 		if (vehicleUsername != sessionUsername) {
 			if (req.session.type != 0) {
@@ -890,12 +889,12 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 				return;
 			}
 		}
-		sql += ` AND o.rescuer = '${vehicleUsername}'`;
+		sql += ` WHERE o.status = 1 AND o.rescuer = '${vehicleUsername}'`;
 	} else {
 		// No parameter given, so give every free task
 		sql += 	' WHERE o.status = 0';
 	}
-
+	console.log(sql);
 	db.query(sql, function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -1003,12 +1002,13 @@ app.post('/rescuer/cancelTask', (req, res) => {
 	table = req.body.type;
 	
 
-	if (id && table === ('requests' || 'offers')) {
+	if (id && (table === 'requests' || table === 'offers')) {
 		// Ensure is rescuer
 		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
 			// Has permission to cancel
 			if (username_results.length > 0) {
-				db.query(`UPDATE ${table} SET rescuer = NULL, status=0, date_accepted=NULL WHERE id = (?) AND rescuer = (?) AND status=1`, [id, username, id], function (error, results) {
+				db.query(`UPDATE ${table} SET rescuer = NULL, status=0, date_accepted=NULL
+				WHERE id = (?) AND rescuer = (?) AND status=1`, [id, username, id], function (error, results) {
 					if (error) throw error;
 					console.log(`${id},${table} canceled from ${username}`)
 				});

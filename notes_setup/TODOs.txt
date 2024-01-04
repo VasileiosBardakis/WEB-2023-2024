@@ -11,17 +11,14 @@ na kseperastei to orio
 
 Bugs:
 - If you press "Show map" fast enough two tables appear (?)
-- Sidebar images dont get css
-- On load cargo, everything closes
 - If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
 - On mobile: elements make page unzoomable, breaks the sidebar (FIX: make sidebar take up the whole width)
 - Sidebar has no overflow so when not enough height is given (and text too large) some options vanish
-- Map doesnt refresh correctly
-- Entering wrong quantity on pickup cargo makes page crash
 - Make every "window" have same padding and margin so sidebar doesnt change size
 - Scrolling horizontally makes sidebar glitch out
 - New errors on admin map
 - Triggers for tasks dont work
+- Case sensitive login: if CAPS LOCK, username doesnt match session
 
 POPUPS VS TEXT DIVS?
 
@@ -63,6 +60,63 @@ div label {
 TODO:
 Maybe change tasks to 2 panels? offers and requests?
 
+Instead of removing map, reload
+
+Update every other element when something is clicked/updates etc.
+
+Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
+Clean up api endpoints (done on admin)
+
+UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0
+
+
+
+Server side:
+- Change column names (date offered/requested) or alias on api
+Also to sort those tasks maybe have composite api call that does the sql,
+unions the 2 tables and orders by date
+- When something changes (base relocation, new offer, new announcement)
+have sql watcher and update everyone's currently logged in homepage
+and cross validate sql entries in case they are on older data and they're not valid yet
+- let instead of var
+- Fix sql auth (where username = ?)
+- Proper GET/POST responses (error message, update error message on client screen etc)
+
+
+
+Web design:
+- Make font scale with screen size (unreadable on mobile)
+- on mobile: make table go under map so its readable
+- If media < 768px, make everything stack vertically
+
+
+
+Rescuer:
+- WORKING ASSUME TASK
+- WORKING TASK TABLE
+- offer complete, cancel, update tables, in proximity popup
+- On assume task, redraw map
+- Manage tasks: Handle header names being from different api calls
+- For mapping (status codes, item id's) gather DISTINCT item id's query val -> map
+
+
+
+Citizen:
+- on cancel, check if cancellable (might be old data) and show message "cant cancel, picked up"
+- For mapping (status codes, item id's) gather DISTINCT item id's query val -> map
+
+
+
+Caching:
+https://zeropointdevelopment.com/speed-up-your-website-using-caching-and-htaccess/
+
+
+Check if geolocation is enabled and place rescuer vehicle there. check every 10 seconds
+
+
+
+Finishing touches:
+
 Add error message fade:
 .error-message {
     color: red;
@@ -83,74 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 5000);
 });
 Set display to none when it ends
-
-When moving vehicle around, redraw lines
-FIX: Keep array of assumed tasks
-
-Update every other element when something is clicked/updates etc.
-
-Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
-Clean up api endpoints (done on admin)
-
-Check task num before assigning task:
-UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0
-UPDATE requests SET rescuer = 'res', status=1, date_accepted=NOW() WHERE id = 12 AND status=0
-
-idea/probably not good: When loading the html things, load all the xml requests too
-e.g. Load cargo and map together
-When you change something on map (like unloading) also refresh cargo
-
-Server side:
-- Change column names (date offered/requested) or alias on api
-Also to sort those tasks maybe have composite api call that does the sql,
-unions the 2 tables and orders by date
-- When something changes (base relocation, new offer, new announcement)
-have sql watcher and update everyone's currently logged in homepage
-and cross validate sql entries in case they are on older data and they're not valid yet
-- let instead of var
-- Fix sql auth (where username = ?)
-- Proper GET/POST responses (error message, update error message on client screen etc)
-- xmlhttp -> fetch
-- Remove item_name from cargo
-
-
-
-Web design:
-- Make font scale with screen size (unreadable on mobile)
-- on mobile: make table go under map so its readable
-- If media < 768px, make everything stack vertically
-- On mobile make sidebar scale with canvas size and make canvas scrollable (tables)
-
-
-
-Rescuer:
-- WORKING ASSUME TASK
-- WORKING TASK TABLE
-- offer complete, cancel, update tables, in proximity popup
-- On assume task, reload window
-- Table in rescuer tasks user_table colors and action column
-- Manage tasks: Handle header names being from different api calls
-- Custom map markers for every possible entity
-- For mapping (status codes, item id's) gather DISTINCT item id's query val -> map
-- If no tasks show message instead of table
-
-
-
-Citizen:
-- on cancel, check if cancellable (might be old data) and show message "cant cancel, picked up"
-- For mapping (status codes, item id's) gather DISTINCT item id's query val -> map
-
-
-
-Caching:
-https://zeropointdevelopment.com/speed-up-your-website-using-caching-and-htaccess/
-
-
-Check if geolocation is enabled and place rescuer vehicle there. check every 10 seconds
-
-
-
-Finishing touches:
 
 Database normalization (one-to-many etc)
 

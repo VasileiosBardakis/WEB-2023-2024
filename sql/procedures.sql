@@ -14,22 +14,20 @@ BEGIN
    SELECT name INTO tempItem_name
    FROM items WHERE id = item_tl_id; 
 
-   SELECT category INTO tempItem_category
-   FROM items WHERE id = item_tl_id;  
    
-   IF(tempItem_name IS NOT NULL OR tempItem_category IS NOT NULL) THEN
+   IF(tempItem_name IS NOT NULL) THEN
 
        IF(item_tl_quantity > tempQ) THEN
        SIGNAL SQLSTATE VALUE '45000'
        SET MESSAGE_TEXT = 'Not enough items';
 
        ELSE
-       UPDATE  items 
+       UPDATE items 
        SET quantity = quantity-item_tl_quantity 
        WHERE id = item_tl_id;
    
        INSERT INTO cargo 
-       VALUES (res_username, item_tl_id, tempItem_name, tempItem_category,item_tl_quantity)
+       VALUES (res_username, item_tl_id, item_tl_quantity)
        ON duplicate key update
        res_quantity = res_quantity+item_tl_quantity;
        END IF;
@@ -111,7 +109,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+DROP PROCEDURE IF EXISTS cancelOffer;
 DELIMITER $$
 CREATE PROCEDURE cancelOffer(IN delete_offer_id INT)
 BEGIN 
