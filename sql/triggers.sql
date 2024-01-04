@@ -29,11 +29,11 @@ BEGIN
     DECLARE task_num INT;
 
     -- If update is on rescuer column
-    IF !(NEW.rescuer <=> OLD.rescuer) THEN
+    IF NOT(NEW.rescuer <=> OLD.rescuer) THEN
         -- Check the condition
-        CALL getTaskNum(NEW.username, task_num);
+        CALL getTaskNum(NEW.rescuer, task_num);
 
-        IF !(task_num < 4) THEN
+        IF NOT(task_num < 4) THEN
             SIGNAL SQLSTATE VALUE '45000'
             SET MESSAGE_TEXT = `Can't assume offer, max number of tasks reached.`;
         END IF;
@@ -49,11 +49,11 @@ FOR EACH ROW
 BEGIN
     DECLARE task_num INT;
     -- If update is on rescuer column
-    IF !(NEW.rescuer <=> OLD.rescuer) THEN
+    IF NOT(NEW.rescuer <=> OLD.rescuer) THEN
         -- Check the condition
-        CALL getTaskNum(NEW.username, task_num);
+        CALL getTaskNum(NEW.rescuer, task_num);
 
-        IF !(task_num < 4) THEN
+        IF NOT(task_num < 4) THEN
             SIGNAL SQLSTATE VALUE '45000'
             SET MESSAGE_TEXT = `Can't assume request, max number of tasks reached.`;
         END IF;
