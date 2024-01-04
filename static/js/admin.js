@@ -1,5 +1,5 @@
 
-
+let mymap;
 var dropdownCount;  // Variable to keep track of the number of dropdowns in make announcement button
 var xhr = new XMLHttpRequest();
 
@@ -1043,10 +1043,12 @@ function mapTab() {
     document.getElementById('mapid').style.display = 'block';
     document.getElementById('mapid').innerHTML = inputFieldsHTML;
 
-
+    if (mymap) mymap.remove();
+    mymap = L.map("mapid"); 
+    loadMap(mymap);
 }
 
-function loadMap() {
+function loadMap(mymap) {
     function roundDecimal(float, decimal_places) {
         return (Math.round(float * Math.pow(10, decimal_places)) / Math.pow(10, decimal_places)).toFixed(decimal_places);
     }
@@ -1074,36 +1076,36 @@ function loadMap() {
     // TODO: Promises and await to flatten this
 
     //custom markers
-    var customBase = L.icon({
+    let customBase = L.icon({
         iconUrl: 'markers/customBase.png',
         iconSize: [32, 32], // size of the icon
         iconAnchor: [16, 16] // center of the icon
     });
-    var customCar = L.icon({
+    let customCar = L.icon({
         iconUrl: 'markers/vehicle.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
-    var icon_activeRequest = L.icon({
+    let icon_activeRequest = L.icon({
         iconUrl: 'markers/exclamation_green.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
-    var icon_freeRequest = L.icon({
+    let icon_freeRequest = L.icon({
         iconUrl: 'markers/exclamation_red.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
 
-    var icon_activeOffer = L.icon({
+    let icon_activeOffer = L.icon({
         iconUrl: 'markers/handshake_green.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
-    var icon_freeOffer = L.icon({
+    let icon_freeOffer = L.icon({
         iconUrl: 'markers/handshake_orange.png',
         iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 16] // center of the icon
+        iconAnchor: [16, 32] // center of the icon
     });
 
 
@@ -1115,10 +1117,14 @@ function loadMap() {
             let data = JSON.parse(xhr_init_base.response)
             let baseCoordinates = data.base[0].coordinate;
 
-            let mymap = L.map("mapid");
+
             let osmUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
             let osmAttrib = '© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a>';
             let osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
+            let baseMap = {
+                "OpenStreetMap": osm,
+            };
+            
             mymap.addLayer(osm);
 
             essentialInfo = L.layerGroup().addTo(mymap);
@@ -1138,7 +1144,7 @@ function loadMap() {
             };
 
             mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
-            var layerControl = L.control.layers(overlayMaps).addTo(mymap);
+            var layerControl = L.control.layers(null, overlayMaps).addTo(mymap);
 
             baseInfo = `<b>Organization base</b><br>`
             // TODO: zlayer 9999
