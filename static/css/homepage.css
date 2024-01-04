@@ -49,7 +49,11 @@ label.dropdown {
   //Dropdowns next to each other
   display:inline-block; 
 } */
-  
+
+.logo img {
+    width: 50px; /* Adjust the width as needed */
+}
+
 .sidebar {
   position: fixed;
   overflow: none;
