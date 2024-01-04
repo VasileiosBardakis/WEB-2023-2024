@@ -38,11 +38,14 @@
 
 #buttons2 button {
     display: inline-flex;
-    flex-direction: column; /* Display the table in a column */
-    flex-basis: 20%; /* Adjust the width as needed, considering some space for margin/padding */
-    background-color: #4CAF50; /* Green */
+    flex-direction: column;
+    flex-basis: 20%;
+    flex-shrink: 0;
+    background-color: #4CAF50;
     padding: 5px;
     margin: 10px;
+    min-width: 150px;
+    height: 70px; /* Set a fixed height for the buttons */
 }
 
 #buttons2 {
@@ -62,6 +65,7 @@
         padding: 5px;
         margin-left: 3%;
         border: 1px solid black; /* Add a thin black border */
+        height: 40px;
     }
 
     #buttons2 input[type="file"] {
