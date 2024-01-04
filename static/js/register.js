@@ -29,6 +29,7 @@ let customBase = L.icon({
   iconAnchor: [16, 16] // center of the icon
 });
 
+let location_marker;
 async function completeMap(mymap) {
   const organizationBase = await fetchBaseLocation();
   console.log(organizationBase);
@@ -41,7 +42,7 @@ async function completeMap(mymap) {
   base_marker.bindPopup("<b>Organization base</b>");
 
   // TODO: Popup tooltip saying "drag marker to your location"
-  let location_marker = L.marker([organizationBase['x'], organizationBase['y']], 
+  location_marker = L.marker([organizationBase['x'], organizationBase['y']], 
   { draggable: "true" });
   location_marker.addTo(mymap);
   // TODO: Popup tooltip saying "drag marker to your location"
