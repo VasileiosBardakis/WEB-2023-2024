@@ -74,6 +74,15 @@
         // Dynamically set size of canvas to prevent overlap with sidebar
         // TODO: Sidebar has static size, but might change to scale with screen size
         // If so, make font scale with sidebar also
+        /*
+        document.addEventListener("DOMContentLoaded", function () {
+          if (window.innerWidth > 300) {
+            var sidebarWidth = document.getElementById("sidebar").offsetWidth;
+            document.getElementById("canvas").style.marginLeft = sidebarWidth + "px";
+          }
+        });
+        */
+      
         function toggleSidebar() {
             var x = document.getElementById("mySidebar");
             x.classList.toggle("hidden");

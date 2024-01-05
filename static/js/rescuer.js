@@ -421,7 +421,7 @@ function mapTab() {
 }
 
 // TODO: Complete stub
-function completeTask(id, type) {
+function completeTask(id, type, item_id, item_quantity) {
     console.log(id, type);
     if (!id || (type !== 'requests' && type !== 'offers')) {
         console.error('Invalid function call');
@@ -440,7 +440,7 @@ function completeTask(id, type) {
                 }
             }
         };
-        xhr.send(JSON.stringify({ id:id, type:type }));
+        xhr.send(JSON.stringify({ id:id, type:type, item_id: item_id, quantity: item_quantity }));
     }
 }
 
@@ -698,8 +698,9 @@ function loadMap(mymap) {
                                             distance = mymap.distance(offer_marker.getLatLng(),vehicle_marker.getLatLng());
                                             if (distance <= 50) {
                                                 // TODO: marker.getPopup().getContent();
+                                                // TODO: Is missing item id
                                                 offer_marker.bindPopup(offerText + 
-                                                    `<button onclick="completeTask(${offer.id}, 'offers')">Complete task</button>`
+                                                    `<button onclick="completeTask(${offer.id}, 'offers', )">Complete task</button>`
                                                     );
                                             }
                                         }

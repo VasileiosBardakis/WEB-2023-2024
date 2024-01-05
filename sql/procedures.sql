@@ -76,16 +76,39 @@ DELIMITER $$
 CREATE PROCEDURE completeRequest(IN item_id INT,IN item_quantity INT, IN res_username VARCHAR(30), IN request_id INT)
 BEGIN
     DECLARE MESSAGE_TEXT VARCHAR(255);
+    DECLARE success INT;
+    DECLARE difference INT;
+    
+    SELECT res_quantity
+    INTO difference
+    FROM cargo
+    WHERE username = res_username AND item_id = item_id;
 
-    IF EXISTS (SELECT 1 FROM cargo) THEN
-        UPDATE items
-        INNER JOIN cargo ON items.id = cargo.item_id
-        SET items.quantity = items.quantity + cargo.res_quantity;
-
-        DELETE FROM cargo;
-    ELSE
+    IF FOUND_ROWS() = 0 THEN
         SIGNAL SQLSTATE VALUE '45000';
-        SET MESSAGE_TEXT = 'Cargo is missing';
+        SET MESSAGE_TEXT = 'Rescuer doesnt have that item.';
+    ELSE
+        -- check if enough items
+        difference = difference - item_quantity
+        IF difference < 0 THEN
+            SIGNAL SQLSTATE VALUE '45000';
+            SET MESSAGE_TEXT = 'Not enough items to complete request';
+        ELSE
+            -- hand over the items
+            UPDATE cargo
+            SET res_quantity = res_quantity - item_quantity
+            WHERE username = res_username AND item_id = item_id;
+
+            IF ROW_COUNT() > 0 THEN
+                -- mark offer as completed
+                UPDATE requests
+                SET status = 2, date_completed=NOW()
+                WHERE id = request_id AND rescuer = res_username;
+            ELSE
+                SIGNAL SQLSTATE VALUE '45000';
+                SET MESSAGE_TEXT = 'Error during offer completion';
+            END IF;
+        END IF;
     END IF;
 END $$
 DELIMITER ;
@@ -109,6 +132,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- used by citizen
 DROP PROCEDURE IF EXISTS cancelOffer;
 DELIMITER $$
 CREATE PROCEDURE cancelOffer(IN delete_offer_id INT)
