@@ -2,6 +2,7 @@
     /* Reset css */
     margin: 0;
     padding: 0;
+
   }
 
 /* Feeble attempt at restraining the user table */
@@ -23,10 +24,6 @@ body {
   display: none; /* Keep elements hidden until sidebar press */
 }
 
-.navbar-header{
-  display: none;
-}
-
 .grid-container {
   /* position:relative; */
   display:flex;
@@ -37,17 +34,15 @@ body {
   margin:0;
 }
 
-.tasks {
-  width:100%;
-  height:100%;
+.canvas {
+  width:85vw;
+  padding:4%;
+  overflow:auto;
 }
 
-div.canvas {
-  width:100%;
-  overflow:auto;
-  padding-top:5%;
-  padding-left:5%;
-  padding-right:3%;
+.canvas > * {
+  width: 100%;
+  
 }
 
 label.dropdown {
@@ -59,18 +54,30 @@ label.dropdown {
   display:inline-block; 
 } */
   
+
+/*
+
+==================================
+SIDE BAR ELEMENTS
+==================================
+
+*/
 .sidebar {
+  /* Sidebar stays fixed when scrolling canvas */
   position: fixed;
   z-index:9999;
-  overflow: none;
+  overflow-y: auto;
   list-style-type: none;
   margin: 0;
   padding: 0;
   height: 100%;
   width: 15%;
   float:none;
-  /* Sidebar stays the same when scrolling */
   background-color: #f1f1f1;
+}
+
+.sidebar > * {
+  /* white-space: nowrap; */
 }
 
 .sidebar a {
@@ -102,14 +109,28 @@ a.header {
   text-decoration: none;
 }
 
+img.sidebar-icon {
+  width: 36px;
+  top: -5px;
+  position: relative;
+  /* display:inline; */
+  margin-right: 2px;
+}
+
+/*
+
+==================================
+USER TABLE
+==================================
+
+*/
+
 .user_table {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
-  width: 100%;
-  /* max-width:100%; */
-  height: 100%;
-  /* overflow:hidden; */
   white-space: nowrap;
+  width: 100%;
+  height: 100%;
 }
 
 /* Header follows scroll */
@@ -140,6 +161,14 @@ a.header {
   width: 100%;
 }
 
+/*
+
+==================================
+MAP TAB
+==================================
+
+*/
+
 #mapContainer.hidden {
   display: none;
 }
@@ -156,10 +185,31 @@ a.header {
   margin-left:10px;
 }
 
-.canvas {
-  /* padding-left: 230px; */
+.mapTab {
+  width: 100%;
 }
-  
+
+#mapid { 
+  height: 750px;
+  width: 500px;
+  min-height: 200px;
+  min-width: 200px;
+}
+
+.tasks {
+  width:100%;
+  max-width: 100%;
+  overflow-x:auto;
+  height:100%;
+}
+
+/*
+
+==================================
+CITIZEN ANNOUNCEMENTS
+==================================
+
+*/
 .announcement-box {
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -195,13 +245,6 @@ a.header {
   padding: 0.3em;
 }
 
-#mapid { 
-  height: 750px;
-  width: 500px;
-  min-height: 200px;
-  min-width: 200px;
-}
-
 /* Normal sidebar */
 @media only screen and (min-width: 769px) {
     .sidebar_button {
@@ -222,10 +265,9 @@ a.header {
 /* Mobile sidebar */
 @media screen and (max-width: 768px) {
   .canvas {
-    /* everything to to the left since no sidebar now */
+    /* everything to the left since no sidebar now */
     margin-left:0%;
     width:100vw;
-    padding-left:1%;
   }
 
   #mapid {
@@ -262,10 +304,3 @@ a.header {
 }
 
 
-img.sidebar-icon {
-    width: 36px;
-    top: -5px;
-    position: relative;
-    /* display:inline; */
-    margin-right: 2px;
-}

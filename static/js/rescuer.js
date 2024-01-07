@@ -268,9 +268,7 @@ function assumeTask(id, type) {
 function manageTasks() {
     let table = document.getElementById('user_table');
     let errorMessageElement = document.getElementById('task-info');
-    table.innerText='';
-    errorMessageElement.innerText = '';
-
+    
     // Load offers
     let xhr_offers = new XMLHttpRequest();
     xhr_offers.open('GET', '/rescuer/offers/' + username)
@@ -280,13 +278,15 @@ function manageTasks() {
             offers = offers.map((obj) => ({
                 ...obj,
                 type: "offers",
-              }));
-
+            }));
+            
             // Load requests
             let xhr_requests = new XMLHttpRequest();
             xhr_requests.open('GET', '/rescuer/requests/' + username, true);
             xhr_requests.onreadystatechange = function() {
                 if (xhr_requests.readyState === 4 && xhr_requests.status === 200) {
+                    table.innerText='';
+                    errorMessageElement.innerText = '';
                     let requests = JSON.parse(xhr_requests.response).rescuer_requests;
                     requests = requests.map((obj) => ({
                         ...obj,

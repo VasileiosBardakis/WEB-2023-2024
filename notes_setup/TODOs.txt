@@ -10,7 +10,7 @@ na kseperastei to orio
 - To koubi complete task den einai sto table alla se popup
 
 Bugs:
-- If you press "Show map" fast enough two tables appear (?)
+- If you press "Show map" fast enough two tables appear (?) FIX: MOVING INNERTEXT = "" INSIDE THE XHR SO WHEN IT SUCCEEDS ERASE
 - If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
 - On mobile: elements make page unzoomable, breaks the sidebar (FIX: make sidebar take up the whole width)
 - Sidebar has no overflow so when not enough height is given (and text too large) some options vanish
@@ -19,6 +19,7 @@ Bugs:
 - New errors on admin map
 - Triggers for tasks dont work
 - Case sensitive login: if CAPS LOCK, username doesnt match session
+- Task table doesnt overflow but cargo table does ???
 
 POPUPS VS TEXT DIVS?
 

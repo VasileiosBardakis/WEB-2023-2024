@@ -72,7 +72,7 @@ app.post('/', disableCaching,(req, res) => {
 			if (results.length > 0) {
 				// Authenticate the user
 				req.session.loggedin = true;
-				req.session.username = username;
+				req.session.username = username.toLowerCase();
 				req.session.type = results[0].type;   // Give the account type to the session variable
 				// Direct to auth page
 				res.redirect('/auth');
@@ -839,7 +839,7 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 
-	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.date_completed, r.rescuer, c.coordinate, i.name
+	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.date_completed, r.rescuer, c.coordinate, i.name, i.id as item_id
 	FROM requests r
 	JOIN account_coordinates c ON r.username = c.username
 	JOIN items i ON r.item_id = i.id
@@ -858,7 +858,7 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 		// No parameter given, so give every free task
 		sql += 	' WHERE r.status = 0';
 	}
-	console.log(sql);
+
 	db.query(sql, function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -875,7 +875,7 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every free task
-	let sql = `SELECT o.id, a.fullname, a.telephone, o.date_offered, o.date_accepted, o.date_completed, o.rescuer, c.coordinate, i.name
+	let sql = `SELECT o.id, a.fullname, a.telephone, o.date_offered, o.date_accepted, o.date_completed, o.rescuer, c.coordinate, i.name, i.id as item_id
 	FROM offers o
 	JOIN account_coordinates c ON o.username = c.username
 	JOIN items i ON o.item_id = i.id
@@ -894,7 +894,7 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 		// No parameter given, so give every free task
 		sql += 	' WHERE o.status = 0';
 	}
-	console.log(sql);
+
 	db.query(sql, function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
