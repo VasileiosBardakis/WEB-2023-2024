@@ -36,6 +36,11 @@ function hideAll() {
     }
 }
 
+// TODO: stub
+function getMapView(map) {
+    return null;
+}
+
 // Show cargo tab and GET items in vehicle
 async function myCargo() {
         const username = await getUsername();
@@ -264,7 +269,7 @@ function assumeTask(id, type) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 //TODO: Refresh vehicle cargo and map markers
-                manageTasks();
+                mapTab();
             } else {
                 // TODO: alert user
             }
@@ -461,8 +466,8 @@ function completeTask(id, type, item_id, item_quantity) {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    //TODO: Refresh vehicle cargo and map markers
-                    manageTasks();
+                    //TODO: controlObject
+                    mapTab();
                 } else {
                     // TODO: alert user
                 }
@@ -738,7 +743,7 @@ function loadMap(mymap, controlObject) {
                                                 // TODO: marker.getPopup().getContent();
                                                 // TODO: Is missing item id
                                                 offer_marker.bindPopup(offerText + 
-                                                    `<button onclick="completeTask(${offer.id}, 'offers', ${offer.item_id})">Pick up offer</button>`
+                                                    `<button onclick="completeTask(${offer.id}, 'offers', ${offer.item_id});">Pick up offer</button>`
                                                     );
                                             }
                                         }

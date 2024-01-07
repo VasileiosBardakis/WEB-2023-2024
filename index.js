@@ -987,6 +987,7 @@ app.post('/rescuer/assumeTask', (req, res) => {
 				db.query(`UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0`, [username, id], function (error, results) {
 					if (error) {
 						console.log(error.sqlMessage);
+						// TODO: ERROR!
 						res.status(400).json({ error: error.sqlMessage });
 						res.end();
 					}
@@ -1047,13 +1048,13 @@ app.post('/rescuer/completeTask', (req, res) => {
 				switch (table) {
 					case 'requests':
 						db.query('CALL completeRequest(?,?,?,?)', [item_id, quantity, username, id], function (error, results) {
-							if (error) throw error;
+							if (error) console.log(error);
 							// TODO: log sql message
 						});
 
 					case 'offers':
 						db.query('CALL completeOffer(?,?,?,?)', [item_id, quantity, username, id], function (error, results) {
-							if (error) throw error;
+							if (error) console.log(error);
 							// TODO: log sql message
 						});
 					

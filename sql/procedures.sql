@@ -78,11 +78,11 @@ BEGIN
     DECLARE MESSAGE_TEXT VARCHAR(255);
     DECLARE success INT;
     DECLARE difference INT;
-    
+
     SELECT res_quantity
     INTO difference
     FROM cargo
-    WHERE username = res_username AND item_id = item_id;
+    WHERE username = res_username AND cargo.item_id = item_id;
 
     IF FOUND_ROWS() = 0 THEN
         SIGNAL SQLSTATE VALUE '45000';
@@ -97,10 +97,10 @@ BEGIN
             -- hand over the items
             UPDATE cargo
             SET res_quantity = res_quantity - item_quantity
-            WHERE username = res_username AND item_id = item_id;
+            WHERE username = res_username AND cargo.item_id = item_id;
 
             IF ROW_COUNT() > 0 THEN
-                -- mark offer as completed
+                -- mark request as completed
                 UPDATE requests
                 SET status = 2, date_completed=NOW()
                 WHERE id = request_id AND rescuer = res_username;
@@ -165,14 +165,25 @@ CREATE PROCEDURE getTaskNum(IN res_username VARCHAR(30), OUT total_rows INT UNSI
 BEGIN 
    DECLARE offer_num INT UNSIGNED;
    DECLARE request_num INT UNSIGNED;
+
+
    
+
    SELECT COUNT(*) INTO offer_num
-   FROM offers WHERE rescuer = res_username AND status != 2;
+   FROM offers WHERE rescuer = res_username AND status <> 2;
    -- status=2 means completed 
 
    SELECT COUNT(*) INTO request_num
-   FROM requests WHERE rescuer = res_username AND status != 2;
+   FROM requests WHERE rescuer = res_username AND status <> 2;
    
    SET total_rows = offer_num + request_num;
 END $$
 DELIMITER ;
+
+/*
+    SELECT COUNT(*)
+   FROM offers WHERE rescuer = res_username AND status <> 2;
+   
+   SELECT COUNT(*)
+    FROM requests WHERE rescuer = res_username AND status <> 2;
+*/
