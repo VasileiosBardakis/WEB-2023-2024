@@ -27,6 +27,7 @@ BEFORE UPDATE ON offers
 FOR EACH ROW
 BEGIN
     DECLARE task_num INT;
+    DECLARE MESSAGE_TEXT VARCHAR(255);
 
     -- If update is on rescuer column
     IF NOT(NEW.rescuer <=> OLD.rescuer) THEN
@@ -48,6 +49,8 @@ BEFORE UPDATE ON requests
 FOR EACH ROW
 BEGIN
     DECLARE task_num INT;
+    DECLARE MESSAGE_TEXT VARCHAR(255);
+    
     -- If update is on rescuer column
     IF NOT(NEW.rescuer <=> OLD.rescuer) THEN
         -- Check the condition

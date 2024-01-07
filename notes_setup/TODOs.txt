@@ -9,19 +9,19 @@ na kseperastei to orio
 - To kathe request/offer thelei 1 QUANTITY gia na oloklirwthei
 - To koubi complete task den einai sto table alla se popup
 
-Bugs:
-- If you press "Show map" fast enough two tables appear (?) FIX: MOVING INNERTEXT = "" INSIDE THE XHR SO WHEN IT SUCCEEDS ERASE
-- If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
-- On mobile: elements make page unzoomable, breaks the sidebar (FIX: make sidebar take up the whole width)
-- Sidebar has no overflow so when not enough height is given (and text too large) some options vanish
-- Make every "window" have same padding and margin so sidebar doesnt change size
-- Scrolling horizontally makes sidebar glitch out
-- New errors on admin map
-- Triggers for tasks dont work
-- Case sensitive login: if CAPS LOCK, username doesnt match session
-- Task table doesnt overflow but cargo table does ???
+Bugs:   
+Check if 2 people can assume same task
+To prevent assuming already assumed task, do UPDATE on status=0 ONLY
+Maybe change tasks to 2 panels? offers and requests?
 
-POPUPS VS TEXT DIVS?
+- Triggers for tasks dont work
+- On admin: Map is short and console errors on map
+- If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
+- Make every "window" have same padding and margin so sidebar doesnt change size
+
+- If you press "Show map" fast enough two tables appear (?) FIX: MOVING INNERTEXT = "" INSIDE THE XHR SO WHEN IT SUCCEEDS ERASE
+- Scrolling horizontally makes sidebar glitch out FIX: Z-INDEX 99999
+- On mobile: elements make page unzoomable, breaks the sidebar (FIX: make sidebar take up the whole width)
 
 Requests of civilian:
 PERSON requests ITEM for # PEOPLE and ITS STATUS
@@ -59,10 +59,10 @@ div label {
 
 
 TODO:
-To prevent assuming already assumed task, do UPDATE on status=0 ONLY
-Maybe change tasks to 2 panels? offers and requests?
 
-Instead of removing map, reload
+Move complete button to task table (compare with var coords)
+
+Make tables look the same across the site
 
 Update every other element when something is clicked/updates etc.
 
@@ -95,7 +95,6 @@ Web design:
 
 Rescuer:
 - WORKING ASSUME TASK
-- WORKING TASK TABLE
 - offer complete, cancel, update tables, in proximity popup
 - On assume task, redraw map
 - Manage tasks: Handle header names being from different api calls

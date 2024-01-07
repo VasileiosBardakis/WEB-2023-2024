@@ -22,6 +22,12 @@ fetch('/api/username')
     });
 
 function hideAll() {
+    // clear error messages
+    let errorNodes = document.getElementsByClassName("error-message");
+    // Iterate NodeList
+    for (var i = 0; i < errorNodes.length; i++) {
+        errorNodes[i].innerText = "";
+    }
     let nodes = document.getElementById('canvas').childNodes;
     for(let i=0; i<nodes.length; i++) {
         if (nodes[i].nodeName.toLowerCase() == 'div') {
@@ -160,14 +166,18 @@ function forEach(item) {
     return function () {
         let itemId = item.id;
 
+        let input = prompt("Enter quantity for " + item.name);
+
+        if (input === null) {
+            return;
+        }
+
         // Prompt the user for the wanted quantity
-        let wantedQuantity = parseInt(prompt("Enter quantity for " + item.name), 10); //10 for decimal
+        let wantedQuantity = parseInt(input, 10); //10 for decimal
 
         // Check if the input is a valid number
         if (!isNaN(wantedQuantity) && wantedQuantity > 0) {
             storeItem(itemId, wantedQuantity);
-
-            // TODO: REFRESH TABLE USING displayItems()
             load();
         } else {
             alert("Please enter a valid quantity.");
@@ -276,8 +286,8 @@ function manageTasks() {
         if (xhr_offers.readyState === 4 && xhr_offers.status === 200) {
             let offers = JSON.parse(xhr_offers.response).rescuer_offers;
             offers = offers.map((obj) => ({
+                type: "Offer",
                 ...obj,
-                type: "offers",
             }));
             
             // Load requests
@@ -289,8 +299,8 @@ function manageTasks() {
                     errorMessageElement.innerText = '';
                     let requests = JSON.parse(xhr_requests.response).rescuer_requests;
                     requests = requests.map((obj) => ({
+                        type: "Request",
                         ...obj,
-                        type: "requests",
                       }));
 
                     // Combine the two jsons
@@ -303,7 +313,7 @@ function manageTasks() {
                         return;
                     }
 
-                    delete tasks.forEach((item) => { delete item.rescuer; });
+                    delete tasks.forEach((item) => { delete item.rescuer; delete item.item_id});
                     console.log(tasks);
 
                     // TODO: Sort by date_accepted
@@ -311,8 +321,7 @@ function manageTasks() {
                     //https://www.tutorialspoint.com/how-to-convert-json-data-to-a-html-table-using-javascript-jquery#:~:text=Loop%20through%20the%20JSON%20data,table%20row%20to%20the%20table.
 
                     // Get the keys (column names) of the first object in the JSON data
-                    console.log(Object.keys(tasks[0]));
-                    let cols = Object.keys(tasks[0]);
+                    // let cols = Object.keys(tasks[0]);
                     // Disregard type
                     // cols = cols.slice(0,-1);
                     
@@ -321,10 +330,15 @@ function manageTasks() {
                     let tr = document.createElement("tr");
                     
                     // Loop through the column names and create header cells
+                    // "Task Type", "ID", "Full name", "Telephone", "Offered on", "Accepted on", "Completed on", "Coordinates", "Item"
+                    let cols = ["Task Type", "ID", "Full name", "Telephone", "Created on", "Accepted on", null, null, "Item"];
+                    console.log(cols);
                     cols.forEach((colname) => {
-                        let th = document.createElement("th");
-                        th.innerText = colname; // Set the column name as the text of the header cell
-                        tr.appendChild(th); // Append the header cell to the header row
+                        if (colname !== null) {
+                            let th = document.createElement("th");
+                            th.innerText = colname; // Set the column name as the text of the header cell
+                            tr.appendChild(th); // Append the header cell to the header row
+                        }
                     });
 
                     // Add action buttons column
@@ -343,15 +357,19 @@ function manageTasks() {
                         
                         // Get the values of the current object in the JSON data
                         let vals = Object.values(item);
-                        // Disregard type
-                        // vals = vals.slice(0,-1);
-
+                        
+                        
+                        
                         // Loop through the values and create table cells
-                        vals.forEach((elem) => {
+                        vals.forEach((elem, indx) => {
                             let td = document.createElement("td");
-                            td.innerText = elem; // Set the value as the text of the table cell
-                            tr.appendChild(td); // Append the table cell to the table row
+                            if (cols[indx] !== null) {
+                                td.innerText = elem; // Set the value as the text of the table cell
+                                tr.appendChild(td); // Append the table cell to the table row
+                            }
                         });
+
+
 
                         // Now: for each table row we need 2 actions: complete and cancel
                         
@@ -384,8 +402,11 @@ function manageTasks() {
                                     }
                                 }
                             };
+                            let taskType = "";
+                            if (type === "Offer") { taskType = "offers"; }
+                            else if (type === "Request") { taskType = "requests"; }
 
-                            let data = JSON.stringify({ id: task_id.toString(), type: type.toString() });
+                            let data = JSON.stringify({ id: task_id.toString(), type: taskType });
                             console.log(data);
                             xhttp.send(data);
                         }.bind(null, task_id, item.type);
@@ -408,19 +429,26 @@ function manageTasks() {
 }
 
 
-function mapTab() {
+function mapTab(controlObject) {
         hideAll();
         let mapTab = document.getElementById("mapTab");
         mapTab.classList.toggle("hidden");
 
         if (mymap) mymap.remove();
         mymap = L.map("mapid"); 
+
         loadMap(mymap);
+        /*
+        if (controlObject === undefined) loadMap(mymap);
+        else {
+            console.log(controlObject);
+            loadMap(mymap, controlObject);
+        }
+        */
         manageTasks();
 
 }
 
-// TODO: Complete stub
 function completeTask(id, type, item_id, item_quantity) {
     console.log(id, type);
     if (!id || (type !== 'requests' && type !== 'offers')) {
@@ -440,11 +468,11 @@ function completeTask(id, type, item_id, item_quantity) {
                 }
             }
         };
-        xhr.send(JSON.stringify({ id:id, type:type, item_id: item_id, quantity: item_quantity }));
+        xhr.send(JSON.stringify({ id:id, type:type, item_id: item_id, quantity: 1 }));
     }
 }
 
-function loadMap(mymap) {
+function loadMap(mymap, controlObject) {
     function connectDots(marker1, marker2, layer) {
         polyLine = [];
         polyLine.push([marker1.getLatLng().lat, marker1.getLatLng().lng]);
@@ -546,6 +574,13 @@ function loadMap(mymap) {
                 "Draw lines": activeLines
             };
 
+            if (controlObject === undefined) {
+                mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
+            }
+            else {
+                mymap.setView(coordinates, zoom);
+            }
+
             mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
             let layerControl = L.control.layers(null, overlayMaps).addTo(mymap);
 
@@ -597,7 +632,10 @@ function loadMap(mymap) {
                                         let response = JSON.parse(xhttp.responseText);
                                         // errorMessageElement.innerHTML = response.error;
                                     } else {
-                                        mapTab(mymap);
+                                        let controlObject = {};
+                                        controlObject.zoom = mymap.getZoom();
+                                        controlObject.center = mymap.getCenter();
+                                        mapTab(mymap, controlObject);
                                         let distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
                                         if (distance <= 100) {
                                             cargo_pick_up = load();
@@ -681,8 +719,8 @@ function loadMap(mymap) {
                                     vehicle_offers.forEach(function (offer) {
                                         // if (offer.rescuer !== null) { it's this vehicle's surely
                                         //TODO: Table
-                                        let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
-                                        ${offer.fullname}, ${offer.telephone}<br>
+                                        let offerText = `<b>Offers:</b> ${offer.name}<br>
+                                        Contact: ${offer.fullname}, ${offer.telephone}<br>
                                         Offered on: ${offer.date_offered}<br>
                                         Picked up from: ${offer.rescuer}<br>
                                         On: ${offer.date_accepted}<br>`
@@ -700,7 +738,7 @@ function loadMap(mymap) {
                                                 // TODO: marker.getPopup().getContent();
                                                 // TODO: Is missing item id
                                                 offer_marker.bindPopup(offerText + 
-                                                    `<button onclick="completeTask(${offer.id}, 'offers', )">Complete task</button>`
+                                                    `<button onclick="completeTask(${offer.id}, 'offers', ${offer.item_id})">Pick up offer</button>`
                                                     );
                                             }
                                         }
@@ -720,8 +758,8 @@ function loadMap(mymap) {
                                     let vehicle_requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
                                     vehicle_requests.forEach(function (request) {
-                                        let requestText = `<b>Requests:</b> ${request.name}, ${request.quantity}<br>
-                                        ${request.fullname}, ${request.telephone}<br>
+                                        let requestText = `<b>Requests:</b> ${request.name}<br>
+                                        Contact: ${request.fullname}, ${request.telephone}<br>
                                         Requested on: ${request.date_requested}<br>
                                         Picked up from: ${request.rescuer}<br>
                                         On: ${request.date_accepted}<br>`
@@ -737,7 +775,7 @@ function loadMap(mymap) {
                                             distance = mymap.distance(request_marker.getLatLng(),vehicle_marker.getLatLng());
                                             if (distance <= 50) {
                                                 request_marker.bindPopup(requestText + 
-                                                    `<button onclick="completeTask(${request.id}, 'requests')">Complete task</button>`
+                                                    `<button onclick="completeTask(${request.id}, 'requests', ${request.item_id})">Complete request</button>`
                                                     );
                                             }
                                         }
@@ -760,8 +798,8 @@ function loadMap(mymap) {
                             let offers = JSON.parse(xhr_offers.response).rescuer_offers;
 
                             offers.forEach(function (offer) {
-                                let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
-                                ${offer.fullname}, ${offer.telephone}<br>
+                                let offerText = `<b>Offers:</b> ${offer.name}<br>
+                                Contact: ${offer.fullname}, ${offer.telephone}<br>
                                 Offered on: ${offer.date_offered}<br>
                                 <button onclick="assumeTask(${offer.id}, 'offers')">Assume offer</button>`
 
@@ -780,8 +818,8 @@ function loadMap(mymap) {
                             let requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
                             requests.forEach(function (request) {
-                                let requestText = `<b>Requests:</b> ${request.name}, ${request.quantity}<br>
-                                ${request.fullname}, ${request.telephone}<br>
+                                let requestText = `<b>Requests:</b> ${request.name}<br>
+                                Contact: ${request.fullname}, ${request.telephone}<br>
                                 Requested on: ${request.date_requested}<br>
                                 <button onclick="assumeTask(${request.id}, 'requests')">Assume request</button>`
                                 

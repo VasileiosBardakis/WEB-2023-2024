@@ -49,7 +49,7 @@ BEGIN
     DECLARE success INT;
 
     INSERT INTO cargo
-    VALUES (res, item_id, item_quantity)
+    VALUES (res_username, item_id, item_quantity)
     ON DUPLICATE KEY UPDATE res_quantity = res_quantity + item_quantity;
 
     -- TODO:
@@ -89,7 +89,7 @@ BEGIN
         SET MESSAGE_TEXT = 'Rescuer doesnt have that item.';
     ELSE
         -- check if enough items
-        difference = difference - item_quantity
+        SET difference = difference - item_quantity;
         IF difference < 0 THEN
             SIGNAL SQLSTATE VALUE '45000';
             SET MESSAGE_TEXT = 'Not enough items to complete request';

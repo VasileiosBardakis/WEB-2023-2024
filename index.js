@@ -839,7 +839,9 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 
-	let sql = `SELECT r.id, a.fullname, a.telephone, r.date_requested, r.date_accepted, r.date_completed, r.rescuer, c.coordinate, i.name, i.id as item_id
+	let sql = `SELECT r.id, a.fullname, a.telephone, 
+	r.date_requested, r.date_accepted, r.date_completed, 
+	r.rescuer, c.coordinate, i.name, i.id as item_id
 	FROM requests r
 	JOIN account_coordinates c ON r.username = c.username
 	JOIN items i ON r.item_id = i.id
@@ -875,7 +877,9 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every free task
-	let sql = `SELECT o.id, a.fullname, a.telephone, o.date_offered, o.date_accepted, o.date_completed, o.rescuer, c.coordinate, i.name, i.id as item_id
+	let sql = `SELECT o.id, a.fullname, a.telephone, 
+	o.date_offered, o.date_accepted, o.date_completed, 
+	o.rescuer, c.coordinate, i.name, i.id as item_id
 	FROM offers o
 	JOIN account_coordinates c ON o.username = c.username
 	JOIN items i ON o.item_id = i.id
@@ -981,8 +985,11 @@ app.post('/rescuer/assumeTask', (req, res) => {
 			// Has permission to assume
 			if (username_results.length > 0) {
 				db.query(`UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0`, [username, id], function (error, results) {
-					// TODO: Add completeOffer call
-					if (error) throw error;
+					if (error) {
+						console.log(error.sqlMessage);
+						res.status(400).json({ error: error.sqlMessage });
+						res.end();
+					}
 					console.log(`${id},${table} assumed from ${username}`)
 				});
 				res.end();
@@ -1000,7 +1007,6 @@ app.post('/rescuer/cancelTask', (req, res) => {
 	let username = req.session.username;
 	id = req.body.id;
 	table = req.body.type;
-	
 
 	if (id && (table === 'requests' || table === 'offers')) {
 		// Ensure is rescuer
@@ -1028,6 +1034,7 @@ app.post('/rescuer/completeTask', (req, res) => {
 	table = req.body.type;
 	item_id = req.body.item_id;
 	quantity = req.body.item_quantity;
+	quantity = 1; // TODO: paradoxh
 
 	
 
