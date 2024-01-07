@@ -174,7 +174,7 @@ td {
     height: 100%; /* Make the button fill the cell vertically */
     margin: 0; /* Remove default margin for better alignment */
 }
-}
+
 
     .tableBtn:hover {
         background-color: #cc0000; /* Darker red on hover */

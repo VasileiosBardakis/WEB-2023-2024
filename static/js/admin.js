@@ -10,6 +10,16 @@ xhr.onreadystatechange = function () {
     }
 };
 
+let username;
+fetch('/api/username')
+    .then(response => response.text())
+    .then(data => {
+    username = data; // Log the text received from the server
+    document.getElementById('username_placeholder').innerText = username;
+    })
+    .catch(error => {
+    console.error('Error:', error);
+    });
 
 
 /* Function for clearing fields from other buttons */
@@ -1222,7 +1232,8 @@ function loadMap(mymap) {
                                 */
                                 let vehicleText = `<b>${vehicle.username}</b><br>`
                                 vehicle_cargo.forEach(function (item) {
-                                    vehicleText += `${item.item_name} (${item.res_quantity})<br>`;
+                                    console.log(item);
+                                    vehicleText += `${item.Name} (${item.Quantity})<br>`;
                                 });
                                 vehicleText += '<b>Status:</b>';
                                 vehicle_marker.bindPopup(vehicleText);
@@ -1263,8 +1274,8 @@ function loadMap(mymap) {
                                         let vehicle_requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
                                         vehicle_requests.forEach(function (request) {
-                                            let requestText = `<b>Requests:</b> ${request.name}, ${request.quantity}<br>
-                                            ${request.fullname}, ${request.telephone}<br>
+                                            let requestText = `<b>Requests:</b> ${request.name}<br>
+                                            Contact: ${request.fullname}, ${request.telephone}<br>
                                             Requested on: ${request.date_requested}<br>
                                             Picked up from: ${request.rescuer}<br>
                                             On: ${request.date_accepted}<br>`

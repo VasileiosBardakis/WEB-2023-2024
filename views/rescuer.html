@@ -29,15 +29,15 @@
             <div class="sidebar_button">
                 <a href="javascript:void(0);" style="text-decoration: none;font-size:30px;" class="icon" onclick="toggleSidebar()">&#9776;</a>
             </div>
-
-
             <div class="sidebarOptions" id="mySidebar">
-                <a onclick="myCargo(); toggleSidebar();"><img class="sidebar-icon" title="cargo" src="img/sidebar/cargo.png" alt="truck icon" />My Cargo</a>
+                <a onclick="myCargo(); toggleSidebar();">
+                    <img class="sidebar-icon" title="cargo" src="img/sidebar/cargo.png" alt="truck icon" />My Cargo</a>
                 <a onclick="mapTab(); toggleSidebar();"><img class="sidebar-icon" title="map" src="img/sidebar/map.png" alt="map icon" />Show Map</a>
                 <form id="logoutForm" action="/logout?_method=DELETE" method="post">
-                    <a onclick="logoutForm.submit()"><img class="sidebar-icon" title="logout" src="img/sidebar/logout.png" alt="logout icon" />Logout</a>
+                    <a onclick="logoutForm.submit()">
+                        <img class="sidebar-icon" title="logout" src="img/sidebar/logout.png" alt="logout icon" />Logout</a>
                 </form>
-                </div>
+            </div>
         </div>
 
         <div class="canvas" id="canvas">
@@ -59,7 +59,7 @@
                 <div id="tasks" style="text-align:left;">
                     <h3 id="task_header">Your tasks [<span id="task_counter"></span>/4]</h3>
                     <p id="task-info"></p>
-                    <table class="user_table" id="user_table">
+                    <table class="user_table" id="user_tasks">
                 </div>
             </div>
         </div>

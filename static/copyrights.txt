@@ -21,4 +21,5 @@ SIDEBAR ICONS
 <a href="https://www.flaticon.com/free-icons/management" title="management icons">Management icons created by Freepik - Flaticon</a>
 <a href="https://www.flaticon.com/free-icons/megaphone" title="megaphone icons">Megaphone icons created by Freepik - Flaticon</a>
 <a href="https://www.flaticon.com/free-icons/rescuer" title="rescuer icons">Rescuer icons created by Freepik - Flaticon</a>
-
+<a href="https://www.flaticon.com/free-icons/volunteer" title="volunteer icons">Volunteer icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/request" title="request icons">Request icons created by Freepik - Flaticon</a>

@@ -266,7 +266,7 @@ function assumeTask(id, type) {
 
 // code taken from citizen.js
 function manageTasks() {
-    let table = document.getElementById('user_table');
+    let table = document.getElementById('user_tasks');
     let errorMessageElement = document.getElementById('task-info');
     
     // Load offers

@@ -1,3 +1,8 @@
+:root {
+  --company_orange: rgba(243,101,39,255);
+
+}
+
 * {
     /* Reset css */
     margin: 0;
@@ -80,10 +85,6 @@ SIDE BAR ELEMENTS
   background-color: #f1f1f1;
 }
 
-.sidebar > * {
-  /* white-space: nowrap; */
-}
-
 .sidebar a {
   cursor: pointer;
   user-select: none;
@@ -94,7 +95,7 @@ SIDE BAR ELEMENTS
 }
  
 .sidebar a.active {
-  background-color: rgb(218, 92, 9);
+  background-color: var(--company_orange);
   color: white;
 }
 
@@ -108,7 +109,7 @@ SIDE BAR ELEMENTS
 }
 
 a.header {
-  background-color: rgb(218, 92, 9);
+  background-color: var(--company_orange);
   display: block;
   text-decoration: none;
 }
@@ -153,7 +154,7 @@ USER TABLE
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
-  background-color: rgb(218, 92, 9);
+  background-color: var(--company_orange);
   color: white;
 }
 
@@ -200,7 +201,7 @@ MAP TAB
   min-width: 200px;
 }
 
-.tasks {
+#tasks {
   width:100%;
   max-width: 100%;
   overflow-x:auto;

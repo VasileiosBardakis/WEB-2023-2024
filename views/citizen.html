@@ -21,7 +21,7 @@
     <div id="grid-container">
         <div class="sidebar">
 
-            <a class="header" onclick="showAnnouncementsPanel()" style="color:white;">
+            <a class="header" onclick="showAnnouncementsPanel(); toggleSidebar();" style="color:white;">
                 <div class="logo">
                     <img src="/img/favicon.png" alt="SAVIORS Rescue Coordination logo">
                 </div>
@@ -31,10 +31,13 @@
                 <a href="javascript:void(0);" style="font-size:30px;" class="icon" onclick="toggleSidebar()">&#9776;</a>
             </div>
             <div class="sidebarOptions" id="mySidebar">
-                <a onclick="showRequestPanel(); toggleSidebar();">Make a request</a>
-                <a href="#about" onclick="toggleSidebar()">About</a>
+                <a onclick="showAnnouncementsPanel(); toggleSidebar();">
+                    <img class="sidebar-icon" title="cargo" src="img/sidebar/offer.png" alt="offer icon" />Offer items</a>
+                <a onclick="showRequestPanel(); toggleSidebar();">
+                    <img class="sidebar-icon" title="cargo" src="img/sidebar/request.png" alt="request icon" />Make a request</a>
                 <form id="logoutForm" action="/logout?_method=DELETE" method="post">
-                    <a onclick="logoutForm.submit()">Logout</a>
+                    
+                    <a onclick="logoutForm.submit()"><img class="sidebar-icon" title="logout" src="img/sidebar/logout.png" alt="logout icon" />Logout</a>
                 </form>
             </div>
         </div>
