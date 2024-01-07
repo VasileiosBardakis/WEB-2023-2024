@@ -390,7 +390,7 @@ function itemsInCat(selected) {
 
             /*Button that hides the ItemsInCategory and shows the categories again*/
             var backButton = document.createElement('button');
-            backButton.textContent = 'Go back to the categories';
+            backButton.textContent = 'Go back';
             backButton.classList.add('goBackButton');
             backButton.onclick = function () {
                 // Show inputFieldsDiv and hide inputFieldsDiv2

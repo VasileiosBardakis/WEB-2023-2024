@@ -9,7 +9,7 @@
 
 #storageCategories {
     width: 13%;
-    height: 70%;
+    height: 50%;
     display: none;
     position: fixed;
     margin-top: 0%;
@@ -47,14 +47,19 @@
     min-width: 150px;
     height: 70px; /* Set a fixed height for the buttons */
 }
+    #buttons2 button:hover {
+        background-color: #808080; /* Darker background color on hover */
+    }
+
+
 
 #buttons2 {
     display: flex;
     flex-direction: row; /* Display the buttons in a row */
     flex-wrap: wrap; /* Allow wrapping to the next row */
-    width: 40%; /* Adjust the width as needed */
+    width: 500px; /* Adjust the width as needed */
     margin-top: 10px;
-    margin-left: 18%; /* Set the distance from the left */
+    margin-left: 300px; /* Set the distance from the left */
     padding-bottom: 50px;
 }
 
@@ -72,21 +77,21 @@
         display: inline-flex;
         flex-direction: row; /* Display the buttons in a row */
         padding: 5px;
-        width: 55%;
+        width: 100%;
         margin-left: 10px;
     }
 
 #jsonFileInput {
-    width: 55%;
+    width: 505px;
     margin-top: 5px;
 }
 
 #inputFieldsDiv {
-    display: flex;
+    display: fixed;
     align-items: center;
     flex-direction: column; /* Display checkboxes in a column */
     width: 35%; /* Adjust the width as needed */
-    margin-left: 18%; /* Set the distance from the left */
+    margin-left: 300px /* Set the distance from the left */
 }
 
 #inputFieldsDiv2 {
@@ -94,7 +99,7 @@
     align-items: center;
     flex-direction: column; /* Display checkboxes in a column */
     width: 45%; /* Adjust the width as needed */
-    margin-left: 22%; /* Set the distance from the left */
+    margin-left: 300px /* Set the distance from the left */
 }
 
 #inputFieldsDiv3 {
@@ -102,10 +107,11 @@
     align-items: center;
     flex-direction: column; /* Display checkboxes in a column */
     width: 45%; /* Adjust the width as needed */
-    margin-left: 18%; /* Set the distance from the left */
+    margin-left: 300px; /* Set the distance from the left */
 }
 
 .goBackButton {
+    display: flex;
     background-color: #3498db; /* Set the background color */
     color: white; /* Set the text color */
     padding: 10px 15px; /* Adjust padding for better appearance */
@@ -219,10 +225,16 @@ td {
     #inputFieldsDiv3 {
         position: absolute;
         left: 50%;
-        transform: translate(-50%,0);
+        transform: translate(-70%,0);
         width: 80%;
-        margin-left: 0%;
+        margin-left: 15%;
     }
+
+
+    input {
+        width: 80%; /* You can adjust the width of the input fields as needed */
+    }
+
 
     #buttons2 {
         width: 100%;
@@ -252,6 +264,31 @@ td {
 
 }
 
+@media only screen and (max-width: 360px) {
 
+
+
+
+    #inputFieldsDiv3 table {
+        width: 5%; /* You can adjust the percentage according to your preference */
+        border-collapse: collapse;
+    }
+
+    #inputFieldsDiv3 td {
+        padding: 3px; /* You can adjust the padding as needed */
+        border: 1px solid #ddd;
+    }
+
+    .th {
+        font-weight: bold;
+        background-color: #f2f2f2;
+        width: 20%;
+    }
+
+    
+
+
+
+}
   
 
