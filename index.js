@@ -1026,20 +1026,34 @@ app.post('/rescuer/completeTask', (req, res) => {
 	let username = req.session.username;
 	id = req.body.id;
 	table = req.body.type;
+	item_id = req.body.item_id;
+	quantity = req.body.item_quantity;
+
 	
 
-	if (id && table === ('requests' || 'offers')) {
+	if (id && (table === 'requests' || table === 'offers')) {
 		// Ensure is rescuer
 		// TODO: join with task and ensure is right person
 		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
 			// Has permission to complete
 			if (username_results.length > 0) {
-				// Call complete procedure
-				
-				db.query(`UPDATE ${table} SET rescuer = NULL, status=0, date_accepted=NULL WHERE id = (?) AND rescuer = (?) AND status=1`, [id, username, id], function (error, results) {
-					if (error) throw error;
-					console.log(`${id},${table} canceled from ${username}`)
-				});
+				switch (table) {
+					case 'requests':
+						db.query('CALL completeRequest(?,?,?,?)', [item_id, quantity, username, id], function (error, results) {
+							if (error) throw error;
+							// TODO: log sql message
+						});
+
+					case 'offers':
+						db.query('CALL completeOffer(?,?,?,?)', [item_id, quantity, username, id], function (error, results) {
+							if (error) throw error;
+							// TODO: log sql message
+						});
+					
+					default:
+						return;
+				}
+
 				res.end();
 			}
 		});

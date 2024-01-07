@@ -58,6 +58,7 @@ div label {
 
 
 TODO:
+To prevent assuming already assumed task, do UPDATE on status=0 ONLY
 Maybe change tasks to 2 panels? offers and requests?
 
 Instead of removing map, reload
@@ -86,9 +87,9 @@ and cross validate sql entries in case they are on older data and they're not va
 
 Web design:
 - Make font scale with screen size (unreadable on mobile)
-- on mobile: make table go under map so its readable
 - If media < 768px, make everything stack vertically
-
+- Make body have no scroll but only the inside elements (so canvas) */
+- Make user_table have scroll inside */
 
 
 Rescuer:
