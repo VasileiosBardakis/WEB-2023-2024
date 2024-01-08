@@ -1,4 +1,3 @@
-
 let mymap;
 var dropdownCount;  // Variable to keep track of the number of dropdowns in make announcement button
 var xhr = new XMLHttpRequest();

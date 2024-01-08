@@ -493,18 +493,11 @@ function loadMap(mymap, controlObject) {
     }
     
     function addMarker(map_layer, layer_name, x, y, isDraggable, icon, popupText) {
-        let = randOffset = Math.floor(Math.random() * 10) + 1;
-        randOffset = randOffset * 1/Math.pow(10,5);
-        
-        stackableLayers = ['requestsAssumed', 'requestsFree', 'offersAssumed', 'offersFree'];
-        if (!(stackableLayers.includes(layer_name))) {
-            randOffset = 0; 
-        }
-
-        let marker = L.marker([x+randOffset, y+4*randOffset], {
+        let marker = L.marker([x, y], {
             icon: icon,
             draggable: isDraggable,
         }).addTo(map_layer);
+
 
         if (popupText)
             marker.bindPopup(popupText);
@@ -566,13 +559,34 @@ function loadMap(mymap, controlObject) {
             };
 
             mymap.addLayer(osm);
-
+            
             essentialInfo = L.layerGroup().addTo(mymap);
-            requestsAssumed = L.layerGroup().addTo(mymap);
-            requestsFree = L.layerGroup().addTo(mymap);
-            offersAssumed = L.layerGroup().addTo(mymap);
-            offersFree = L.layerGroup().addTo(mymap);
             activeLines = L.layerGroup().addTo(mymap);
+
+            requestsAssumed = L.markerClusterGroup()
+            mymap.addLayer(requestsAssumed);
+            requestsAssumed.on('clusterclick', function (event) {
+                event.layer.zoomToBounds();
+            });
+
+            requestsFree = L.markerClusterGroup().addTo(mymap);
+            mymap.addLayer(requestsFree);
+            requestsFree.on('clusterclick', function (event) {
+                event.layer.zoomToBounds();
+            });
+
+            offersAssumed = L.markerClusterGroup().addTo(mymap);
+            mymap.addLayer(offersAssumed);
+            offersAssumed.on('clusterclick', function (event) {
+                event.layer.zoomToBounds();
+            });
+            
+            offersFree = L.markerClusterGroup().addTo(mymap);
+            mymap.addLayer(offersFree);
+            offersFree.on('clusterclick', function (event) {
+                event.layer.zoomToBounds();
+            });
+
 
             let overlayMaps = {
                 "Base & Vehicle": essentialInfo, 
