@@ -753,17 +753,19 @@ app.post('/citizen/deleteOffer', (req, res) => {
 	// TODO: for some reason plain text HERE counts as 1
 	if (username && offer_id.length === 1) {
 		// Ensure offer is from correct person
-		db.query('SELECT username FROM offers WHERE id = (?)', [offer_id], function (error, username_results) {
-			console.log(username_results);
+		db.query('SELECT username FROM offers WHERE id = (?) AND status = 0', [offer_id], function (error, offer_results) {
+			console.log(offer_results);
 
 			// TODO: Do check username[0] with req.session.username
 			// Has permission to delete their own offer
-			if (username_results.length > 0) {
-				db.query('DELETE FROM offers WHERE id = (?)', [offer_id], function (error, results) {
+			if (offer_results.length > 0) {
+				db.query('DELETE FROM offers WHERE id = (?) AND status = 0', [offer_id], function (error, results) {
 					if (error) throw error;
 
 				});
 				res.end();
+			} else {
+				// TODO: Handle "can't cancel"
 			}
 		});
 	} else {
@@ -776,7 +778,6 @@ app.post('/citizen/deleteOffer', (req, res) => {
 
 // Modular requests
 app.get('/map/base', (req, res) => {
-	//TODO: Doesnt need c.st_x???
 	db.query('SELECT * FROM base_coordinates WHERE id=0', function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -978,7 +979,6 @@ app.post('/rescuer/assumeTask', (req, res) => {
 	id = req.body.id;
 	table = req.body.type;
 
-	// TODO: for some reason plain text HERE counts as 1
 	if (id && (table === 'requests' || table === 'offers')) {
 		// Ensure is rescuer
 		db.query('SELECT username FROM accounts WHERE username = (?) AND type=2', [username], function (error, username_results) {
@@ -1002,7 +1002,6 @@ app.post('/rescuer/assumeTask', (req, res) => {
 	}
 });
 
-// TODO: on offer arent offered items "stolen"? or just returned to base
 app.post('/rescuer/cancelTask', (req, res) => {
 	console.log(req.body);
 	let username = req.session.username;
@@ -1035,7 +1034,7 @@ app.post('/rescuer/completeTask', (req, res) => {
 	table = req.body.type;
 	item_id = req.body.item_id;
 	quantity = req.body.item_quantity;
-	quantity = 1; // TODO: paradoxh
+	quantity = 1;
 
 	
 

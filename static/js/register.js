@@ -41,11 +41,9 @@ async function completeMap(mymap) {
   base_marker.addTo(mymap);
   base_marker.bindPopup("<b>Organization base</b>");
 
-  // TODO: Popup tooltip saying "drag marker to your location"
   location_marker = L.marker([organizationBase['x'], organizationBase['y']], 
   { draggable: "true" });
   location_marker.addTo(mymap);
-  // TODO: Popup tooltip saying "drag marker to your location"
   location_marker.bindPopup('Drag to your location');
   location_marker.openPopup();
   location_marker.on("click", markerClick);

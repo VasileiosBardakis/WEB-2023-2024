@@ -21,8 +21,6 @@ VALUES
 ('npc', '2023-01-06 11:30:00', NULL, 0, NULL, 22),
 ('npc', '2023-01-07 15:00:00', '2023-01-08 09:30:00', 2, 'res', 19);
 
-DELETE FROM offers;
-
 
 DELETE FROM account_coordinates;
 INSERT INTO account_coordinates (username, coordinate)

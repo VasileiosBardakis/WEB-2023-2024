@@ -42,7 +42,8 @@ body {
 .canvas {
   width:85vw;
   padding:4%;
-  overflow:auto;
+  overflow-y:auto;
+  /* TODO: Overflow x */
 }
 
 .canvas > * {
@@ -250,7 +251,15 @@ CITIZEN ANNOUNCEMENTS
   padding: 0.3em;
 }
 
-/* Normal sidebar */
+/*
+
+==================================
+MEDIA QUERIES
+==================================
+
+*/
+
+/* Desktop */
 @media only screen and (min-width: 769px) {
     .sidebar_button {
         display: none;
@@ -261,13 +270,12 @@ CITIZEN ANNOUNCEMENTS
     }
 
     .canvas {
-      margin-left:15%;
-      width:85%;
+      margin-left:15vw;
     }
 
 }
 
-/* Mobile sidebar */
+/* Mobile */
 @media screen and (max-width: 768px) {
   .canvas {
     /* everything to the left since no sidebar now */

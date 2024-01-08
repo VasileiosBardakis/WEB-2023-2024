@@ -506,7 +506,6 @@ function loadMap(mymap, controlObject) {
         return marker;
     }
 
-    // TODO: Map already initialized bug fix when clicking twice
     // TODO: Promises and await to flatten this
 
     let cargo_pick_up = document.getElementById('cargo_pick_up');
@@ -723,7 +722,6 @@ function loadMap(mymap, controlObject) {
 
                                     vehicle_offers.forEach(function (offer) {
                                         // if (offer.rescuer !== null) { it's this vehicle's surely
-                                        //TODO: Table
                                         let offerText = `<b>Offers:</b> ${offer.name}<br>
                                         Contact: ${offer.fullname}, ${offer.telephone}<br>
                                         Offered on: ${offer.date_offered}<br>
@@ -740,8 +738,6 @@ function loadMap(mymap, controlObject) {
                                         function updateOfferCompletion() {
                                             distance = mymap.distance(offer_marker.getLatLng(),vehicle_marker.getLatLng());
                                             if (distance <= 50) {
-                                                // TODO: marker.getPopup().getContent();
-                                                // TODO: Is missing item id
                                                 offer_marker.bindPopup(offerText + 
                                                     `<button onclick="completeTask(${offer.id}, 'offers', ${offer.item_id});">Pick up offer</button>`
                                                     );
@@ -795,7 +791,7 @@ function loadMap(mymap, controlObject) {
                     }
                     xhr_cargo.send(); 
                         
-                    // TODO: Offers and requests which arent assumed
+                    // Offers and requests which arent assumed
                     let xhr_offers = new XMLHttpRequest();
                     xhr_offers.open('GET', '/rescuer/offers/', true);
                     xhr_offers.onreadystatechange = function() {

@@ -169,8 +169,6 @@ BEGIN
    DECLARE request_num INT UNSIGNED;
 
 
-   
-
    SELECT COUNT(*) INTO offer_num
    FROM offers WHERE rescuer = res_username AND status <> 2;
    -- status=2 means completed 
