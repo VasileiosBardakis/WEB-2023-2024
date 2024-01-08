@@ -31,6 +31,8 @@ function clearFields() {
     document.getElementById('storageCategories').innerHTML = '';
     document.getElementById('buttons').innerHTML = '';
     document.getElementById('buttons2').innerHTML = '';
+    document.getElementById('buttons3').innerHTML = '';
+    document.getElementById('mkAnService').innerHTML = '';
     document.getElementById('inputFieldsDiv2').innerHTML = '';
     document.getElementById('inputFieldsDiv2').style.display = 'flex';
     document.getElementById('inputFieldsDiv3').innerHTML = '';
@@ -42,7 +44,7 @@ function clearFields() {
 
 /* Function for add a rescuer button */
 function addRescuer() {
-    document.getElementById('inputFieldsDiv').style.display = 'flex';
+    document.getElementById('mkAnService').style.display = 'flex';
     clearFields();
 
     var inputFieldsHTML = `
@@ -66,7 +68,7 @@ function addRescuer() {
     <button type="button" onclick="register()" class="btn btn-primary btn-block mb-4">Submit</button>
     `;
     //insert the HTML content into the designated div
-    document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
+    document.getElementById('mkAnService').innerHTML = inputFieldsHTML;
 
 
 }
@@ -233,8 +235,8 @@ function mkAn() {
     `;
 
     //insert the HTML content into the designated div
-    document.getElementById('inputFieldsDiv').innerHTML = inputFieldsHTML;
-    document.getElementById('inputFieldsDiv').innerHTML += '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
+    document.getElementById('mkAnService').innerHTML = inputFieldsHTML;
+    document.getElementById('mkAnService').innerHTML += '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
     moreItems();
 
 
@@ -266,7 +268,7 @@ function moreItems() {
     xhr.send();
 
     // Append the new dropdown to the form
-    document.getElementById('inputFieldsDiv').appendChild(newDropdown);
+    document.getElementById('mkAnService').appendChild(newDropdown);
 }
 
 
@@ -1364,7 +1366,7 @@ async function shStats() {
         } else {
 
             /* using html's date picker for the dates */
-            const inputFieldsDiv = document.getElementById('buttons2');
+            const inputFieldsDiv = document.getElementById('buttons3');
             inputFieldsDiv.innerHTML = `
                     <div><label for="startDate">Start Date:</label>
                     <input type="date" id="startDate"></div>
@@ -1407,7 +1409,7 @@ async function shStats() {
                 if (total > 0) {
 
                     /*------html code for the graph------*/
-                    const containerDiv = document.getElementById('inputFieldsDiv2');
+                    const containerDiv = document.getElementById('mkAnService');
                     const canvas = document.createElement('canvas');
                     canvas.id = 'myChart';
                     containerDiv.innerHTML = '';

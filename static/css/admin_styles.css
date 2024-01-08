@@ -6,17 +6,17 @@
 }
 
 
-
 #storageCategories {
     width: 13%;
-    height: 50%;
-    display: none;
+    height: 60%;
+    display: block;
     position: fixed;
-    margin-top: 0%;
-    margin-left: 16%; /* Set the distance from the left */
-    z-index: 999; /* Set a high z-index to ensure it's on top of other elements */
-    border: 1px solid #ccc; /* Add a border to the container */
-    padding: 10px; /* Add some padding to the container */
+    margin-left: 16%;
+    
+    bottom: 10%; /* Set the minimum distance from the bottom */
+    z-index: 999;
+    border: 1px solid #ccc;
+    padding: 10px;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -59,7 +59,7 @@
     flex-wrap: wrap; /* Allow wrapping to the next row */
     width: 500px; /* Adjust the width as needed */
     margin-top: 10px;
-    margin-left: 300px; /* Set the distance from the left */
+    margin-left:43%; /* Set the distance from the left */
     padding-bottom: 50px;
 }
 
@@ -81,17 +81,30 @@
         margin-left: 10px;
     }
 
+
+
 #jsonFileInput {
     width: 505px;
     margin-top: 5px;
 }
+
+#buttons3 {
+    display: flex;
+    flex-direction: row; /* Display the buttons in a row */
+    flex-wrap: wrap; /* Allow wrapping to the next row */
+    width: 35%; /* Adjust the width as needed */
+    margin-top: 10px;
+    margin-left: 35%; /* Set the distance from the left */
+    padding-bottom: 50px;
+}
+
 
 #inputFieldsDiv {
     display: fixed;
     align-items: center;
     flex-direction: column; /* Display checkboxes in a column */
     width: 35%; /* Adjust the width as needed */
-    margin-left: 300px /* Set the distance from the left */
+    margin-left: 35% /* Set the distance from the left */
 }
 
 #inputFieldsDiv2 {
@@ -99,7 +112,7 @@
     align-items: center;
     flex-direction: column; /* Display checkboxes in a column */
     width: 45%; /* Adjust the width as needed */
-    margin-left: 300px /* Set the distance from the left */
+    margin-left: 35% /* Set the distance from the left */
 }
 
 #inputFieldsDiv3 {
@@ -107,7 +120,15 @@
     align-items: center;
     flex-direction: column; /* Display checkboxes in a column */
     width: 45%; /* Adjust the width as needed */
-    margin-left: 300px; /* Set the distance from the left */
+    margin-left: 35%; /* Set the distance from the left */
+}
+
+#mkAnService {
+    display: fixed;
+    align-items: center;
+    flex-direction: column; /* Display checkboxes in a column */
+    width: 35%; /* Adjust the width as needed */
+    margin-left: 35% /* Set the distance from the left */
 }
 
 .goBackButton {
@@ -205,6 +226,15 @@ td {
 
 
 @media only screen and (max-width: 768px) {
+
+    #storageCategories {
+        display:block;
+        position: fixed;
+    }
+        #storageCategories input[type="checkbox"] {
+            transform: scale(1); /* Adjust the scale factor as needed */
+
+        }
 
     #inputFieldsDiv {
         position: absolute;
