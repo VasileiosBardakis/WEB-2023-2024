@@ -271,8 +271,10 @@ function assumeTask(id, type) {
                 //TODO: Refresh vehicle cargo and map markers
                 mapTab();
             } else {
-                // TODO: alert user
+                // TODO: alert user'
+                document.getElementById("map-task-info").innerText = JSON.parse(xhr.responseText).error;
             }
+            return;
         }
     };
     xhr.send(JSON.stringify({ id:id, type:type }));    
@@ -469,8 +471,10 @@ function completeTask(id, type, item_id, item_quantity) {
                     //TODO: controlObject
                     mapTab();
                 } else {
-                    // TODO: alert user
+                    console.log(JSON.parse(xhr.responseText));
+                    document.getElementById("map-task-info").innerText = JSON.parse(xhr.responseText).error;
                 }
+                return;
             }
         };
         xhr.send(JSON.stringify({ id:id, type:type, item_id: item_id, quantity: 1 }));

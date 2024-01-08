@@ -78,7 +78,6 @@ app.post('/', disableCaching,(req, res) => {
 				res.redirect('/auth');
 			} else {
 				res.status(401).json({ error: 'Incorrect Username and/or Password, please try again!' });
-				res.end();
 			}
 		});
 	} else {
@@ -149,7 +148,6 @@ app.post('/announce', (req, res) => {
 		res.end();
 	} else {
 		res.status(401).json({ error: 'Please insert a title, announcement text and item(s).' });
-		res.end();
 	}
 });
 
@@ -243,10 +241,8 @@ app.post('/citizen/sendRequest', (req, res) => {
 			}
 				console.log('Request added');
 		});
-		res.end();
 	} else {
 		res.status(401).json({ error: 'Please select an item and write amount of people.' });
-		res.end();
 	}
 });
 
@@ -462,7 +458,6 @@ app.post('/categories/add', (req, res) => {
 			});
 
 		}
-		res.end();
 	});
 });
 /*Method for adding items to the database */
@@ -569,7 +564,6 @@ app.post('/announce', (req, res) => {
 		res.end();
 	} else {
 		res.status(401).json({ error: 'Please insert a title, announcement text and item(s).' });
-		res.end();
 	}
 });
 /*Returns all items in database*/
@@ -696,18 +690,28 @@ app.get('/api/offers', (req, res) => {
 	let username = req.session.username;
 	let query;
 
+	// TODO: instead of username do sql query and check type
+	/*
+	// TODO:
+	DATE_FORMAT(o.date_offered, '%d-%m-%Y %H:%i:%s') as 'Offered on', 
+	DATE_FORMAT(o.date_completed, '%d-%m-%Y %H:%i:%s') as 'Delivered on'
+	make this work with shstats()
+	*/
 	if (username!='admin') {
 		query = `SELECT
       o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
-      o.date_offered as 'Offered on', o.date_completed as 'Delivered on'
+      o.date_offered as 'Offered on', 
+	  o.date_completed as 'Delivered on'
       FROM offers o
       INNER JOIN offer_status_code osc on o.status = osc.status
       INNER JOIN items i on o.item_id = i.id 
-      WHERE username = ? ORDER BY o.date_offered DESC`;
+      WHERE username = ? 
+	  ORDER BY o.date_offered DESC`;
 	} else {
 		query = `SELECT
       o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
-      o.date_offered as 'Offered on', o.date_completed as 'Delivered on'
+      o.date_offered as 'Offered on', 
+	  o.date_completed as 'Delivered on'
       FROM offers o
       INNER JOIN offer_status_code osc on o.status = osc.status
       INNER JOIN items i on o.item_id = i.id 
@@ -738,7 +742,6 @@ app.post('/citizen/sendOffer', (req, res) => {
 		res.end();
 	} else {
 		res.status(401).json({ error: 'Please insert a valid username and item.' });
-		res.end();		
 	}
 
 	
@@ -770,7 +773,6 @@ app.post('/citizen/deleteOffer', (req, res) => {
 		});
 	} else {
 		res.status(401).json({ error: 'Please insert a valid username and item.' });
-		res.end();		
 	}
 
 	
@@ -815,7 +817,6 @@ app.post('/map/relocateBase', (req, res) => {
 		});
 	} else {
 		res.status(401).json({ error: 'Please insert a valid username and coordinates.' });
-		res.end();		
 	}
 });
 
@@ -832,7 +833,6 @@ app.post('/map/relocateVehicle', (req, res) => {
 				res.end();
 	} else {
 		res.status(401).json({ error: 'Please insert a valid username and coordinates.' });
-		res.end();		
 	}
 });
 
@@ -841,7 +841,9 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 	const sessionUsername = req.session.username;
 
 	let sql = `SELECT r.id, a.fullname, a.telephone, 
-	r.date_requested, r.date_accepted, r.date_completed, 
+	DATE_FORMAT(r.date_requested, '%d-%m-%Y %H:%i:%s') as date_requested, 
+	DATE_FORMAT(r.date_accepted, '%d-%m-%Y %H:%i:%s') as date_accepted, 
+	DATE_FORMAT(r.date_completed, '%d-%m-%Y %H:%i:%s') as date_completed, 
 	r.rescuer, c.coordinate, i.name, i.id as item_id
 	FROM requests r
 	JOIN account_coordinates c ON r.username = c.username
@@ -879,7 +881,9 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every free task
 	let sql = `SELECT o.id, a.fullname, a.telephone, 
-	o.date_offered, o.date_accepted, o.date_completed, 
+	DATE_FORMAT(o.date_offered, '%d-%m-%Y %H:%i:%s') as date_offered, 
+	DATE_FORMAT(o.date_accepted, '%d-%m-%Y %H:%i:%s') as date_accepted, 
+	DATE_FORMAT(o.date_completed, '%d-%m-%Y %H:%i:%s') as date_completed,  
 	o.rescuer, c.coordinate, i.name, i.id as item_id
 	FROM offers o
 	JOIN account_coordinates c ON o.username = c.username
@@ -986,19 +990,19 @@ app.post('/rescuer/assumeTask', (req, res) => {
 			if (username_results.length > 0) {
 				db.query(`UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0`, [username, id], function (error, results) {
 					if (error) {
-						console.log(error.sqlMessage);
-						// TODO: ERROR!
-						res.status(400).json({ error: error.sqlMessage });
-						res.end();
+						res.status(403).json({ error: error.sqlMessage });
+						return;
 					}
 					console.log(`${id},${table} assumed from ${username}`)
+					res.end();
 				});
-				res.end();
+			} else {
+				// No permission to assume
+				res.status(401).json({ error: 'Permission denied.' });
 			}
 		});
 	} else {
 		res.status(401).json({ error: 'Invalid parameters.' });
-		res.end();		
 	}
 });
 
@@ -1023,7 +1027,6 @@ app.post('/rescuer/cancelTask', (req, res) => {
 		});
 	} else {
 		res.status(401).json({ error: 'Invalid parameters.' });
-		res.end();		
 	}
 });
 
@@ -1047,24 +1050,32 @@ app.post('/rescuer/completeTask', (req, res) => {
 				switch (table) {
 					case 'requests':
 						db.query('CALL completeRequest(?,?,?,?)', [item_id, quantity, username, id], function (error, results) {
-							if (error) console.log(error);
-							// TODO: json error to front end
+							if (error) {
+								// User-made signal
+								console.log(error);
+								res.status(403).json({ error: error.sqlMessage });
+								return;
+							}
 						});
+						break;
 
 					case 'offers':
 						db.query('CALL completeOffer(?,?,?,?)', [item_id, quantity, username, id], function (error, results) {
-							if (error) console.log(error);
+							if (error) {
+								// User-made signal
+								console.log(error);
+								res.status(403).json({ error: error.sqlMessage });
+								return;
+							}
 						});
+						break;
 					
 					default:
 						return;
 				}
-
-				res.end();
 			}
 		});
 	} else {
 		res.status(401).json({ error: 'Invalid parameters.' });
-		res.end();		
 	}
 });

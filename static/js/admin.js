@@ -1234,7 +1234,7 @@ function loadMap(mymap) {
                                 let vehicleText = `<b>${vehicle.username}</b><br>`
                                 vehicle_cargo.forEach(function (item) {
                                     console.log(item);
-                                    vehicleText += `${item.Name} (${item.Quantity})<br>`;
+                                    vehicleText += `${item.Name}<br>`;
                                 });
                                 vehicleText += '<b>Status:</b>';
                                 vehicle_marker.bindPopup(vehicleText);
@@ -1249,8 +1249,8 @@ function loadMap(mymap) {
                                         vehicle_offers.forEach(function (offer) {
                                             // if (offer.rescuer !== null) { it's this vehicle's surely
                                             //TODO: Table
-                                            let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
-                                            ${offer.fullname}, ${offer.telephone}<br>
+                                            let offerText = `<b>Offers:</b> ${offer.name}<br>
+                                            Contact: ${offer.fullname}, ${offer.telephone}<br>
                                             Offered on: ${offer.date_offered}<br>
                                             Picked up from: ${offer.rescuer}<br>
                                             On: ${offer.date_accepted}<br>`
@@ -1302,8 +1302,8 @@ function loadMap(mymap) {
                             let offers = JSON.parse(xhr_offers.response).rescuer_offers;
 
                             offers.forEach(function (offer) {
-                                let offerText = `<b>Offers:</b> ${offer.name}, ${offer.quantity}<br>
-                                ${offer.fullname}, ${offer.telephone}<br>
+                                let offerText = `<b>Offers:</b> ${offer.name}<br>
+                                Contact: ${offer.fullname}, ${offer.telephone}<br>
                                 Offered on: ${offer.date_offered}<br>`
 
                                 let offer_marker = addMarker(offersFree,
@@ -1322,8 +1322,8 @@ function loadMap(mymap) {
                             let requests = JSON.parse(xhr_requests.response).rescuer_requests;
 
                             requests.forEach(function (request) {
-                                let requestText = `<b>Requests:</b> ${request.name}, ${request.quantity}<br>
-                                ${request.fullname}, ${request.telephone}<br>
+                                let requestText = `<b>Requests:</b> ${request.name}<br>
+                                Contact: ${request.fullname}, ${request.telephone}<br>
                                 Requested on: ${request.date_requested}<br>`
 
                                 let request_marker = addMarker(requestsFree,

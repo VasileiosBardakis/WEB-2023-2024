@@ -15,7 +15,7 @@ VALUES
 
 INSERT INTO offers (username, date_offered, date_completed, status, rescuer, item_id)
 VALUES
-('npc', '2023-01-01 12:00:00', NULL, 0, 'res', 16),
+('npc', '2023-01-01 12:00:00', NULL, 1, 'res', 16),
 ('npc', '2023-01-02 14:30:00', NULL, 1, 'res', 18),
 ('npc', '2023-01-04 08:15:00', '2023-01-05 10:30:00', 2, 'res', 22),
 ('npc', '2023-01-06 11:30:00', NULL, 0, NULL, 22),
