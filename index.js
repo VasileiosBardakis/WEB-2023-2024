@@ -1049,13 +1049,12 @@ app.post('/rescuer/completeTask', (req, res) => {
 					case 'requests':
 						db.query('CALL completeRequest(?,?,?,?)', [item_id, quantity, username, id], function (error, results) {
 							if (error) console.log(error);
-							// TODO: log sql message
+							// TODO: json error to front end
 						});
 
 					case 'offers':
 						db.query('CALL completeOffer(?,?,?,?)', [item_id, quantity, username, id], function (error, results) {
 							if (error) console.log(error);
-							// TODO: log sql message
 						});
 					
 					default:

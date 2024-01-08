@@ -18,7 +18,7 @@ BEGIN
    IF(tempItem_name IS NOT NULL) THEN
 
        IF(item_tl_quantity > tempQ) THEN
-       SIGNAL SQLSTATE VALUE '45000'
+       SIGNAL SQLSTATE '45000'
        SET MESSAGE_TEXT = 'Not enough items';
 
        ELSE
@@ -33,7 +33,7 @@ BEGIN
        END IF;
    
    ELSE 
-   SIGNAL SQLSTATE VALUE '45000'
+   SIGNAL SQLSTATE '45000'
    SET MESSAGE_TEXT = 'Item is out of stock';
    END IF;
 END $$
@@ -62,7 +62,7 @@ BEGIN
         SET date_completed = NOW(), status = 2
         WHERE id = offer_id;
     ELSE
-        SIGNAL SQLSTATE VALUE '45000';
+        SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Error during offer completion';
     END IF;
 
@@ -83,15 +83,16 @@ BEGIN
     INTO difference
     FROM cargo
     WHERE username = res_username AND cargo.item_id = item_id;
-
+    
     IF FOUND_ROWS() = 0 THEN
-        SIGNAL SQLSTATE VALUE '45000';
+        SELECT FOUND_ROWS();
+        SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Rescuer doesnt have that item.';
     ELSE
         -- check if enough items
         SET difference = difference - item_quantity;
         IF difference < 0 THEN
-            SIGNAL SQLSTATE VALUE '45000';
+            SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Not enough items to complete request';
         ELSE
             -- hand over the items
@@ -105,8 +106,8 @@ BEGIN
                 SET status = 2, date_completed=NOW()
                 WHERE id = request_id AND rescuer = res_username;
             ELSE
-                SIGNAL SQLSTATE VALUE '45000';
-                SET MESSAGE_TEXT = 'Error during offer completion';
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Error during request completion';
             END IF;
         END IF;
     END IF;
@@ -124,9 +125,10 @@ BEGIN
         INNER JOIN cargo ON items.id = cargo.item_id
         SET items.quantity = items.quantity + cargo.res_quantity;
 
+        -- unloads all, clear 0 values
         DELETE FROM cargo;
     ELSE
-        SIGNAL SQLSTATE VALUE '45000';
+        SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Cargo is missing';
     END IF;
 END $$

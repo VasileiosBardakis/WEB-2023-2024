@@ -9,7 +9,8 @@ na kseperastei to orio
 - To kathe request/offer thelei 1 QUANTITY gia na oloklirwthei
 - To koubi complete task den einai sto table alla se popup
 
-Bugs:   
+Bugs:
+Complete request doesnt reduce item in cargo by 1 but calling procedure directly does
 Check if 2 people can assume same task
 To prevent assuming already assumed task, do UPDATE on status=0 ONLY
 Maybe change tasks to 2 panels? offers and requests?
@@ -59,6 +60,7 @@ div label {
 
 
 TODO:
+Dont reload whole map or keep some (layers etc)
 
 Move complete button to task table (compare with var coords)
 
