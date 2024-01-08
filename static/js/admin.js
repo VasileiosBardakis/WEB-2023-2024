@@ -1047,7 +1047,7 @@ function mapTab() {
 
     //Html code for input fields
     clearFields();
-    loadMap();
+
     document.getElementById('buttons').innerHTML = ' <h1 style="text-align: center; font-size: 2em; margin-bottom: 10px;">Map View</h1>'
     var inputFieldsHTML = ``;
     //insert the HTML content into the designated div
