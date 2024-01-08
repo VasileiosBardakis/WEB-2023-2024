@@ -14,6 +14,12 @@ fetch('/api/username')
 
 // Functions
 function hideAll() {
+    // clear error messages
+    let errorNodes = document.getElementsByClassName("error-message");
+    // Iterate NodeList
+    for (var i = 0; i < errorNodes.length; i++) {
+        errorNodes[i].innerText = "";
+    }
     let nodes = document.getElementById('canvas').childNodes;
     for(let i=0; i<nodes.length; i++) {
         if (nodes[i].nodeName.toLowerCase() == 'div') {
@@ -39,7 +45,7 @@ function showRequestPanel() {
 function sendRequest() {
     let item_id = document.getElementById('items').value;
     let num_people = document.getElementById('num_people').value;
-    let errorMessageElement = document.getElementById('error-message');
+    let errorMessageElement = document.getElementById('request-error');
     errorMessageElement.innerText = '';
 
     if (String(item_id) === '-1' || '') {
@@ -148,7 +154,6 @@ function loadRequestsTable() {
 
             let requests = data.requests;
 
-            // TODO: If empty, show no request button
             if (requests.length === 0) {
                 errorMessageElement.innerHTML = 'You have not done any requests.';
                 return;
@@ -350,7 +355,6 @@ function loadOffersTable() {
 
             let offers = data.offers;
 
-            // TODO: If empty, show no request button
             if (offers.length === 0) {
                 errorMessageElement.innerHTML = 'You have not done any offers.';
                 return;

@@ -2,8 +2,8 @@ CREATE TABLE accounts (
     username VARCHAR(30) PRIMARY KEY,
     password VARCHAR(30) NOT NULL,
     type TINYINT NOT NULL,
-    fullname VARCHAR(60),
-    telephone VARCHAR(12)
+    fullname VARCHAR(60) NOT NULL,
+    telephone VARCHAR(12) NOT NULL
 )ENGINE=InnoDB;
 
 INSERT INTO accounts VALUES
@@ -36,17 +36,25 @@ CREATE TABLE base_coordinates (
 )ENGINE=InnoDB;
 INSERT INTO base_coordinates VALUES (0, POINT(38.361427, 21.712058));
 
+CREATE TABLE categories (
+    id INT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL
+)ENGINE=InnoDB;
+
 -- all possible items in the database
 CREATE TABLE items (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255),
-    category VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
+    category INT NOT NULL,
     quantity INT DEFAULT 1, -- current quantity in the central base !! SET TO 1 FOR TESTING !!
+    
+    FOREIGN KEY (category) REFERENCES categories(id),
+
     CONSTRAINT ch_quantity CHECK (quantity > -1)
 )ENGINE=InnoDB;
 
 /* FOR TESTING */
-UPDATE  items 
+UPDATE items 
     SET quantity = 10 WHERE id>10; 
 
 CREATE TABLE details (
@@ -59,12 +67,9 @@ CREATE TABLE details (
     -- TODO: Composite
 )ENGINE=InnoDB;
 
-CREATE TABLE categories (
-    id INT PRIMARY KEY,
-    category_name VARCHAR(255)
-)ENGINE=InnoDB;
 
 -- admin announcements for 
+-- TODO: NOT NULL?
 CREATE TABLE announce (
     id INT PRIMARY KEY auto_increment,
     title VARCHAR(255),
@@ -99,7 +104,7 @@ INSERT INTO request_status_code VALUES
 CREATE TABLE cargo (
   username VARCHAR(30) NOT NULL,
   item_id int NOT NULL,
-  res_quantity int,
+  res_quantity int NOT NULL,
   
   CONSTRAINT ch_res_quantity CHECK (res_quantity > -1),
 
@@ -111,15 +116,14 @@ CREATE TABLE cargo (
 CREATE TABLE offers (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL,
-    -- announcement INT,
+    item_id INT NOT NULL, /* 1 item per offer */
+    status INT UNSIGNED NOT NULL default 0,
+    rescuer VARCHAR(30),
     date_offered DATETIME default now(),
     date_accepted DATETIME,
     date_completed DATETIME,
-    status INT UNSIGNED NOT NULL default 0,
-    rescuer VARCHAR(30),
-    item_id INT NOT NULL, /* 1 item per offer */
+
     -- 0 for not picked up, 1 for picked up, 2 for completed
-    -- TODO: if 1, cant delete 
 
     FOREIGN KEY (username) REFERENCES accounts(username),
     FOREIGN KEY (item_id) REFERENCES items(id)

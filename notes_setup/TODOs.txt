@@ -1,4 +1,5 @@
 Paradoxes:
+- Ta offer kai ta request exoun value 1. Oles oi sunallages ginontai gia 1 item
 - Offer gia 1 item, kai de kanei reference to announcement.
 - Trigger gia assume task isxuei mono an ginei update se hdh uparxon
 offer/request. An kapoios admin kanei insert task apeutheias mporei
@@ -10,6 +11,7 @@ na kseperastei to orio
 - To koubi complete task den einai sto table alla se popup
 
 Bugs:
+Cannot send headers: assume offer, cancel tasks
 Complete request doesnt reduce item in cargo by 1 but calling procedure directly does
 Check if 2 people can assume same task
 To prevent assuming already assumed task, do UPDATE on status=0 ONLY
@@ -20,12 +22,16 @@ Maybe change tasks to 2 panels? offers and requests?
 - If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
 - Make every "window" have same padding and margin so sidebar doesnt change size
 
-- If you press "Show map" fast enough two tables appear (?) FIX: MOVING INNERTEXT = "" INSIDE THE XHR SO WHEN IT SUCCEEDS ERASE
-- Scrolling horizontally makes sidebar glitch out FIX: Z-INDEX 99999
-- On mobile: elements make page unzoomable, breaks the sidebar (FIX: make sidebar take up the whole width)
 
-Requests of civilian:
-PERSON requests ITEM for # PEOPLE and ITS STATUS
+
+Fixes:
+- If you press "Show map" fast enough two tables appear
+FIX: MOVING INNERTEXT = "" INSIDE THE XHR SO WHEN IT SUCCEEDS ERASE
+- Scrolling horizontally makes sidebar glitch out 
+FIX: Z-INDEX 99999
+- On mobile: elements make page unzoomable, breaks the sidebar 
+FIX: make sidebar take up the whole width
+
 
 Use css display instead of innerhtml rewrites (computationally expensive)
 https://stackoverflow.com/questions/11144274/javascript-changing-innerhtml-vs-display
@@ -60,13 +66,13 @@ div label {
 
 
 TODO:
+Change database and handle NOT NULLs
+
 Dont reload whole map or keep some (layers etc)
 
 Move complete button to task table (compare with var coords)
 
 Make tables look the same across the site
-
-Update every other element when something is clicked/updates etc.
 
 Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
 Clean up api endpoints (done on admin)
@@ -91,17 +97,10 @@ and cross validate sql entries in case they are on older data and they're not va
 Web design:
 - Make font scale with screen size (unreadable on mobile)
 - If media < 768px, make everything stack vertically
-- Make body have no scroll but only the inside elements (so canvas) */
-- Make user_table have scroll inside */
 
 
 Rescuer:
 - WORKING ASSUME TASK
-- offer complete, cancel, update tables, in proximity popup
-- On assume task, redraw map
-- Manage tasks: Handle header names being from different api calls
-- For mapping (status codes, item id's) gather DISTINCT item id's query val -> map
-
 
 
 Citizen:
@@ -114,7 +113,7 @@ Caching:
 https://zeropointdevelopment.com/speed-up-your-website-using-caching-and-htaccess/
 
 
-Check if geolocation is enabled and place rescuer vehicle there. check every 10 seconds
+geolocation rescuer
 
 
 
@@ -156,7 +155,3 @@ Reorganize each route to different js folders (like app/, storage/ etc. so index
 
 To register sto test.html thewritika tha prepe na xei animation alla den doulevei
 https://mdbootstrap.com/docs/standard/extended/login/
-
-
--plat
-prettier error handling when request bigger than existing quantity

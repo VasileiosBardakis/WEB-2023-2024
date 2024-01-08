@@ -1082,7 +1082,6 @@ function loadMap(mymap) {
 
         return marker;
     }
-    // TODO: Map already initialized bug fix when clicking twice
     // TODO: Promises and await to flatten this
 
     //custom markers
@@ -1293,7 +1292,7 @@ function loadMap(mymap) {
                         xhr_cargo.send();
                     });
 
-                    // TODO: Offers and requests which arent assumed
+                    // Offers and requests which arent assumed
                     let xhr_offers = new XMLHttpRequest();
                     xhr_offers.open('GET', '/rescuer/offers/', true);
                     xhr_offers.onreadystatechange = function () {
