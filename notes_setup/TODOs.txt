@@ -12,20 +12,17 @@ na kseperastei to orio
 - Idio timezone pantou
 
 Bugs:
+- Map errors and reloads
 
-Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
+- Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
 Clean up api endpoints (done on admin)
 + where res.end(), change it to send error codes
 + return;
-Add return; in js code after handling xhr
+- Add return; in js code after handling xhr
 
-Complete request doesnt reduce item in cargo by 1 but calling procedure directly does
+- Check if 2 people can assume same task
+FIX: To prevent assuming already assumed task, do UPDATE on status=0 ONLY
 
-Check if 2 people can assume same task
-To prevent assuming already assumed task, do UPDATE on status=0 ONLY
-Maybe change tasks to 2 panels? offers and requests?
-
-- Triggers for tasks dont work
 - On admin: Map is short and console errors on map
 - If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
 - Make every "window" have same padding and margin so sidebar doesnt change size
@@ -74,6 +71,8 @@ div label {
 
 
 TODO:
+Maybe change tasks to 2 panels? offers and requests?
+
 Change database and handle NOT NULLs
 
 Dont reload whole map or keep some (layers etc)

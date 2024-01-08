@@ -17,7 +17,7 @@ function hideAll() {
     // clear error messages
     let errorNodes = document.getElementsByClassName("error-message");
     // Iterate NodeList
-    for (var i = 0; i < errorNodes.length; i++) {
+    for (let i = 0; i < errorNodes.length; i++) {
         errorNodes[i].innerText = "";
     }
     let nodes = document.getElementById('canvas').childNodes;

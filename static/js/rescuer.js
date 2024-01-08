@@ -25,7 +25,7 @@ function hideAll() {
     // clear error messages
     let errorNodes = document.getElementsByClassName("error-message");
     // Iterate NodeList
-    for (var i = 0; i < errorNodes.length; i++) {
+    for (let i = 0; i < errorNodes.length; i++) {
         errorNodes[i].innerText = "";
     }
     let nodes = document.getElementById('canvas').childNodes;
@@ -38,7 +38,15 @@ function hideAll() {
 
 // TODO: stub
 function getMapView(map) {
-    return null;
+    if (!map) return undefined;
+    let controlObject = {};
+    let coords = map.getCenter();
+    controlObject.lat = coords.lat;
+    controlObject.lng = coords.lng;
+    controlObject.zoom = map.getZoom();
+    console.log(controlObject);
+
+    return controlObject;
 }
 
 // Show cargo tab and GET items in vehicle
@@ -52,7 +60,7 @@ async function myCargo() {
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 let jsonResponse = JSON.parse(xhr.responseText);
-                console.log(jsonResponse);
+                // console.log(jsonResponse);
                 displayCargo(jsonResponse);
             }
         };
@@ -269,7 +277,7 @@ function assumeTask(id, type) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 //TODO: Refresh vehicle cargo and map markers
-                mapTab();
+                mapTab(getMapView(mymap));
             } else {
                 // TODO: alert user'
                 document.getElementById("map-task-info").innerText = JSON.parse(xhr.responseText).error;
@@ -339,7 +347,7 @@ function manageTasks() {
                     // Loop through the column names and create header cells
                     // "Task Type", "ID", "Full name", "Telephone", "Offered on", "Accepted on", "Completed on", "Coordinates", "Item"
                     let cols = ["Task Type", "ID", "Full name", "Telephone", "Created on", "Accepted on", null, null, "Item"];
-                    console.log(cols);
+                    // console.log(cols);
                     cols.forEach((colname) => {
                         if (colname !== null) {
                             let th = document.createElement("th");
@@ -405,7 +413,7 @@ function manageTasks() {
                                         let response = JSON.parse(xhttp.responseText);
                                         // errorMessageElement.innerHTML = response.error;
                                     } else if (xhttp.status === 200) {
-                                        manageTasks();
+                                        mapTab(getMapView(mymap));
                                     }
                                 }
                             };
@@ -430,9 +438,6 @@ function manageTasks() {
         }
     };
     xhr_offers.send();
-
-    
-    
 }
 
 
@@ -444,14 +449,12 @@ function mapTab(controlObject) {
         if (mymap) mymap.remove();
         mymap = L.map("mapid"); 
 
-        loadMap(mymap);
-        /*
-        if (controlObject === undefined) loadMap(mymap);
-        else {
-            console.log(controlObject);
+        if (controlObject === undefined) {
+            loadMap(mymap);
+        } else {
             loadMap(mymap, controlObject);
         }
-        */
+
         manageTasks();
 
 }
@@ -468,8 +471,7 @@ function completeTask(id, type, item_id, item_quantity) {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    //TODO: controlObject
-                    mapTab();
+                    mapTab(getMapView(mymap));
                 } else {
                     console.log(JSON.parse(xhr.responseText));
                     document.getElementById("map-task-info").innerText = JSON.parse(xhr.responseText).error;
@@ -556,7 +558,6 @@ function loadMap(mymap, controlObject) {
             let data = JSON.parse(xhr_init_base.response)
             let baseCoordinates = data.base[0].coordinate;
 
-
             let osmUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
             let osmAttrib ='© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a>';
             let osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
@@ -579,17 +580,16 @@ function loadMap(mymap, controlObject) {
                 "Free requests": requestsFree, 
                 "Current offers": offersAssumed, 
                 "Free offers": offersFree, 
-                "Draw lines": activeLines
+                "Task lines": activeLines
             };
 
             if (controlObject === undefined) {
                 mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
-            }
-            else {
-                mymap.setView(coordinates, zoom);
+            } else {
+                console.log(controlObject);
+                mymap.setView([controlObject.lat, controlObject.lng], controlObject.zoom);
             }
 
-            mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
             let layerControl = L.control.layers(null, overlayMaps).addTo(mymap);
 
             // let base_marker = L.marker([baseCoordinates['x'], baseCoordinates['y']], {icon: customBase}, {
@@ -640,10 +640,7 @@ function loadMap(mymap, controlObject) {
                                         let response = JSON.parse(xhttp.responseText);
                                         // errorMessageElement.innerHTML = response.error;
                                     } else {
-                                        let controlObject = {};
-                                        controlObject.zoom = mymap.getZoom();
-                                        controlObject.center = mymap.getCenter();
-                                        mapTab(mymap, controlObject);
+                                        mapTab(getMapView(mymap));
                                         let distance = mymap.distance(base_marker.getLatLng(),vehicle_marker.getLatLng());
                                         if (distance <= 100) {
                                             cargo_pick_up = load();
