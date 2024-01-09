@@ -1137,12 +1137,31 @@ function loadMap(mymap) {
             
             mymap.addLayer(osm);
 
+            // credits: https://github.com/ghybs/Leaflet.FeatureGroup.SubGroup
+            // https://ghybs.github.io/Leaflet.FeatureGroup.SubGroup/examples/subGroup-markercluster-controlLayers-realworld.388.html
+            
+            // Clusters children nodes from every subgroup
+            let clusterGroup = L.markerClusterGroup();
+            
+            // Don't want to cluster these
             essentialInfo = L.layerGroup().addTo(mymap);
-            requestsAssumed = L.layerGroup().addTo(mymap);
-            requestsFree = L.layerGroup().addTo(mymap);
-            offersAssumed = L.layerGroup().addTo(mymap);
-            offersFree = L.layerGroup().addTo(mymap);
             activeLines = L.layerGroup().addTo(mymap);
+
+            // Create subgroups
+            let layerGroups = [
+            requestsAssumed = L.featureGroup.subGroup(clusterGroup),
+            requestsFree = L.featureGroup.subGroup(clusterGroup),
+            offersAssumed = L.featureGroup.subGroup(clusterGroup),
+            offersFree = L.featureGroup.subGroup(clusterGroup)
+            ];
+            
+            // Add cluster to map
+            clusterGroup.addTo(mymap);
+
+            // Adding to map now adds all child layers into the parent group
+            layerGroups.forEach((layer) => {
+                layer.addTo(mymap);
+            });
 
             var overlayMaps = {
                 "Base & Vehicle": essentialInfo,
@@ -1150,7 +1169,7 @@ function loadMap(mymap) {
                 "Free requests": requestsFree,
                 "Current offers": offersAssumed,
                 "Free offers": offersFree,
-                "Draw lines": activeLines
+                "Task lines": activeLines
             };
 
             mymap.setView([baseCoordinates['x'], baseCoordinates['y']], 16);
@@ -1283,6 +1302,9 @@ function loadMap(mymap) {
                                             let request_marker = addMarker(requestsAssumed,
                                                 request.coordinate['x'], request.coordinate['y'],
                                                 false, icon_activeRequest, requestText);
+
+                                            // Connect with vehicle
+                                            connectDots(vehicle_marker, request_marker, activeLines);
 
                                         });
                                     }
