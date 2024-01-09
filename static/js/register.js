@@ -24,7 +24,7 @@ async function fetchBaseLocation() {
 }
 
 let customBase = L.icon({
-  iconUrl: 'img/customBase.png',
+  iconUrl: 'markers/customBase.png',
   iconSize: [32, 32], // size of the icon
   iconAnchor: [16, 16] // center of the icon
 });

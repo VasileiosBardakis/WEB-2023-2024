@@ -12,16 +12,12 @@ na kseperastei to orio
 - Idio timezone pantou
 
 Bugs:
-- Map errors and reloads
-
 - Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
 Clean up api endpoints (done on admin)
 + where res.end(), change it to send error codes
 + return;
 - Add return; in js code after handling xhr
 
-- Check if 2 people can assume same task
-FIX: To prevent assuming already assumed task, do UPDATE on status=0 ONLY
 
 - On admin: Map is short and console errors on map
 - If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
@@ -36,6 +32,8 @@ FIX: MOVING INNERTEXT = "" INSIDE THE XHR SO WHEN IT SUCCEEDS ERASE
 FIX: Z-INDEX 99999
 - On mobile: elements make page unzoomable, breaks the sidebar 
 FIX: make sidebar take up the whole width
+- Check if 2 people can assume same task
+FIX: To prevent assuming already assumed task, do UPDATE on status=0 ONLY
 
 
 Use css display instead of innerhtml rewrites (computationally expensive)
@@ -71,19 +69,18 @@ div label {
 
 
 TODO:
-Maybe change tasks to 2 panels? offers and requests?
+"center marker" for rescuer vehicle
 
 Change database and handle NOT NULLs
-
-Dont reload whole map or keep some (layers etc)
 
 Move complete button to task table (compare with var coords)
 
 Make tables look the same across the site
 
 
-UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0
 
+
+UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0
 
 
 Server side:
@@ -120,6 +117,9 @@ geolocation rescuer
 
 
 Finishing touches:
+Dont reload whole map or keep some (layers etc)
+
+Maybe change tasks to 2 panels? offers and requests?
 
 Add error message fade:
 .error-message {

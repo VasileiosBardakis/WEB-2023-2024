@@ -993,8 +993,15 @@ app.post('/rescuer/assumeTask', (req, res) => {
 						res.status(403).json({ error: error.sqlMessage });
 						return;
 					}
-					console.log(`${id},${table} assumed from ${username}`)
-					res.end();
+
+					console.log(results.changedRows);
+					if (results.changedRows > 0) {
+						console.log(`${id},${table} assumed from ${username}`)
+						res.end();
+					} else {
+						res.status(403).json({ error: "Can't assume, task already assumed from someone else."})
+						return;
+					}
 				});
 			} else {
 				// No permission to assume

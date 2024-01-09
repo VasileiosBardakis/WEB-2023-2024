@@ -28,7 +28,8 @@ VALUES
 ('res', POINT(38.361527, 21.713058));
 INSERT INTO account_coordinates (username, coordinate)
 VALUES
-('npc', POINT(38.364567, 21.713078));
+('npc', POINT(38.364567, 21.713078)),
+('mister_helper', POINT(38.364567, 21.713078));
 
 INSERT INTO cargo (username, item_id, res_quantity)
 VALUES
