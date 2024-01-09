@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 const methodOverride = require('method-override');
 const fs = require('fs');
+const NodeCache = require('node-cache');
 
 
 // Establishing connection
@@ -25,6 +26,35 @@ db.connect((err) => {
 	}
     else { console.log('MySql Connected'); }
 });
+
+const cache= new NodeCache();
+
+module.exports = duration => (req, res, next) => {
+	if (req.method !== 'GET') {
+		// Clear cache to update 
+		if(cache.has(req.originalUrl)){
+			console.log('Cache cleared');
+			cache.del(req.originalUrl);
+		  }
+		return next();
+	}
+	// check if key exists
+	const key = req.originalUrl;
+	const cachedResponse = cache.get(key);
+	console.log('${key}')
+	if (cachedResponse) {
+		console.log('Cache hit');
+		res.send(cachedResponse);
+	} else {
+		console.log('Cache miss');
+		res.originalSend = res.send;
+		res.send = body => {
+			res.originalSend(body);
+			cache.set(key, body, duration);
+		};
+		next();
+	}
+}
 
 // GET for rendering pages,
 // POST for user actions
