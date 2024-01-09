@@ -1383,6 +1383,7 @@ async function shStats() {
         const offers = await fetchMethod('/api/offers');
         if ((requests.requests.length + offers.offers.length) == 0) {
             document.getElementById('error-message').innerHTML = 'There are no requests or offers';
+            
         } else {
 
             /* using html's date picker for the dates */
@@ -1489,7 +1490,9 @@ async function shStats() {
                     containerDiv.myChart = myChart;
                 }
                 /* if total<0 show this */
-                else { document.getElementById('inputFieldsDiv2').innerHTML = 'There are no requests or offers between these dates'; }
+                else {
+                    document.getElementById('mkAnService').innerHTML = 'There are no requests or offers between these dates';
+                }
             };
 
 
