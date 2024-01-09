@@ -75,9 +75,6 @@ Change database and handle NOT NULLs
 
 Move complete button to task table (compare with var coords)
 
-Make tables look the same across the site
-
-
 
 
 UPDATE ${table} SET rescuer = (?), status=1, date_accepted=NOW() WHERE id = (?) AND status=0
@@ -90,15 +87,7 @@ unions the 2 tables and orders by date
 - When something changes (base relocation, new offer, new announcement)
 have sql watcher and update everyone's currently logged in homepage
 and cross validate sql entries in case they are on older data and they're not valid yet
-- let instead of var
 - Fix sql auth (where username = ?)
-- Proper GET/POST responses (error message, update error message on client screen etc)
-
-
-
-Web design:
-- Make font scale with screen size (unreadable on mobile)
-- If media < 768px, make everything stack vertically
 
 
 
@@ -110,9 +99,6 @@ Citizen:
 
 Caching:
 https://zeropointdevelopment.com/speed-up-your-website-using-caching-and-htaccess/
-
-
-geolocation rescuer
 
 
 
@@ -142,18 +128,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 Set display to none when it ends
 
-Database normalization (one-to-many etc)
-
-Register: To column scalearei me to megalutero item, kanta aneksartita
-
-On table load: make each row appear with fade
-
 Handle SQL errors (e.g. when admin change db a user might be trying to access item that no longer exists) with sending response
 On server error, close connection instead of closing server
 
 Bad input for make request
 
 Reorganize each route to different js folders (like app/, storage/ etc. so index.js is not as cluttered)
-
-To register sto test.html thewritika tha prepe na xei animation alla den doulevei
-https://mdbootstrap.com/docs/standard/extended/login/

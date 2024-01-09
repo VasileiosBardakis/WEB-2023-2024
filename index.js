@@ -18,7 +18,11 @@ const db = mysql.createConnection({
 })
 
 db.connect((err) => { 
-    if (err) { throw err; }
+	if (err) {
+		console.error('Error executing query:', err);
+		res.status(500).json({ error: 'Internal Server Error' });
+		return;
+	}
     else { console.log('MySql Connected'); }
 });
 
@@ -66,7 +70,11 @@ app.post('/', disableCaching,(req, res) => {
 		db.query('SELECT type FROM accounts WHERE username = ? AND password = ?', [username, password], function (error, results, fields) {
 			// Get specific account type
 			// If there is an issue with the query, output the error
-			if (error) throw error;
+			if (error) {
+				console.error('Error executing query:', error);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
 
 			// If the account exists
 			if (results.length > 0) {
@@ -111,17 +119,29 @@ app.post('/register', (req, res) => {
 		// Execute SQL query that'll register the account to the database
 		db.query('SELECT * FROM accounts WHERE username = ?', [username], function (error, results, fields) {
 			// If there is an issue with the query, output the error
-			if (error) throw error;
+			if (error) {
+				console.error('Error executing query:', error);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
 			// Account already exists
 			if (results.length > 0) {
 				//TODO: Maybe add same check for telephone number
 				res.status(401).json({ error: 'Username is already being used, please use a different one.' });
 			} else {
 				db.query('INSERT INTO accounts VALUES (?,?,?,?,?)', [username,password,type,name,telephone], function (error, results, fields) {
-					if (error) throw error;
+					if (error) {
+						console.error('Error executing query:', error);
+						res.status(500).json({ error: 'Internal Server Error' });
+						return;
+					}
 
 					db.query('INSERT INTO account_coordinates VALUES (?, POINT(?, ?))', [username, coordinates_obj['lat'], coordinates_obj['lng']], function (error) {
-						if (error) throw error;
+						if (error) {
+							console.error('Error executing query:', error);
+							res.status(500).json({ error: 'Internal Server Error' });
+							return;
+						}
 						console.log('Register successful');
 					});
 				});
@@ -143,7 +163,11 @@ app.post('/announce', (req, res) => {
 		
 		//execute SQL query to insert announcement into the 'announce' table
 		db.query('INSERT INTO announce (title, descr, items) VALUES (?, ?, ?)', [title, anText, itemsJSON], function (error, results, fields) {
-			if (error) throw error;
+			if (error) {
+				console.error('Error executing query:', error);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
 		});
 		res.end();
 	} else {
@@ -154,7 +178,11 @@ app.post('/announce', (req, res) => {
 app.get('/admin', disableCaching, (req, res) => {
 	let username = req.session.username;
 	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
-		if (err) throw err;
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
 		if (req.session.type == 0) {        //Checking to see if user is an admin
 
 			res.sendFile(path.join(__dirname, 'views', '/admin.html'));
@@ -167,7 +195,11 @@ app.get('/admin', disableCaching, (req, res) => {
 app.get('/citizen', disableCaching, (req, res) => {
 	let username = req.session.username;
 	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
-		if (err) throw err;
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
 		if (req.session.type == 1) {        //Checking to see if user is a citizen
 
 			res.sendFile(path.join(__dirname, 'views', '/citizen.html')); 
@@ -180,7 +212,11 @@ app.get('/citizen', disableCaching, (req, res) => {
 app.get('/rescuer', disableCaching, (req, res) => {
 	let username = req.session.username;
 	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
-		if (err) throw err;
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
 		if (req.session.type == 2) {        //Checking to see if user is a rescuer
 
 			res.sendFile(path.join(__dirname, 'views', '/rescuer.html')); 
@@ -192,7 +228,11 @@ app.get('/rescuer', disableCaching, (req, res) => {
 app.get('/auth', disableCaching, (req, res) => {    //Pages go through /auth to see what permissions the user has and point them to the right page
 	let username = req.session.username;
 	db.query('SELECT * FROM accounts WHERE username = (?)', [username], (err, result) => {
-		if (err) throw err;
+		if (err) {
+			console.error('Error executing query:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
 		if (req.session.loggedin) {
 			if (req.session.type == 0) { res.redirect('/admin'); }
 			if (req.session.type == 1) { res.redirect('/citizen'); }
@@ -236,6 +276,7 @@ app.post('/citizen/sendRequest', (req, res) => {
 		//execute SQL query to insert announcement into the 'announce' table
 		db.query('INSERT INTO requests (username, item_id, num_people, status) VALUES (?, ?, ?, ?)', [username, item_id, num_people, status], function (error, results, fields) {
 			if (error) {
+				console.error('Error executing query:', error);
 				res.status(500).json({ error: 'Internal Server Error' });
 				return;
 			}
@@ -294,7 +335,11 @@ if (DO_RESET) {
 	
 		// Insert category into the 'categories' table
 		db.query('INSERT INTO categories (id, category_name) VALUES (?, ?)', [categoryId, categoryName], (err, results) => {
-			if (err) throw err;
+			if (err) {
+				console.error('Error executing query:', err);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
 		});
 	});
 	
@@ -306,7 +351,11 @@ if (DO_RESET) {
 	
 		// Insert item into the 'items' table
 		db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
-			if (err) throw err;
+			if (err) {
+				console.error('Error executing query:', err);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
 	
 			// Insert details into the 'details' table
 			item.details.forEach((detail) => {
@@ -314,7 +363,11 @@ if (DO_RESET) {
 				const detailValue = detail.detail_value;
 	
 				db.query('INSERT INTO details (item_id, detail_name, detail_value) VALUES (?, ?, ?)', [itemId, detailName, detailValue], (err, results) => {
-					if (err) throw err;
+					if (err) {
+						console.error('Error executing query:', err);
+						res.status(500).json({ error: 'Internal Server Error' });
+						return;
+					}
 				});
 			});
 		});
@@ -342,7 +395,11 @@ app.post('/import-data', async (req, res) => {
 			const categoryId = category.id;
 			const categoryName = category.category_name;
 			db.query('INSERT IGNORE INTO categories (id, category_name) VALUES (?, ?)', [categoryId, categoryName], (err, results) => {
-				if (err) throw err;
+				if (err) {
+					console.error('Error executing query:', err);
+					res.status(500).json({ error: 'Internal Server Error' });
+					return;
+				}
 			});
 		});
 
@@ -353,7 +410,11 @@ app.post('/import-data', async (req, res) => {
 			const category = item.category;
 
 			db.query('INSERT IGNORE INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
-				if (err) throw err;
+				if (err) {
+					console.error('Error executing query:', err);
+					res.status(500).json({ error: 'Internal Server Error' });
+					return;
+				}
 
 				// details
 				item.details.forEach((detail) => {
@@ -361,7 +422,11 @@ app.post('/import-data', async (req, res) => {
 					const detailValue = detail.detail_value;
 
 					db.query('INSERT IGNORE INTO details (item_id, detail_name, detail_value) VALUES (?, ?, ?)', [itemId, detailName, detailValue], (err, results) => {
-						if (err) throw err;
+						if (err) {
+							console.error('Error executing query:', err);
+							res.status(500).json({ error: 'Internal Server Error' });
+							return;
+						}
 					});
 				});
 			});
@@ -443,14 +508,20 @@ app.post('/categories/add', (req, res) => {
 
 	db.query('SELECT * FROM categories WHERE (id = ? || category_name = ?)', [id,name], function (error, results, fields) {
 		// If there is an issue with the query, output the error
-		if (error) throw error;
+		if (error) {
+			console.error('Error executing query:', error);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
 		// Category id
 		if (results.length > 0) {
 			res.status(401).json({ error: 'Category id and/or name is already being used' });
 		} else {
 			db.query('INSERT INTO categories VALUES (?,?)',[id,name], function (error, results, fields) {
 				if (error) {
-					throw error;
+					console.error('Error executing query:', error);
+					res.status(500).json({ error: 'Internal Server Error' });
+					return;
 				}
 
 				console.log('Category added!');
@@ -559,7 +630,11 @@ app.post('/announce', (req, res) => {
 
 		//execute SQL query to insert announcement into the 'announce' table
 		db.query('INSERT INTO announce (title, descr, items) VALUES (?, ?, ?)', [title, anText, itemsJSON], function (error, results, fields) {
-			if (error) throw error;
+			if (error) {
+				console.error('Error executing query:', error);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
 		});
 		res.end();
 	} else {
@@ -731,7 +806,11 @@ app.post('/citizen/sendOffer', (req, res) => {
 	// TODO: for some reason plain text counts as 2 
 	if (username && item_id.length === 2) {
 		db.query('INSERT INTO offers (username, item_id) VALUES (?, ?)', [username, item_id], function (error, results) {
-			if (error) throw error;
+			if (error) {
+				console.error('Error executing query:', error);
+				res.status(500).json({ error: 'Internal Server Error' });
+				return;
+			}
 		})
 		res.end();
 	} else {
@@ -757,7 +836,11 @@ app.post('/citizen/deleteOffer', (req, res) => {
 			// Has permission to delete their own offer
 			if (offer_results.length > 0) {
 				db.query('DELETE FROM offers WHERE id = (?) AND status = 0', [offer_id], function (error, results) {
-					if (error) throw error;
+					if (error) {
+						console.error('Error executing query:', error);
+						res.status(500).json({ error: 'Internal Server Error' });
+						return;
+					}
 
 				});
 				res.end();
@@ -803,7 +886,11 @@ app.post('/map/relocateBase', (req, res) => {
 		db.query('SELECT * FROM accounts WHERE username = (?) AND type=0', [username], function (error, username_results) {
 			if (username_results.length > 0) {
 				db.query('UPDATE base_coordinates SET coordinate = POINT(?,?) WHERE id=0', [lat, lng], function (error, results) {
-					if (error) throw error;
+					if (error) {
+						console.error('Error executing query:', error);
+						res.status(500).json({ error: 'Internal Server Error' });
+						return;
+					}
 
 				});
 				res.end();
@@ -822,7 +909,11 @@ app.post('/map/relocateVehicle', (req, res) => {
 
 	if (username && lat && lng) {
 				db.query('UPDATE account_coordinates SET coordinate = POINT(?,?) WHERE username = (?)', [lat, lng, username], function (error, results) {
-					if (error) throw error;
+					if (error) {
+						console.error('Error executing query:', error);
+						res.status(500).json({ error: 'Internal Server Error' });
+						return;
+					}
 				});
 				res.end();
 	} else {
@@ -1020,7 +1111,11 @@ app.post('/rescuer/cancelTask', (req, res) => {
 			if (username_results.length > 0) {
 				db.query(`UPDATE ${table} SET rescuer = NULL, status=0, date_accepted=NULL
 				WHERE id = (?) AND rescuer = (?) AND status=1`, [id, username, id], function (error, results) {
-					if (error) throw error;
+					if (error) {
+						console.error('Error executing query:', error);
+						res.status(500).json({ error: 'Internal Server Error' });
+						return;
+					}
 					console.log(`${id},${table} canceled from ${username}`)
 				});
 				res.end();

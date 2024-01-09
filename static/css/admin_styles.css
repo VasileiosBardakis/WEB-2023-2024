@@ -146,8 +146,8 @@
         background-color: #2980b9; /* Darker background color on hover */
     }
 
-#error-message{
-color: red;
+#error-message {
+    color: red;
     font-size: 150%;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -226,6 +226,34 @@ td {
 
 
 @media only screen and (max-width: 768px) {
+
+   /*adjust font size in every div*/
+#storageCategories {
+        font-size: 80%;
+    }
+
+
+
+#inputFieldsDiv2 {
+        font-size: 80%;
+    }
+
+#inputFieldsDiv3 {
+        font-size: 80%;
+    }
+
+    
+
+#storage {
+        font-size: 80%;
+    }
+
+    .goBackButton {
+        font-size: 80%;
+    }
+
+
+    
 
     #storageCategories {
         display:block;

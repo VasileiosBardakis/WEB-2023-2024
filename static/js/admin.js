@@ -98,8 +98,9 @@ function register() {
             }
         }
     };
+   
 
-    var data = JSON.stringify({ username: username, password: password, type: type, name: name, telephone: telephone });
+    var data = JSON.stringify({ username: username, password: password, type: type, name: name, telephone: telephone, coordinates: organizationBase });
     xhttp.send(data);
 }
 
