@@ -558,35 +558,23 @@ function loadMap(mymap, controlObject) {
                 "OpenStreetMap": osm,
             };
 
-            mymap.addLayer(osm);
+            mymap.addLayer(osm);    
             
-            essentialInfo = L.layerGroup().addTo(mymap);
-            activeLines = L.layerGroup().addTo(mymap);
-
-            requestsAssumed = L.markerClusterGroup()
-            mymap.addLayer(requestsAssumed);
-            requestsAssumed.on('clusterclick', function (event) {
-                event.layer.zoomToBounds();
-            });
-
-            requestsFree = L.markerClusterGroup().addTo(mymap);
-            mymap.addLayer(requestsFree);
-            requestsFree.on('clusterclick', function (event) {
-                event.layer.zoomToBounds();
-            });
-
-            offersAssumed = L.markerClusterGroup().addTo(mymap);
-            mymap.addLayer(offersAssumed);
-            offersAssumed.on('clusterclick', function (event) {
-                event.layer.zoomToBounds();
-            });
+            layerGroups = [
+            essentialInfo = L.markerClusterGroup(),
+            activeLines = L.markerClusterGroup(),
+            requestsAssumed = L.markerClusterGroup(),
+            requestsFree = L.markerClusterGroup(),
+            offersAssumed = L.markerClusterGroup(),
+            offersFree = L.markerClusterGroup()
+            ];
             
-            offersFree = L.markerClusterGroup().addTo(mymap);
-            mymap.addLayer(offersFree);
-            offersFree.on('clusterclick', function (event) {
-                event.layer.zoomToBounds();
+            layerGroups.forEach((layer) => {
+                mymap.addLayer(layer);
+                layer.on('clusterclick', function (event) {
+                    event.layer.zoomToBounds();
+                });
             });
-
 
             let overlayMaps = {
                 "Base & Vehicle": essentialInfo, 
