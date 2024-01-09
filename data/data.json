@@ -104,25 +104,6 @@
             ]
         },
         {
-            "id": "23",
-            "name": "Test Product",
-            "category": "9",
-            "details": [
-                {
-                    "detail_name": "weight",
-                    "detail_value": "500g"
-                },
-                {
-                    "detail_name": "pack size",
-                    "detail_value": "12"
-                },
-                {
-                    "detail_name": "expiry date",
-                    "detail_value": "13\/12\/1978"
-                }
-            ]
-        },
-        {
             "id": "24",
             "name": "Test Val",
             "category": "14",

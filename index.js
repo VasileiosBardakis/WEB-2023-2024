@@ -659,8 +659,8 @@ app.get('/api/requests', (req, res) => {
 	if (username!='admin') {
 		query = `SELECT
       r.id as 'id', i.name as 'Requested', r.num_people as 'People', rsc.meaning as 'Status',
-      r.date_requested as 'Requested on', r.date_accepted as 'Accepted on', 
-      r.date_completed as 'Completed on'
+	  DATE_FORMAT(o.date_requested, '%d-%m-%Y %H:%i:%s') as 'Accepted on', 
+	  DATE_FORMAT(o.date_completed, '%d-%m-%Y %H:%i:%s') as 'Completed on'
       FROM requests r 
       INNER JOIN request_status_code rsc on r.status = rsc.status
       INNER JOIN items i ON r.item_id = i.id
@@ -689,19 +689,13 @@ app.get('/api/requests', (req, res) => {
 app.get('/api/offers', (req, res) => {
 	let username = req.session.username;
 	let query;
-
-	// TODO: instead of username do sql query and check type
-	/*
-	// TODO:
-	DATE_FORMAT(o.date_offered, '%d-%m-%Y %H:%i:%s') as 'Offered on', 
-	DATE_FORMAT(o.date_completed, '%d-%m-%Y %H:%i:%s') as 'Delivered on'
-	make this work with shstats()
-	*/
+	
+	
 	if (username!='admin') {
 		query = `SELECT
       o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
-      o.date_offered as 'Offered on', 
-	  o.date_completed as 'Delivered on'
+      DATE_FORMAT(o.date_offered, '%d-%m-%Y %H:%i:%s') as 'Offered on', 
+	  DATE_FORMAT(o.date_completed, '%d-%m-%Y %H:%i:%s') as 'Delivered on'
       FROM offers o
       INNER JOIN offer_status_code osc on o.status = osc.status
       INNER JOIN items i on o.item_id = i.id 
