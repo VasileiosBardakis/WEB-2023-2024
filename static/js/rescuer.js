@@ -558,22 +558,32 @@ function loadMap(mymap, controlObject) {
                 "OpenStreetMap": osm,
             };
 
-            mymap.addLayer(osm);    
+            mymap.addLayer(osm);
             
-            layerGroups = [
-            essentialInfo = L.markerClusterGroup(),
-            activeLines = L.markerClusterGroup(),
-            requestsAssumed = L.markerClusterGroup(),
-            requestsFree = L.markerClusterGroup(),
-            offersAssumed = L.markerClusterGroup(),
-            offersFree = L.markerClusterGroup()
+            // credits: https://github.com/ghybs/Leaflet.FeatureGroup.SubGroup
+            // https://ghybs.github.io/Leaflet.FeatureGroup.SubGroup/examples/subGroup-markercluster-controlLayers-realworld.388.html
+            
+            // Clusters children nodes from every subgroup
+            let clusterGroup = L.markerClusterGroup();
+            
+            // Don't want to cluster these
+            essentialInfo = L.layerGroup().addTo(mymap);
+            activeLines = L.layerGroup().addTo(mymap);
+
+            // Create subgroups
+            let layerGroups = [
+            requestsAssumed = L.featureGroup.subGroup(clusterGroup),
+            requestsFree = L.featureGroup.subGroup(clusterGroup),
+            offersAssumed = L.featureGroup.subGroup(clusterGroup),
+            offersFree = L.featureGroup.subGroup(clusterGroup)
             ];
             
+            // Add cluster to map
+            clusterGroup.addTo(mymap);
+
+            // Adding to map now adds all child layers into the parent group
             layerGroups.forEach((layer) => {
-                mymap.addLayer(layer);
-                layer.on('clusterclick', function (event) {
-                    event.layer.zoomToBounds();
-                });
+                layer.addTo(mymap);
             });
 
             let overlayMaps = {
