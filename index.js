@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 const methodOverride = require('method-override');
 const fs = require('fs');
-const NodeCache = require('node-cache');
+const apicache = require('apicache');
 
 
 // Establishing connection
@@ -27,34 +27,11 @@ db.connect((err) => {
     else { console.log('MySql Connected'); }
 });
 
-const cache= new NodeCache();
 
-module.exports = duration => (req, res, next) => {
-	if (req.method !== 'GET') {
-		// Clear cache to update 
-		if(cache.has(req.originalUrl)){
-			console.log('Cache cleared');
-			cache.del(req.originalUrl);
-		  }
-		return next();
-	}
-	// check if key exists
-	const key = req.originalUrl;
-	const cachedResponse = cache.get(key);
-	console.log('${key}')
-	if (cachedResponse) {
-		console.log('Cache hit');
-		res.send(cachedResponse);
-	} else {
-		console.log('Cache miss');
-		res.originalSend = res.send;
-		res.send = body => {
-			res.originalSend(body);
-			cache.set(key, body, duration);
-		};
-		next();
-	}
-}
+// Caching ( default 5 mins ) : respectively use on app.get and clear on app.post
+const stCache = apicache.middleware('stCache'); // static
+const mysqlCache = apicache.middleware('mysqlCache'); // mySQL data
+
 
 // GET for rendering pages,
 // POST for user actions
@@ -80,7 +57,7 @@ const disableCaching = (req, res, next) => {
 };
 
 // http://localhost:3000/ redirects to login
-app.get('/', function(req, res) {
+app.get('/', stCache, function(req, res) {
 	// Render login template
 	if (req.session.loggedin) {
 		res.redirect('/auth');      //If logged in, redirect to auth
@@ -124,7 +101,7 @@ app.post('/', disableCaching,(req, res) => {
 });
 
 
-app.get('/register', function (req, res) {
+app.get('/register', stCache, function (req, res) {
 	// Render login template
 	if (req.session.loggedin) {
 		res.redirect('/auth');      //If logged in, redirect to auth
@@ -142,7 +119,6 @@ app.post('/register', (req, res) => {
 	let name = req.body.name;
 	let telephone = req.body.telephone;
 	let coordinates_obj = req.body.coordinates;
-
 	console.log(`Register attempt ${username}, ${name}, ${telephone}, ${coordinates_obj}`);
 
 	if (username && password && coordinates_obj) {
@@ -185,10 +161,10 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/announce', (req, res) => {
+	apicache.clear('mysqlCache');
 	let title = req.body.title;
 	let anText = req.body.anText;
 	let itemsJSON = JSON.stringify(req.body.dropdownValues); //convert dropdownValues array to a JSON
-
 	if (title && anText && (itemsJSON.length>2)) {
 		
 		//execute SQL query to insert announcement into the 'announce' table
@@ -275,7 +251,7 @@ app.get('/auth', disableCaching, (req, res) => {    //Pages go through /auth to 
 	});
 });
 
-app.get('/api/username', (req, res) => {
+app.get('/api/username', stCache, (req, res) => {
 	console.log(req.session.username);
 	res.send(req.session.username);
 });
@@ -292,15 +268,13 @@ app.delete('/logout', (req, res) => {
 
 
 
-
-
 app.post('/citizen/sendRequest', (req, res) => {
+	apicache.clear('mysqlCache');
 	console.log(req.body)
 	let username = req.session.username;
 	let item_id = req.body.item_id;
 	let num_people = req.body.num_people;
 	let status = 0;
-
 	if (username && item_id && num_people) {
 		
 		//execute SQL query to insert announcement into the 'announce' table
@@ -407,6 +381,7 @@ if (DO_RESET) {
 /*Async method that gets json file from url/upload and imports the contents ignoring the duplicates with 'INSERT IGNORE'*/
 
 app.post('/import-data', async (req, res) => {
+	apicache.clear('mysqlCache');
 	try { 
 		let jsonData;
 
@@ -472,7 +447,7 @@ app.post('/import-data', async (req, res) => {
 
 
 /*Method for getting categories from the database*/
-app.get('/api/categories', (req, res) => {
+app.get('/api/categories', mysqlCache, (req, res) => {
 	const query = 'SELECT * FROM categories';
 	db.query(query, (err, results) => {
 		if (err) {
@@ -484,7 +459,7 @@ app.get('/api/categories', (req, res) => {
 	});
 });
 /*Method for getting announcements from the database*/
-app.get('/api/announcements', (req, res) => {
+app.get('/api/announcements', mysqlCache, (req, res) => {
 	//TODO: Throws 500 if announcements are empty
 	const query = `SELECT * FROM announce`; 
 	db.query(query, (err, announcement_results) => {
@@ -533,9 +508,9 @@ app.get('/api/announcements', (req, res) => {
 });
 /*Method for adding categories to the database*/
 app.post('/categories/add', (req, res) => {
+	apicache.clear('mysqlCache');
 	let id = req.body.id;
 	let name = req.body.name;
-
 	db.query('SELECT * FROM categories WHERE (id = ? || category_name = ?)', [id,name], function (error, results, fields) {
 		// If there is an issue with the query, output the error
 		if (error) {
@@ -563,11 +538,11 @@ app.post('/categories/add', (req, res) => {
 });
 /*Method for adding items to the database */
 app.post('/items/add', (req, res) => {
+	apicache.clear('mysqlCache');
 	let name = req.body.name;
 	let detail_name = req.body.detail_name;
 	let detail_value = req.body.detail_value;
 	let category = req.body.category;
-
 	db.query('SELECT * FROM items WHERE name = ?', [name], function (error, results, fields) {
 		/*error handling*/
 		if (error) {
@@ -652,10 +627,10 @@ app.route('/api/del')
 	});
 /*Makes an insertion in table announcements */
 app.post('/announce', (req, res) => {
+	apicache.clear('mysqlCache');
 	let title = req.body.title;
 	let anText = req.body.anText;
 	let itemsJSON = JSON.stringify(req.body.dropdownValues); //convert dropdownValues array to a JSON
-
 	if (title && anText && (itemsJSON.length > 2)) {
 
 		//execute SQL query to insert announcement into the 'announce' table
@@ -672,7 +647,7 @@ app.post('/announce', (req, res) => {
 	}
 });
 /*Returns all items in database*/
-app.get('/api/items', (req, res) => {
+app.get('/api/items', mysqlCache, (req, res) => {
 	const query = 'SELECT * FROM items';
 	db.query(query, (err, results) => {
 		if (err) {
@@ -685,7 +660,7 @@ app.get('/api/items', (req, res) => {
 });
 
 /*Gets items with their details*/
-app.get('/api/itemswdet', (req, res) => {
+app.get('/api/itemswdet', mysqlCache, (req, res) => {
 	const query = 'SELECT items.*, details.item_id,details.detail_id, details.detail_name, details.detail_value FROM items LEFT JOIN details ON items.id = details.item_id';
 
 	db.query(query, (err, results) => {
@@ -698,7 +673,7 @@ app.get('/api/itemswdet', (req, res) => {
 	});
 });
 /*Gets details from just one item*/
-app.get('/api/details/:itemId', (req, res) => {
+app.get('/api/details/:itemId', mysqlCache, (req, res) => {
 	const itemId = req.params.itemId;
 	const query = `SELECT * FROM details WHERE item_id = ${itemId}`;
 	db.query(query, (err, results) => {
@@ -711,7 +686,7 @@ app.get('/api/details/:itemId', (req, res) => {
 	});
 });
 /*Gets items with their categories*/
-app.get('/api/itemswcat', (req, res) => {
+app.get('/api/itemswcat', mysqlCache, (req, res) => {
 	const query = 'SELECT items.id, items.name, items.quantity, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id WHERE quantity>0';
 
 	db.query(query, (err, results) => {
@@ -727,6 +702,7 @@ app.get('/api/itemswcat', (req, res) => {
  // CARGO MANAGEMENT
 
  app.post('/api/load', (req, res) => {
+	apicache.clear('mysqlCache');
 	let username = req.session.username;
 	let { itemId, wantedQuantity } = req.body;
     let sql = 'CALL cargoLoaded(?,?,?)'
@@ -743,6 +719,7 @@ app.get('/api/itemswcat', (req, res) => {
 });
 
  app.post('/api/Deliver', (req, res) => {
+	apicache.clear('mysqlCache');
 	let username = req.session.username;
 	let sql = 'CALL cargoDelivered(?)'
     db.query(sql, [username], (err, results) => {
@@ -758,7 +735,7 @@ app.get('/api/itemswcat', (req, res) => {
 });
 
 // Protect other user data so send only those for username
-app.get('/api/requests', (req, res) => {
+app.get('/api/requests', mysqlCache, (req, res) => {
 	let username = req.session.username;
 	let query;
 	if (username!='admin') {
@@ -791,7 +768,7 @@ app.get('/api/requests', (req, res) => {
 	});
 });
 
-app.get('/api/offers', (req, res) => {
+app.get('/api/offers', mysqlCache, (req, res) => {
 	let username = req.session.username;
 	let query;
 	
@@ -828,6 +805,7 @@ app.get('/api/offers', (req, res) => {
 });
 
 app.post('/citizen/sendOffer', (req, res) => {
+	apicache.clear('mysqlCache');
 	let username = req.session.username;
 	item_id = req.body;
 	console.log(item_id);
@@ -851,6 +829,7 @@ app.post('/citizen/sendOffer', (req, res) => {
 });
 
 app.post('/citizen/deleteOffer', (req, res) => {
+	apicache.clear('mysqlCache');
 	//TODO: Delete only if offer is from username
 	let username = req.session.username;
 	offer_id = req.body;
@@ -886,7 +865,7 @@ app.post('/citizen/deleteOffer', (req, res) => {
 });
 
 // Modular requests
-app.get('/map/base', (req, res) => {
+app.get('/map/base', mysqlCache, (req, res) => {
 	db.query('SELECT * FROM base_coordinates WHERE id=0', function (error, results) {
 		if (error) {
 			console.error('Error executing query:', error);
@@ -904,6 +883,7 @@ app.get('/map/base', (req, res) => {
 });
 
 app.post('/map/relocateBase', (req, res) => {
+	apicache.clear('mysqlCache');
 	let username = req.session.username;
 	console.log(req.body);
 	lat = req.body.lat;
@@ -932,6 +912,7 @@ app.post('/map/relocateBase', (req, res) => {
 });
 
 app.post('/map/relocateVehicle', (req, res) => {
+	apicache.clear('mysqlCache');
 	let username = req.session.username;
 	console.log(req.body);
 	lat = req.body.lat;
@@ -951,7 +932,7 @@ app.post('/map/relocateVehicle', (req, res) => {
 	}
 });
 
-app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
+app.get('/rescuer/requests/:vehicleUsername?', mysqlCache, (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 
@@ -991,7 +972,7 @@ app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
 	});
 });
 
-app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
+app.get('/rescuer/offers/:vehicleUsername?', mysqlCache, (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every free task
@@ -1031,7 +1012,7 @@ app.get('/rescuer/offers/:vehicleUsername?', (req, res) => {
 	});
 });
 
-app.get('/map/vehicles/:vehicleUsername?', (req, res) => {
+app.get('/map/vehicles/:vehicleUsername?', mysqlCache, (req, res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	// No parameter given, so give every vehicle (admin only)
@@ -1069,7 +1050,7 @@ app.get('/map/vehicles/:vehicleUsername?', (req, res) => {
 
 // TODO: if session.username is rescuer just send their cargo
 // without doing any other checks
-app.get('/rescuer/cargo/:vehicleUsername', (req,res) => {
+app.get('/rescuer/cargo/:vehicleUsername', mysqlCache, (req,res) => {
 	const vehicleUsername = req.params.vehicleUsername;
 	const sessionUsername = req.session.username;
 	if (vehicleUsername != sessionUsername) {
@@ -1094,6 +1075,7 @@ app.get('/rescuer/cargo/:vehicleUsername', (req,res) => {
 });
 
 app.post('/rescuer/assumeTask', (req, res) => {
+	 apicache.clear('mysqlCache');
 	let username = req.session.username;
 	id = req.body.id;
 	table = req.body.type;
@@ -1129,6 +1111,7 @@ app.post('/rescuer/assumeTask', (req, res) => {
 });
 
 app.post('/rescuer/cancelTask', (req, res) => {
+	apicache.clear('mysqlCache');
 	console.log(req.body);
 	let username = req.session.username;
 	id = req.body.id;
@@ -1157,6 +1140,7 @@ app.post('/rescuer/cancelTask', (req, res) => {
 });
 
 app.post('/rescuer/completeTask', (req, res) => {
+	apicache.clear('mysqlCache');
 	console.log(req.body);
 	let username = req.session.username;
 	id = req.body.id;
