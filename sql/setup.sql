@@ -9,6 +9,9 @@ USE saviors;
 -- Tables
 select 'tables';
 SOURCE tables.sql;
+-- Indexes
+select 'indexes';
+SOURCE indexes.sql;
 -- Triggers
 select 'triggers';
 SOURCE triggers.sql;

@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 const methodOverride = require('method-override');
 const fs = require('fs');
-const apicache = require('apicache').options({ debug: true });
+const apicache = require('apicache').options({ debug: false });
 
 
 // Establishing connection
@@ -120,7 +120,29 @@ app.post('/register', (req, res) => {
 	let coordinates_obj = req.body.coordinates;
 	console.log(`Register attempt ${username}, ${name}, ${telephone}, ${coordinates_obj}`);
 
-	if (username && password && coordinates_obj) {
+	if (username && password) {
+		// if admin or empty register rescuer to base coordinates
+		if (req.session.type === 0 || coordinates_obj === null) {
+			db.query('SELECT * FROM base_coordinates WHERE id=0', function (error, results) {
+				if (error) {
+					console.error('Error executing query:', error);
+					res.status(500).json({ error: 'Internal Server Error' });
+					return;
+				}
+		
+				if (results.length === 0) {
+					res.status(401).json({ error: 'Base coordinates not found.'});
+					return;
+				}
+
+				// init null obj
+				coordinates_obj = {};
+				console.log(results[0].coordinate);
+				coordinates_obj.lat = results[0].coordinate.x;
+				coordinates_obj.lng = results[0].coordinate.y;
+			});
+		}
+		
 		// Execute SQL query that'll register the account to the database
 		db.query('SELECT * FROM accounts WHERE username = ?', [username], function (error, results, fields) {
 			// If there is an issue with the query, output the error
@@ -739,8 +761,9 @@ app.get('/api/requests', cache('5 minutes'), (req, res) => {
 	if (username!='admin') {
 		query = `SELECT
       r.id as 'id', i.name as 'Requested', r.num_people as 'People', rsc.meaning as 'Status',
-	  DATE_FORMAT(o.date_requested, '%d-%m-%Y %H:%i:%s') as 'Accepted on', 
-	  DATE_FORMAT(o.date_completed, '%d-%m-%Y %H:%i:%s') as 'Completed on'
+	  DATE_FORMAT(r.date_requested, '%d-%m-%Y %H:%i:%s') as 'Requested on', 
+	  DATE_FORMAT(r.date_accepted, '%d-%m-%Y %H:%i:%s') as 'Accepted on', 
+      DATE_FORMAT(r.date_completed, '%d-%m-%Y %H:%i:%s') as 'Completed on'
       FROM requests r 
       INNER JOIN request_status_code rsc on r.status = rsc.status
       INNER JOIN items i ON r.item_id = i.id

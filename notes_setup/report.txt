@@ -5,9 +5,19 @@ Checks ginontai client-side (visual) kai server-side (validation and error detec
 Modular GET/POSTs opote ola mporoun na allaksoun eukola
 
 Indexing:
-Indexes xreiazontai gia table me megalo arithmo grammwn
-logariasmoi, items, cargo, tasks
-se column pou ginontai WHERE query
+Indexes xreiazontai gia column se table pou ginontai suxna kai polla WHERE kai JOIN
+Logw yparkshs overhead apo indexes, valame mono sta table me to perissotero "traffic"
+Gia performance gain tha prepe na yparxoun polla perissotera dedomena sta table
+
+poly suxno:
+polla updates ginontai sto cargo (volatile)
+accounts: username (WHERE, JOIN)
+
+requests,offers: username, id
+
+oxi toso suxno:
+account_coordinates username (JOIN)
+JOIN items id
 
 Alternative:
 Anti na exw koubia panw sto marker tha borousa na kanw linear search

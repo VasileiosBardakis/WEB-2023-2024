@@ -12,15 +12,19 @@ na kseperastei to orio
 - Idio timezone pantou
 
 Bugs:
+- admin: text-align, sidebar field margin
+- admin: add same text fields everywhere
+- On admin: Map is short and console errors on map
+
+- Caching doesnt work for example: username: on log out keeps wrong username??
+
 - Error alerts and handling on EVERYTHING (frontend backend) (done for admin)
 Clean up api endpoints (done on admin)
 + where res.end(), change it to send error codes
 + return;
+
 - Add return; in js code after handling xhr
 
-
-- On admin: Map is short and console errors on map
-- If you decrease width enough, elements may appear on top of sidebar or be behind it (use javascript from citizen)
 - Make every "window" have same padding and margin so sidebar doesnt change size
 
 

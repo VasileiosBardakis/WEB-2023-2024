@@ -100,7 +100,7 @@ function register() {
     };
    
 
-    var data = JSON.stringify({ username: username, password: password, type: type, name: name, telephone: telephone, coordinates: organizationBase });
+    var data = JSON.stringify({ username: username, password: password, type: type, name: name, telephone: telephone, coordinates: null });
     xhttp.send(data);
 }
 
@@ -118,6 +118,7 @@ function shStore() {
             var categoryDiv = document.getElementById('storageCategories');
             categoryDiv.innerHTML = '<div>Pick categories:</div>';
             categoryDiv.style.display = 'block';
+            categoryDiv.style.overflowX = 'auto';
             data.categories.forEach(category => {
                 var checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
@@ -376,7 +377,7 @@ function mngStore() {
                 document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="addDetail()" class="btn btn-primary btn-block mb-4">Add a Detail</button>'
                 document.getElementById('buttons2').innerHTML += ' <button type="button" onclick="importJSON(false)" class="btn btn-primary btn-block mb-4">Import items from repository</button>'
                 document.getElementById('buttons2').innerHTML +=
-                    '   <label for="jsonFileInput">Import items through JSON file: </label>' +
+                    '   <label for="jsonFileInput">Import items through JSON file </label>' +
                     '   <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(true)">';
             }
         };
