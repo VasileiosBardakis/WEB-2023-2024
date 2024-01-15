@@ -123,6 +123,22 @@
     margin-left: 35%; /* Set the distance from the left */
 }
 
+#inputFieldsDiv3 table {
+    width: 5%; /* You can adjust the percentage according to your preference */
+    border-collapse: collapse;
+}
+
+#inputFieldsDiv3 td {
+    padding: 3px; /* You can adjust the padding as needed */
+    border: 1px solid #ddd;
+}
+
+.th {
+    font-weight: bold;
+    background-color: #f2f2f2;
+    width: 20%;
+}
+
 #mkAnService {
     display: fixed;
     align-items: center;
@@ -213,19 +229,16 @@ td {
 
 
 #mapid { 
-  height: 150px;
-  width: 100%;
+    height: 200px;
+    width: 100%;
 }
-
 
  /*
     tablets, 768px and above
   */
 
 
-
-
-@media only screen and (max-width: 768px) {
+@media only screen and (min-width: 768px) {
 
    /*adjust font size in every div*/
 #storageCategories {
@@ -316,37 +329,20 @@ td {
     }
 
     #mapid {
-        margin-left: 0%;
+        height: 400px;
+        margin-left: 25%;
+        width:60%;
     }
 
 
 }
 
-@media only screen and (max-width: 360px) {
+@media only screen and (min-width:1000px) {
 
-
-
-
-    #inputFieldsDiv3 table {
-        width: 5%; /* You can adjust the percentage according to your preference */
-        border-collapse: collapse;
+    #mapid {
+        height: 600px;
     }
-
-    #inputFieldsDiv3 td {
-        padding: 3px; /* You can adjust the padding as needed */
-        border: 1px solid #ddd;
-    }
-
-    .th {
-        font-weight: bold;
-        background-color: #f2f2f2;
-        width: 20%;
-    }
-
-    
-
-
 
 }
-  
+
 
