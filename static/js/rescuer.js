@@ -201,7 +201,7 @@ function forEach(item) {
 function storeItem(item, quantity) {
     // Create a new XMLHttpRequest object
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/load", true);
+    xhr.open("POST", "/cargo/load", true);
     xhr.setRequestHeader("Content-Type", "application/json");
     let requestData = {
         itemId: item,
@@ -251,7 +251,7 @@ function searchTable(query, table) {
 
 function drop() {
         let xhr = new XMLHttpRequest();
-        let url = '/api/Deliver';
+        let url = '/cargo/Deliver';
         xhr.open('POST', url, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onreadystatechange = function () {

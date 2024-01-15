@@ -30,7 +30,6 @@ db.connect((err) => {
 
 // Caching 
 let cache = apicache.middleware
-
 // GET for rendering pages,
 // POST for user actions
 
@@ -55,7 +54,7 @@ const disableCaching = (req, res, next) => {
 };
 
 // http://localhost:3000/ redirects to login
-app.get('/', cache('10 minutes'), function(req, res) {
+app.get('/', cache('15 minutes'), function(req, res) {
 	// Render login template
 	if (req.session.loggedin) {
 		res.redirect('/auth');      //If logged in, redirect to auth
@@ -99,7 +98,7 @@ app.post('/', disableCaching,(req, res) => {
 });
 
 
-app.get('/register', cache('10 minutes'), function (req, res) {
+app.get('/register', cache('15 minutes'), function (req, res) {
 	// Render login template
 	if (req.session.loggedin) {
 		res.redirect('/auth');      //If logged in, redirect to auth
@@ -464,7 +463,7 @@ app.post('/import-data', async (req, res) => {
 
 
 /*Method for getting categories from the database*/
-app.get('/api/categories',  (req, res) => {
+app.get('/api/categories', (req, res) => {
 	const query = 'SELECT * FROM categories';
 	db.query(query, (err, results) => {
 		if (err) {
@@ -476,7 +475,7 @@ app.get('/api/categories',  (req, res) => {
 	});
 });
 /*Method for getting announcements from the database*/
-app.get('/api/announcements',  (req, res) => {
+app.get('/api/announcements', (req, res) => {
 	//TODO: Throws 500 if announcements are empty
 	const query = `SELECT * FROM announce`; 
 	db.query(query, (err, announcement_results) => {
@@ -548,7 +547,6 @@ app.post('/categories/add', (req, res) => {
 				console.log('Category added!');
 				res.end();
 			});
-
 		}
 	});
 });
@@ -676,7 +674,6 @@ app.get('/api/items', (req, res) => {
 /*Gets items with their details*/
 app.get('/api/itemswdet', (req, res) => {
 	const query = 'SELECT items.*, details.item_id,details.detail_id, details.detail_name, details.detail_value FROM items LEFT JOIN details ON items.id = details.item_id';
-
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
@@ -702,7 +699,6 @@ app.get('/api/details/:itemId', (req, res) => {
 /*Gets items with their categories*/
 app.get('/api/itemswcat', (req, res) => {
 	const query = 'SELECT items.id, items.name, items.quantity, categories.category_name FROM items INNER JOIN categories ON items.category = categories.id WHERE quantity>0';
-
 	db.query(query, (err, results) => {
 		if (err) {
 			console.error('Error executing query:', err);
@@ -715,7 +711,7 @@ app.get('/api/itemswcat', (req, res) => {
 
  // CARGO MANAGEMENT
 
- app.post('/api/load', (req, res) => {
+ app.post('/cargo/load', (req, res) => {
 	let username = req.session.username;
 	let { itemId, wantedQuantity } = req.body;
     let sql = 'CALL cargoLoaded(?,?,?)'
@@ -726,12 +722,11 @@ app.get('/api/itemswcat', (req, res) => {
             res.status(500).json({ error: err.sqlMessage });
             return;
         }
-
         res.json({ message: 'Item loaded successfully' });
     });
 });
 
- app.post('/api/Deliver', (req, res) => {
+ app.post('/cargo/Deliver', (req, res) => {
 	let username = req.session.username;
 	let sql = 'CALL cargoDelivered(?)'
     db.query(sql, [username], (err, results) => {
@@ -740,7 +735,6 @@ app.get('/api/itemswcat', (req, res) => {
             res.status(500).json({ error: 'Internal Server Error' });
             return;
         }
-
 		console.log(results[0]);
         res.json({ message: 'Cargo delivered successfully' });
     });
@@ -784,8 +778,6 @@ app.get('/api/requests', (req, res) => {
 app.get('/api/offers', (req, res) => {
 	let username = req.session.username;
 	let query;
-	
-	
 	if (username!='admin') {
 		query = `SELECT
       o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
