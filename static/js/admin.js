@@ -1256,9 +1256,22 @@ function loadMap(mymap) {
                                     console.log(item);
                                     vehicleText += `${item.Name}<br>`;
                                 });
-                                vehicleText += '<b>Status:</b>';
-                                vehicle_marker.bindPopup(vehicleText);
-                                // TODO: Markers stack
+                                vehicleText += '<b>Status: </b>';
+
+                                // Task count of the vehicle
+                                let xhr_tasknum = new XMLHttpRequest();
+                                xhr_tasknum.open('GET', '/rescuer/tasknum/' + vehicle.username, true);
+                                xhr_tasknum.onreadystatechange = function () {
+                                    if (xhr_tasknum.readyState === 4 && xhr_tasknum.status === 200) {
+                                        let vehicle_tasknum = JSON.parse(xhr_tasknum.response).rescuer_tasknum;
+                                        console.log(JSON.parse(xhr_tasknum.response));
+
+                                        vehicleText += vehicle_tasknum + '/4<br>';
+                                        vehicle_marker.bindPopup(vehicleText);
+                                    }
+                                }
+                                xhr_tasknum.send();
+
                                 // Offers of the vehicle
                                 let xhr_offers = new XMLHttpRequest();
                                 xhr_offers.open('GET', '/rescuer/offers/' + vehicle.username, true);

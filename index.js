@@ -135,7 +135,6 @@ app.post('/register', (req, res) => {
 
 				// init null obj
 				coordinates_obj = {};
-				console.log(results[0].coordinate);
 				coordinates_obj.lat = results[0].coordinate.x;
 				coordinates_obj.lng = results[0].coordinate.y;
 			});
@@ -167,7 +166,6 @@ app.post('/register', (req, res) => {
 							res.status(500).json({ error: 'Internal Server Error' });
 							return;
 						}
-						console.log('Register successful');
 					});
 				});
 				res.redirect('/');
@@ -270,7 +268,7 @@ app.get('/auth', disableCaching, (req, res) => {    //Pages go through /auth to 
 });
 
 app.get('/api/username', (req, res) => {
-	console.log(req.session.username);
+	console.log(req.session.username + ' requested their session username');
 	res.send(req.session.username);
 });
 
@@ -287,7 +285,6 @@ app.delete('/logout', (req, res) => {
 
 
 app.post('/citizen/sendRequest', (req, res) => {
-	console.log(req.body)
 	let username = req.session.username;
 	let item_id = req.body.item_id;
 	let num_people = req.body.num_people;
@@ -301,7 +298,6 @@ app.post('/citizen/sendRequest', (req, res) => {
 				res.status(500).json({ error: 'Internal Server Error' });
 				return;
 			}
-				console.log('Request added');
 		});
 	} else {
 		res.status(401).json({ error: 'Please select an item and write amount of people.' });
@@ -735,7 +731,6 @@ app.get('/api/itemswcat', (req, res) => {
             res.status(500).json({ error: 'Internal Server Error' });
             return;
         }
-		console.log(results[0]);
         res.json({ message: 'Cargo delivered successfully' });
     });
 });
@@ -812,7 +807,6 @@ app.get('/api/offers', (req, res) => {
 app.post('/citizen/sendOffer', (req, res) => {
 	let username = req.session.username;
 	item_id = req.body;
-	console.log(item_id);
 	// let item_id = req.body.item_id;
 
 	// TODO: for some reason plain text counts as 2 
@@ -836,7 +830,6 @@ app.post('/citizen/deleteOffer', (req, res) => {
 	//TODO: Delete only if offer is from username
 	let username = req.session.username;
 	offer_id = req.body;
-	console.log(offer_id);
 
 	// TODO: for some reason plain text HERE counts as 1
 	if (username && offer_id.length === 1) {
@@ -931,6 +924,41 @@ app.post('/map/relocateVehicle', (req, res) => {
 	} else {
 		res.status(401).json({ error: 'Please insert a valid username and coordinates.' });
 	}
+});
+
+app.get('/rescuer/tasknum/:vehicleUsername?', (req, res) => {
+	const vehicleUsername = req.params.vehicleUsername;
+	
+	// Not an admin
+	if (req.session.type != 0) {
+		res.status(401).json({ error: 'Unauthorized query' });
+		return;
+	}
+
+	let outVariable = { name: 'total_rows', type: mysql.Types.INT };
+	let sqlProcedureCall = `CALL getTaskNum('${vehicleUsername}', @${outVariable.name})`;
+
+	db.query(sqlProcedureCall, function (err, results) {
+		if (err) {
+			console.error('Error calling stored procedure:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+
+		// Get the OUT variable value from the session variable
+		db.query('SELECT @total_rows as total_rows_value', (err, outResult) => {
+		if (err) {
+			console.error('Error retrieving OUT variable:', err);
+			res.status(500).json({ error: 'Internal Server Error' });
+			return;
+		}
+
+		const outVariableValue = outResult[0].total_rows_value;
+
+		res.json({ rescuer_tasknum: outVariableValue });
+
+		});
+	});
 });
 
 app.get('/rescuer/requests/:vehicleUsername?', (req, res) => {
@@ -1091,7 +1119,6 @@ app.post('/rescuer/assumeTask', (req, res) => {
 						return;
 					}
 
-					console.log(results.changedRows);
 					if (results.changedRows > 0) {
 						console.log(`${id},${table} assumed from ${username}`)
 						res.end();
@@ -1111,7 +1138,6 @@ app.post('/rescuer/assumeTask', (req, res) => {
 });
 
 app.post('/rescuer/cancelTask', (req, res) => {
-	console.log(req.body);
 	let username = req.session.username;
 	id = req.body.id;
 	table = req.body.type;
@@ -1139,7 +1165,6 @@ app.post('/rescuer/cancelTask', (req, res) => {
 });
 
 app.post('/rescuer/completeTask', (req, res) => {
-	console.log(req.body);
 	let username = req.session.username;
 	id = req.body.id;
 	table = req.body.type;
