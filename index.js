@@ -10,14 +10,17 @@ const apicache = require('apicache')
 
 
 // Establishing connection
-const db = mysql.createConnection({
+const db = mysql.createPool({
     host: "localhost",
     user: "root",
     password: "root",
     database: 'saviors',
-	timezone: 'local'
+	timezone: 'local',
+
+	connectionLimit: 10,
 })
 
+/*
 db.connect((err) => { 
 	if (err) {
 		console.error('Error executing query:', err);
@@ -26,6 +29,7 @@ db.connect((err) => {
 	}
     else { console.log('MySql Connected'); }
 });
+*/
 
 
 // Caching 
