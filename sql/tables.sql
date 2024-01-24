@@ -1,3 +1,5 @@
+-- TODO: prevent status 1 without res
+
 CREATE TABLE accounts (
     username VARCHAR(30) PRIMARY KEY,
     password VARCHAR(30) NOT NULL,
@@ -6,12 +8,6 @@ CREATE TABLE accounts (
     telephone VARCHAR(12) NOT NULL
 )ENGINE=InnoDB;
 
-INSERT INTO accounts VALUES
-('admin','admin',0, 'all powerful', '2106962800'),
-('test_admin', 'zoowee', 0, 'zowee admin', '2106962800'),
-('npc', 'npc', 1, 'npc npc', '2106962800'),
-('res', 'res', 2, 'res res', '2106962800'),
-('mister_helper', 'forfree', 2, 'helper forfree', '2106962800');
 
 /* e.g.
 INSERT INTO account_coordinates
@@ -41,6 +37,7 @@ CREATE TABLE categories (
     category_name VARCHAR(255) NOT NULL
 )ENGINE=InnoDB;
 
+-- TODO: Testing values remove
 -- all possible items in the database
 CREATE TABLE items (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,13 +65,12 @@ CREATE TABLE details (
 )ENGINE=InnoDB;
 
 
--- admin announcements for 
--- TODO: NOT NULL?
+-- admin announcements for offers
 CREATE TABLE announce (
     id INT PRIMARY KEY auto_increment,
-    title VARCHAR(255),
-    descr VARCHAR(255),
-    items JSON
+    title VARCHAR(255) NOT NULL,
+    descr VARCHAR(255) NOT NULL,
+    items JSON NOT NULL
 )ENGINE=InnoDB;
 
 CREATE TABLE requests (
@@ -130,7 +126,6 @@ CREATE TABLE offers (
     -- FOREIGN KEY (announcement) REFERENCES announce(id) 
 );
 
--- TODO: Maybe add to table directly.
 CREATE TABLE offer_status_code (
     status INT UNSIGNED PRIMARY KEY,
     meaning VARCHAR(30) NOT NULL

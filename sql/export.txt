@@ -1,0 +1,1 @@
+mysqldump -u root -p saviors > output_file_path.sql

@@ -19,6 +19,10 @@ SOURCE triggers.sql;
 select 'procedures';
 SOURCE procedures.sql;
 
+-- Entries
+select 'entries';
+SOURCE entries.sql;
+
 
 
 

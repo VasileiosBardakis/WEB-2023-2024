@@ -232,12 +232,12 @@ function mkAn() {
         <label class="form-label" for="anText">Announcement text</label>
     </div>
     <button type="button" onclick="moreItems()" class="btn btn-primary btn-block mb-4">Add an item</button>
-     <label for="dropdown">Select your items::</label>
     `;
-
+    
     //insert the HTML content into the designated div
     document.getElementById('mkAnService').innerHTML = inputFieldsHTML;
-    document.getElementById('mkAnService').innerHTML += '<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>';
+    document.getElementById('mkAnService').innerHTML += `<button type="button" onclick="announceDatabase()" class="btn btn-primary btn-block mb-4">Submit</button>
+    <label for="dropdown">Select your items</label>`;
     moreItems();
 
 

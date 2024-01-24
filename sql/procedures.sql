@@ -52,7 +52,6 @@ BEGIN
     VALUES (res_username, item_id, item_quantity)
     ON DUPLICATE KEY UPDATE res_quantity = res_quantity + item_quantity;
 
-    -- TODO:
     -- Check if the last operation was successful
     SELECT ROW_COUNT() INTO success;
 
@@ -145,7 +144,6 @@ BEGIN
     SELECT status INTO delete_offer_status
     FROM offers WHERE id = delete_offer_id; 
 
-    -- TODO: = vs IS
     -- if not picked up or completed, can delete
     IF(delete_offer_status = 0) THEN
         DELETE FROM offers

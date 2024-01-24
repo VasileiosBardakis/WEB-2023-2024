@@ -120,7 +120,7 @@ app.post('/register', (req, res) => {
 	let name = req.body.name;
 	let telephone = req.body.telephone;
 	let coordinates_obj = req.body.coordinates;
-	console.log(`Register attempt ${username}, ${name}, ${telephone}, ${coordinates_obj}`);
+	console.log(`Register attempt ${username}, ${name}, ${telephone}, ${coordinates_obj.lat}, ${coordinates_obj.lng}`);
 
 	if (username && password) {
 		// if admin or empty register rescuer to base coordinates
@@ -358,7 +358,6 @@ if (DO_RESET) {
 		db.query('INSERT INTO categories (id, category_name) VALUES (?, ?)', [categoryId, categoryName], (err, results) => {
 			if (err) {
 				console.error('Error executing query:', err);
-				res.status(500).json({ error: 'Internal Server Error' });
 				return;
 			}
 		});
@@ -374,7 +373,6 @@ if (DO_RESET) {
 		db.query('INSERT INTO items (id, name, category) VALUES (?, ?, ?)', [itemId, itemName, category], (err, results) => {
 			if (err) {
 				console.error('Error executing query:', err);
-				res.status(500).json({ error: 'Internal Server Error' });
 				return;
 			}
 	
@@ -386,7 +384,6 @@ if (DO_RESET) {
 				db.query('INSERT INTO details (item_id, detail_name, detail_value) VALUES (?, ?, ?)', [itemId, detailName, detailValue], (err, results) => {
 					if (err) {
 						console.error('Error executing query:', err);
-						res.status(500).json({ error: 'Internal Server Error' });
 						return;
 					}
 				});
@@ -476,7 +473,6 @@ app.get('/api/categories', (req, res) => {
 });
 /*Method for getting announcements from the database*/
 app.get('/api/announcements', (req, res) => {
-	//TODO: Throws 500 if announcements are empty
 	const query = `SELECT * FROM announce`; 
 	db.query(query, (err, announcement_results) => {
 		if (err) {
@@ -741,9 +737,10 @@ app.get('/api/itemswcat', (req, res) => {
 
 // Protect other user data so send only those for username
 app.get('/api/requests', (req, res) => {
+	let user_type = req.session.type;
 	let username = req.session.username;
 	let query;
-	if (username!='admin') {
+	if (user_type!=0) {
 		query = `SELECT
       r.id as 'id', i.name as 'Requested', r.num_people as 'People', rsc.meaning as 'Status',
 	  DATE_FORMAT(r.date_requested, '%d-%m-%Y %H:%i:%s') as 'Requested on', 
@@ -775,9 +772,10 @@ app.get('/api/requests', (req, res) => {
 });
 
 app.get('/api/offers', (req, res) => {
+	let user_type = req.session.type;
 	let username = req.session.username;
 	let query;
-	if (username!='admin') {
+	if (user_type!=0) {
 		query = `SELECT
       o.id as 'id', i.name as 'Item', osc.meaning as 'Status',
       DATE_FORMAT(o.date_offered, '%d-%m-%Y %H:%i:%s') as 'Offered on', 
@@ -810,11 +808,9 @@ app.get('/api/offers', (req, res) => {
 
 app.post('/citizen/sendOffer', (req, res) => {
 	let username = req.session.username;
-	item_id = req.body;
-	// let item_id = req.body.item_id;
+	item_id = req.body.id;
 
-	// TODO: for some reason plain text counts as 2 
-	if (username && item_id.length === 2) {
+	if (username && item_id) {
 		db.query('INSERT INTO offers (username, item_id) VALUES (?, ?)', [username, item_id], function (error, results) {
 			if (error) {
 				console.error('Error executing query:', error);
@@ -831,17 +827,14 @@ app.post('/citizen/sendOffer', (req, res) => {
 });
 
 app.post('/citizen/deleteOffer', (req, res) => {
-	//TODO: Delete only if offer is from username
 	let username = req.session.username;
-	offer_id = req.body;
+	offer_id = req.body.id;
 
-	// TODO: for some reason plain text HERE counts as 1
-	if (username && offer_id.length === 1) {
+	if (username && offer_id) {
 		// Ensure offer is from correct person
 		db.query('SELECT username FROM offers WHERE id = (?) AND status = 0', [offer_id], function (error, offer_results) {
-			console.log(offer_results);
+			// console.log(offer_results);
 
-			// TODO: Do check username[0] with req.session.username
 			// Has permission to delete their own offer
 			if (offer_results.length > 0) {
 				db.query('DELETE FROM offers WHERE id = (?) AND status = 0', [offer_id], function (error, results) {
@@ -887,8 +880,7 @@ app.post('/map/relocateBase', (req, res) => {
 	console.log(req.body);
 	lat = req.body.lat;
 	lng = req.body.lng;
-
-	// TODO: for some reason plain text counts as 2 
+ 
 	if (username) {
 		// Ensure relocation is from actual admin
 		// TODO: req.session.type also

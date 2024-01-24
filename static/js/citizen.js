@@ -293,7 +293,7 @@ function loadAnnouncements() {
                         let xhttp = new XMLHttpRequest();
                         xhttp.open('POST', '/citizen/sendOffer', true);
                         // TODO: Maybe use json even if it's for one.
-                        xhttp.setRequestHeader('Content-Type', 'text/plain');
+                        xhttp.setRequestHeader('Content-Type', 'application/json');
 
                         xhttp.onreadystatechange = function () {
                             if (xhttp.readyState === 4) {
@@ -306,8 +306,7 @@ function loadAnnouncements() {
                                 }
                             }
                         };
-                        let data = item.toString();
-                        console.log(data);
+                        let data = JSON.stringify({ id: item });
                         xhttp.send(data);
                     }.bind(null, item); // .bind() to pass the parameter
 
@@ -327,9 +326,6 @@ function loadAnnouncements() {
 
                 
             });
-        } else {
-            console.log('error');
-
         }
     };
     xhr.send();
@@ -419,7 +415,7 @@ function loadOffersTable() {
                     button_td.onclick=function(offer_id) {
                         let xhttp = new XMLHttpRequest();
                         xhttp.open('POST', '/citizen/deleteOffer', true);
-                        xhttp.setRequestHeader('Content-Type', 'text/plain');
+                        xhttp.setRequestHeader('Content-Type', 'application/json');
                         
                         xhttp.onreadystatechange = function () {
                             if (xhttp.readyState === 4) {
@@ -433,8 +429,7 @@ function loadOffersTable() {
                             }
                         };
 
-                        let data = offer_id.toString();
-                        console.log(data);
+                        let data = JSON.stringify({ id: offer_id });
                         xhttp.send(data);
                     }.bind(null, offer_id);
                 }
