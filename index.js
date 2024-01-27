@@ -58,7 +58,7 @@ const disableCaching = (req, res, next) => {
 };
 
 // http://localhost:3000/ redirects to login
-app.get('/', cache('31536000 seconds'), function(req, res) {
+app.get('/', cache('1 month'), function(req, res) {
 	// Render login template
 	if (req.session.loggedin) {
 		res.redirect('/auth');      //If logged in, redirect to auth
@@ -102,7 +102,7 @@ app.post('/', disableCaching,(req, res) => {
 });
 
 
-app.get('/register', cache('31536000 seconds'), function (req, res) {
+app.get('/register', cache('1 month'), function (req, res) {
 	// Render login template
 	if (req.session.loggedin) {
 		res.redirect('/auth');      //If logged in, redirect to auth
