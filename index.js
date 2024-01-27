@@ -10,14 +10,14 @@ const apicache = require('apicache')
 
 
 // Establishing connection
-const db = mysql.createPool({
+const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "root",
     database: 'saviors',
 	timezone: 'local',
 
-	connectionLimit: 10,
+	// connectionLimit: 10,
 })
 
 /*

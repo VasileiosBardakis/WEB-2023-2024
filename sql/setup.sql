@@ -20,8 +20,7 @@ select 'procedures';
 SOURCE procedures.sql;
 
 -- Entries
-select 'entries';
-SOURCE entries.sql;
+-- Entries are added manually AFTER base initialization
 
 
 
